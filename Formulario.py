@@ -3,9 +3,6 @@ from datetime import *
 
 from Paginas.Ingreso_Solicitud import *
 
-#Python image Library
-from PIL import ImageTk, Image
-
 def variable_global():
     global Contador, Contador2
 
