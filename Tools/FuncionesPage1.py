@@ -6,7 +6,6 @@ from tkinter import ttk
 from tkinter import messagebox
 
 import re
-from sqlalchemy import create_engine
 import pandas as pd
 
 from SQLConnect import SQLConsulta as SQL
@@ -545,6 +544,7 @@ def Sabana_2025(Division,Escuela,Carrera):
                     Lista_Escuelas.add(Nombre_Escuela)
         Lista_Escuelas = list(Lista_Escuelas) ;     Lista_Escuelas[0:0] = ["Operación Sede"]
         Escuela.config(values=Lista_Escuelas) ;     Escuela.set(Escuela['values'][0])
+        print("Hola Mundo")
 
 
     Division.bind("<<ComboboxSelected>>", validar_click_Division)
