@@ -500,17 +500,15 @@ def Sabana_2025(Division,Escuela,Carrera):
     with open("C:/Users/fmorety/OneDrive - Fundacion Instituto Profesional Duoc UC/Documentos/SDP App/SQL-Querys/Consulta_Codigos.sql", 'r', encoding='utf-8') as codeSQL:
         SQL_Select = codeSQL.read().strip()
 
-    github_url = "https://github.com/FMorety/SDP-App/blob/main/SQL-Querys/Consulta_Codigos.sql"
+    github_url = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/main/SQL-Querys/Consulta_Codigos.sql"
     response = requests.get(github_url)
 
     if response.status_code == 200:
         SQL_Select = response.text.strip()
     else:
         raise Exception("Error al obtener el archivo SQL desde GitHub")
-
-    return print(SQL_Select)
     
-    """Sabana = SQL(SQL_Select,pandas=True)
+    Sabana = SQL(SQL_Select,pandas=True)
 
     # --------------------------------------------------------------------------------------------------------------------------------------------#
 
@@ -558,4 +556,4 @@ def Sabana_2025(Division,Escuela,Carrera):
         print("Hola Mundo")
 
 
-    Division.bind("<<ComboboxSelected>>", validar_click_Division)"""
+    Division.bind("<<ComboboxSelected>>", validar_click_Division)
