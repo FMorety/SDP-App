@@ -58,11 +58,10 @@ def Form_Ingreso_Solicitud(parent):
     Ejecutor = crear_combobox(Frame_Mid,"Ejecutor:",Lista_Ejecutor,0,2,7).set(Lista_Ejecutor[0])
 
         #Subcartera
-    Lista_Subcartera = ["Operacional","Disciplinar","Corporativo"]
-    Subcartera = crear_combobox(Frame_Mid,"Subcartera:",Lista_Subcartera,0,4,12).set(Lista_Subcartera[0])
+    Subcartera = crear_combobox(Frame_Mid,"Subcartera:",[],0,4,12)
     
         #Unidad o Escuela#
-    #Lista_UnidadEscuela = ["Escuela de Administración y Negocios","Escuela de Comunicación","Escuela de Construcción","Escuela de Diseño","Escuela de Gastronomía","Escuela de Informática y Telecomunicaciones","Escuela de Ingeniería y Recursos Naturales","Escuela de Salud","Escuela de Turismo y Hospitalidad","Operación Sede","Infraestructura Sede","Dirección de Administración, Finanzas, y Financiamiento Estudiantil","Dirección de Desarrollo Online","Dirección de Estudios y Progresión Estudiantil","Dirección de Gestión y Proyectos","Dirección de Investigación Aplicada, Innovación y Transferencia","Dirección de Pastoral y Cultura Cristiana","Dirección de Procesos y Servicios Digitales","Dirección de Servicios de Infraestructura","Dirección de Contraloria","Dirección de Cumplimiento","Dirección de Calidad","Dirección de Tecnología","Dirección de Gobierno de Datos","Dirección General de Admisión, Comunicaciones y Extensión","Dirección General de Desarrollo Estudiantil, Educación Continua y Titulados","Dirección General de Personas","Dirección General de Servicios Digitales","Dirección Juridica","Secretaría General","Subdirección de Procesos Académicos","Subdirección de Sistemas de Desarrollo de Programas","Vicerrectoría Académica"]
+    
     UnidadEscuela = crear_combobox(Frame_Bottom,"Unidad o Escuela:",[],0,0)
 
         #Carrera de Destino#
@@ -82,7 +81,7 @@ def Form_Ingreso_Solicitud(parent):
         
         # ---------- Listados provenientes de SQL ---------- #    
     
-    Sabana_2025(Division,UnidadEscuela,Carrera);    Division.set(Division['values'][0])
+    Sabana_2025(Division,UnidadEscuela,Carrera,Subcartera);    Division.set(Division['values'][0]);       UnidadEscuela.set(UnidadEscuela['values'][0])
 
     # --------------------------------------------------------------------------------------------------------------------------------------------#
 

@@ -403,8 +403,13 @@ def Registrar_Valores(Frames,Check_var,Col1,Check_var2,Col2):
     }
     FrameCheckBox = Frames[1]
 
-    with open("C:/Users/fmorety/OneDrive - Fundacion Instituto Profesional Duoc UC/Documentos/SDP App/SQL-Querys/ID_Max.sql", 'r', encoding='utf-8') as codeSQL:
-        SQL_Select = codeSQL.read().strip()
+    github_url = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/main/SQL-Querys/ID_Max.sql"
+    response = requests.get(github_url)
+
+    if response.status_code == 200:
+        SQL_Select = response.text.strip()
+    else:
+        raise Exception("Error al obtener el archivo SQL desde GitHub")
     
         #Lista con los datos ingresados en el formulario
     Datos, Division = obtener_variables(Frames)
@@ -496,10 +501,8 @@ def Registrar_Valores(Frames,Check_var,Col1,Check_var2,Col2):
     
     SQL(SQL_Insert,lista=Lista_a_subir)
 
-def Sabana_2025(Division,Escuela,Carrera):
-    with open("C:/Users/fmorety/OneDrive - Fundacion Instituto Profesional Duoc UC/Documentos/SDP App/SQL-Querys/Consulta_Codigos.sql", 'r', encoding='utf-8') as codeSQL:
-        SQL_Select = codeSQL.read().strip()
-
+def Sabana_2025(Division,Escuela,Carrera,Subcartera):
+    
     github_url = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/main/SQL-Querys/Consulta_Codigos.sql"
     response = requests.get(github_url)
 
@@ -537,13 +540,44 @@ def Sabana_2025(Division,Escuela,Carrera):
     
         # Lista de Direcciones
 
-    Direcciones = ["Dirección de Administración, Finanzas, y Financiamiento Estudiantil","Dirección de Desarrollo Online","Dirección de Estudios y Progresión Estudiantil","Dirección de Gestión y Proyectos","Dirección de Investigación Aplicada, Innovación y Transferencia","Dirección de Pastoral y Cultura Cristiana","Dirección de Procesos y Servicios Digitales","Dirección de Servicios de Infraestructura","Dirección de Contraloria","Dirección de Cumplimiento","Dirección de Calidad","Dirección de Tecnología","Dirección de Gobierno de Datos","Dirección General de Admisión, Comunicaciones y Extensión","Dirección General de Desarrollo Estudiantil, Educación Continua y Titulados","Dirección General de Personas","Dirección General de Servicios Digitales","Dirección Juridica","Secretaría General","Subdirección de Procesos Académicos","Subdirección de Sistemas de Desarrollo de Programas","Vicerrectoría Académica"]
+    Direcciones = ["Dirección de Administración, Finanzas, y Financiamiento Estudiantil","Dirección de Desarrollo Online","Dirección de Estudios y Progresión Estudiantil","Dirección de Gestión y Proyectos","Dirección de Investigación Aplicada, Innovación y Transferencia","Dirección de Pastoral y Cultura Cristiana","Dirección de Procesos y Servicios Digitales","Dirección de Servicios de Infraestructura","Dirección de Contraloria","Dirección de Cumplimiento","Dirección de Calidad","Dirección de Tecnología","Dirección de Gobierno de Datos","Dirección General de Admisión, Comunicaciones y Extensión","Dirección General de Desarrollo Estudiantil, Educación Continua y Titulados","Dirección General de Personas","Dirección General de Servicios Digitales","Dirección Juridica","Secretaría General","Subdirección de Procesos Académicos","Subdirección de Sistemas de Desarrollo de Programas","Vicerrectoría Académica"]; Direcciones.sort
 
     Division.config(values=Lista_Sedes)
 
     def validar_click_Division(event):
+
+        if Division.get() == "Casa Central":
+            Direcciones[0:0]=["Operación Sede"]; Escuela.config(values=Direcciones); Escuela.set(Escuela['values'][0])
+            Subcartera.config(values="Corporativo"); Subcartera.set(Subcartera['values'][0])
+            return
+        
+        if event is None:
+            Lista_Subcartera = ["Operacional","Disciplinar","Corporativo"]
+            Subcartera.config(values=Lista_Subcartera); Subcartera.set(Subcartera['values'][0])
+
+        if Subcartera.get() is not "Disciplinar":
+            Escuela.config(values=["Operación Sede","Infraestructura Sede"]); Escuela.set(Escuela['values'][0])
+        
+        elif Subcartera.get() is "Disciplinar":
+
+            Lista_Escuelas = set()
+            Cod_Division = Sedes[Division.get() if event is not None else 'Alameda'][0]
+            for codigo in Carreras:
+
+                if Cod_Division == str(codigo[0][0:2]):
+                    Cod_Escuela = str(codigo[0][3:5])
+                    Nombre_Escuela = next((escuela[1] for escuela in Escuelas.values() if escuela[0] == Cod_Escuela), None)
+
+                    if Nombre_Escuela:
+                        Lista_Escuelas.add(Nombre_Escuela)
+
+            Lista_Escuelas = list(Lista_Escuelas)
+            Escuela.config(values=Lista_Escuelas) ;     Escuela.set(Escuela['values'][0])
+    
+    def validar_click_Escuelas(event):
         Lista_Escuelas = set()
         Cod_Division = Sedes[Division.get()][0]
+        Cod_Escuela = Sedes[Escuela.get()][0]
         for codigo in Carreras:
             if Cod_Division == str(codigo[0][0:2]):
                 Cod_Escuela = str(codigo[0][3:5])
@@ -553,7 +587,8 @@ def Sabana_2025(Division,Escuela,Carrera):
                     Lista_Escuelas.add(Nombre_Escuela)
         Lista_Escuelas = list(Lista_Escuelas) ;     Lista_Escuelas[0:0] = ["Operación Sede"]
         Escuela.config(values=Lista_Escuelas) ;     Escuela.set(Escuela['values'][0])
-        print("Hola Mundo")
-
 
     Division.bind("<<ComboboxSelected>>", validar_click_Division)
+    Subcartera.bind("<<ComboboxSelected>>", validar_click_Division)
+
+    validar_click_Division(event=None)
