@@ -550,18 +550,21 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera):
             Direcciones[0:0]=["Operación Sede"]; Escuela.config(values=Direcciones); Escuela.set(Escuela['values'][0])
             Subcartera.config(values="Corporativo"); Subcartera.set(Subcartera['values'][0])
             return
+        else:
+            Lista_Subcartera = ["Operacional","Disciplinar","Corporativo"]
+            Subcartera.config(values=Lista_Subcartera); #Subcartera.set(Subcartera['values'][0])
         
-        if event is None:
+        if event == None:
             Lista_Subcartera = ["Operacional","Disciplinar","Corporativo"]
             Subcartera.config(values=Lista_Subcartera); Subcartera.set(Subcartera['values'][0])
 
-        if Subcartera.get() is not "Disciplinar":
+        if Subcartera.get() != "Disciplinar":
             Escuela.config(values=["Operación Sede","Infraestructura Sede"]); Escuela.set(Escuela['values'][0])
         
-        elif Subcartera.get() is "Disciplinar":
+        elif Subcartera.get() == "Disciplinar":
 
             Lista_Escuelas = set()
-            Cod_Division = Sedes[Division.get() if event is not None else 'Alameda'][0]
+            Cod_Division = Sedes[Division.get() if event != None else 'Alameda'][0]
             for codigo in Carreras:
 
                 if Cod_Division == str(codigo[0][0:2]):
@@ -574,19 +577,19 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera):
             Lista_Escuelas = list(Lista_Escuelas)
             Escuela.config(values=Lista_Escuelas) ;     Escuela.set(Escuela['values'][0])
     
-    def validar_click_Escuelas(event):
-        Lista_Escuelas = set()
-        Cod_Division = Sedes[Division.get()][0]
-        Cod_Escuela = Sedes[Escuela.get()][0]
-        for codigo in Carreras:
-            if Cod_Division == str(codigo[0][0:2]):
-                Cod_Escuela = str(codigo[0][3:5])
-                Nombre_Escuela = next((escuela[1] for escuela in Escuelas.values() if escuela[0] == Cod_Escuela), None)
+    """    def validar_click_Escuelas(event):
+            Lista_Escuelas = set()
+            Cod_Division = Sedes[Division.get()][0]
+            Cod_Escuela = Sedes[Escuela.get()][0]
+            for codigo in Carreras:
+                if Cod_Division == str(codigo[0][0:2]):
+                    Cod_Escuela = str(codigo[0][3:5])
+                    Nombre_Escuela = next((escuela[1] for escuela in Escuelas.values() if escuela[0] == Cod_Escuela), None)
 
-                if Nombre_Escuela:
-                    Lista_Escuelas.add(Nombre_Escuela)
-        Lista_Escuelas = list(Lista_Escuelas) ;     Lista_Escuelas[0:0] = ["Operación Sede"]
-        Escuela.config(values=Lista_Escuelas) ;     Escuela.set(Escuela['values'][0])
+                    if Nombre_Escuela:
+                        Lista_Escuelas.add(Nombre_Escuela)
+            Lista_Escuelas = list(Lista_Escuelas) ;     Lista_Escuelas[0:0] = ["Operación Sede"]
+            Escuela.config(values=Lista_Escuelas) ;     Escuela.set(Escuela['values'][0])"""
 
     Division.bind("<<ComboboxSelected>>", validar_click_Division)
     Subcartera.bind("<<ComboboxSelected>>", validar_click_Division)
