@@ -65,7 +65,7 @@ def Form_Ingreso_Solicitud(parent):
     UnidadEscuela = crear_combobox(Frame_Bottom,"Unidad o Escuela:",[],0,0)
 
         #Carrera de Destino#
-    Carrera = crear_combobox(Frame_Bottom,"Carrera de destino:",[],1,0).set("hola")
+    Carrera = crear_combobox(Frame_Bottom,"Carrera de destino:",[],1,0)
 
         #Nombre Solicitud#
     NomSol = crear_entry(Frame_Bottom,"Nombre Solicitud:",2,0); limitar_caracteres2(NomSol)
