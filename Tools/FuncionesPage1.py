@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import tkinter as tk
 from tkinter import *
@@ -6,7 +6,6 @@ from tkinter import ttk
 from tkinter import messagebox
 
 import re
-import pandas as pd
 import requests
 
 from SQLConnect import SQLConsulta as SQL

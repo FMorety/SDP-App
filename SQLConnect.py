@@ -1,5 +1,6 @@
 import pyodbc
 import pandas as pd
+from tkinter import messagebox
 
 def SQLConsulta(Query,lista=[],pandas=False):
 
@@ -45,20 +46,22 @@ def SQLConsulta(Query,lista=[],pandas=False):
             print(Query)
             cursor.execute(Query)
             conn.commit()
-            print("Operación completada exitosamente.")
+            messagebox.showinfo("Resultado","La información fue subida con éxito.")
 
         # Recuperar resultados en caso de consultas SELECT
         elif Query.strip().lower().startswith('select'):
             cursor.execute(Query)
             results = cursor.fetchall()
+            messagebox.showinfo("Resultado","La consulta fue realizada con éxito.")
             return int(results[0][0])
-
+                     
     except pyodbc.Error as e:
-        print("Error al ejecutar la consulta:", e)
+        messagebox.showinfo("Resultado",f"Error al ejecutar la consulta. Revisar código. {e}")
 
     finally:
         # Cerrar el cursor y la conexión
         cursor.close()
         conn.close()
+
 
 
