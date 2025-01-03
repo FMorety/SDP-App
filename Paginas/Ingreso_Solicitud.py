@@ -54,8 +54,8 @@ def Form_Ingreso_Solicitud(parent):
     actualizar_Division_ID(Division,ID_Solicitud,Checkbox_var)
 
         #Ejecutor#
-    Lista_Ejecutor = ["SEDE","CC","DSI","DGSD","BIB","SegInt"]
-    Ejecutor = crear_combobox(Frame_Mid,"Ejecutor:",Lista_Ejecutor,0,2,7).set(Lista_Ejecutor[0])
+    Lista_Ejecutor = ["SEDE","CC","DSI","DGSD","BIB"]
+    Ejecutor = crear_combobox(Frame_Mid,"Ejecutor:",Lista_Ejecutor,0,2,7)
 
         #Subcartera
     Subcartera = crear_combobox(Frame_Mid,"Subcartera:",[],0,4,12)
@@ -115,7 +115,6 @@ def Form_Ingreso_Solicitud(parent):
 
         #OCO#
     OCO = crear_entry(Frame_Left, "*OCO:",0,0,15)
-    limitar_caracteres(OCO,9,1)
     
         #CECO#
     CECO = crear_entry(Frame_Left, "CECO:",1,0,15)
@@ -126,7 +125,7 @@ def Form_Ingreso_Solicitud(parent):
 
         #Tipo ítem#
     Lista_TipoItem = ["Equipamiento", "Mobiliario", "Tecnología", "Infraestructura"]
-    TipoItem = crear_combobox(Frame_Right, "Tipo de ítem:",Lista_TipoItem,0,0,14).set(Lista_TipoItem[0])
+    TipoItem = crear_combobox(Frame_Right, "Tipo de ítem:",Lista_TipoItem,0,0,14)
 
         #Ítem#
     Item = crear_entry(Frame_Right, "Ítem Solicitud:",1,0,17)
@@ -157,6 +156,10 @@ def Form_Ingreso_Solicitud(parent):
         
         #Botón para agregar mes de imputación
     AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total)); AgregarMonto.grid(row=1,column=1,sticky="e",padx=(45,0))
+
+        # ---------- Automatización OCO/Cuenta/Equipamiento ---------- #    
+
+    Ejecutor_Auto(Ejecutor, OCO, Cuenta, TipoItem)
 
     # --------------------------------------------------------------------------------------------------------------------------------------------#
 
