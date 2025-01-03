@@ -586,15 +586,14 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera):
             Lista_Escuelas = list(Lista_Escuelas)
             Escuela.config(values=Lista_Escuelas) ;     Escuela.set(Escuela['values'][0]) if Escuela.get() not in Lista_Escuelas else None
             
-            Cod_Escuela1 = next((escuela[0] for escuela in Escuelas.values() if escuela[1] == Escuela.get()),None)
-            print(Cod_Escuela1)
+            Cod_Escuela = next((escuela[0] for escuela in Escuelas.values() if escuela[1] == Escuela.get()),None)
 
             for codigo in Carreras:
                 if Cod_Division == str(codigo[0][0:2]) and Cod_Escuela == str(codigo[0][3:5]):
                         Lista_Carreras.add(codigo[1])
 
-            Lista_Carreras = list(Lista_Carreras) ;     Lista_Carreras[0:0] = ["Todas"]
-            Carrera.config(state="readonly",values=Lista_Carreras)
+            Lista_Carreras = list(Lista_Carreras);  Lista_Carreras2 = [" ".join([palabra.capitalize() if (len(palabra) > 3 and '/' not in palabra) else palabra.lower() for palabra in s.split()]) for s in Lista_Carreras];     Lista_Carreras2[0:0] = ["Todas"]
+            Carrera.config(state="readonly",values=Lista_Carreras2); Carrera.set(Carrera['values'][0]) if Carrera.get() not in Carreras else None
 
     Division.bind("<<ComboboxSelected>>", validar_click_Division)
     Subcartera.bind("<<ComboboxSelected>>", validar_click_Division)
