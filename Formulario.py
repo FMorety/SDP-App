@@ -34,6 +34,7 @@ class Registro:
         self.notebook.add(self.Page2, text="Mov. Bitácora")
 
         Form_Ingreso_Solicitud(self.Page1)
+        Form_
 
 if __name__ =="__main__":
     variable_global()

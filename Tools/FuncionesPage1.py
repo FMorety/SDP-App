@@ -78,7 +78,7 @@ def limitar_caracteres(entry_widget, max_length, EsNumero=0):
         #Parte que revisa si es dígito en caso de que EsNumero = 1
         if EsNumero==1:
             nuevo_texto = event.char
-            if not nuevo_texto.isdigit() and event.char not in ("\b", "\x7f","."):
+            if not nuevo_texto.isdigit() and event.char not in ("\b", "\x7f"):
                 return "break"
             if len(entry_widget.get())==0 and event.char=="0":
                 return "break"
@@ -95,7 +95,7 @@ def limitar_caracteres2(entry_widget):
             largo = entry_widget.get("1.0", tk.END)
         
         # Permitir solo letras como primer carácter
-        if not event.char.isalpha() and event.char not in ("\b", "\x7f","-") and len(largo)<=5:
+        if not event.char.isalpha() and event.char not in ("\b", "\x7f","-") and len(largo)<=2:
             return "break"
     entry_widget.bind("<KeyPress>",validar_entrada)
 

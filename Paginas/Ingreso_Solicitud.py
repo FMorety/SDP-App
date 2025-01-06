@@ -1,6 +1,5 @@
 from Tools.CrearObj import *
 from Tools.FuncionesPage1 import * 
-import pandas as pd
 
 
 def Form_Ingreso_Solicitud(parent):
