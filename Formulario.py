@@ -14,7 +14,7 @@ class Registro:
 
         self.window = ventana
         self.window.title("Formulario para Base de Datos")
-        self.window.geometry("600x700")
+        self.window.geometry("1025x450")
         self.window.resizable(0,0)
         self.window.config(bd=10)
 

@@ -6,13 +6,13 @@ def Form_Ingreso_Solicitud(parent):
         
     MesActual = (datetime.now().month)-1
     Marcos=[]
-    global Checkbox2_var, Checkbox_var
+    global Checkbox_var
 
     # Registrar la función de validación de valor numerico para ciertas celdas #
     Lista_Instancia = Instancias_Disponibles()
             
     ### ---------- Marco1 ---------- ###
-    marco1 = LabelFrame(parent,text="Información general",font=("Arial",10,"bold")); marco1.pack(side="top",padx=12,pady=5 ,ipady=5, ipadx=5, fill="x", expand="yes") 
+    marco1 = LabelFrame(parent,text="Información general",font=("Arial",10,"bold")); marco1.grid(padx=12,pady=(5,5) ,ipady=5, ipadx=5,column=0,row=0,sticky="n") 
 
     ### ---------- Frames Marco1 ---------- ###   
 
@@ -38,15 +38,6 @@ def Form_Ingreso_Solicitud(parent):
         #ID Solicitud si CheckBox = True#
     ID_Solicitud = crear_entry2(Frame_Top,14)
     limitar_caracteres(ID_Solicitud, 14,1)
-
-        #CheckBox reiteración de ID Solicitud#
-    Checkbox2_var = tk.BooleanVar()
-    CheckBox2 = crear_checkbox(Frame_Top,"Repetir ID Solicitud",3,Checkbox2_var)
-    CheckBox2.config(command=lambda: MostrarID(Checkbox2_var, Repeticiones,5,Marcos))
-
-        # Repeticiones # Numero de lineas con el mismo ID Solicitud si CheckBox2 = True #
-    Repeticiones = crear_entry2(Frame_Top,2)
-    limitar_caracteres(Repeticiones,1,1)
 
         #División#
     Division = crear_combobox(Frame_Mid,"División:",[],0,0,15)
@@ -86,9 +77,9 @@ def Form_Ingreso_Solicitud(parent):
 
 
     ### ---------- Marco2 ---------- ###
-    marco2 = LabelFrame(parent,text="Información ítem",font=("Arial",10,"bold")); marco2.pack(padx=12,pady=(0,5) ,ipady=5, ipadx=5, fill="x", expand=True) 
+    marco2 = LabelFrame(parent,text="Información ítem",font=("Arial",10,"bold")); marco2.grid(padx=0,pady=(5,5) ,ipady=5, ipadx=5, column=1,row=0,sticky="n") 
 
-    canvas = Canvas(marco2,height=235)
+    canvas = Canvas(marco2)
     scrollbar = Scrollbar(marco2, orient="vertical", command=canvas.yview)
     scrollable_frame = Frame(canvas)
 
@@ -98,16 +89,17 @@ def Form_Ingreso_Solicitud(parent):
         lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
     )
     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.configure(yscrollcommand=scrollbar.set,height=305)
 
-    canvas.pack(side="left", fill="both", expand=True)
+    canvas.pack(side="left", fill="both", expand=True,padx=(0,15))
     scrollbar.pack(side="right", fill="y")
 
 
     ### ---------- Frames ---------- ###
-    Frame_Right = crear_Frame(scrollable_frame,0,5); Frame_Right.grid(row=0,column=1,padx=(0,0),sticky="ew")
-    Frame_Left = crear_Frame(scrollable_frame,0,5); Frame_Left.grid(row=0,column=0,padx=(75,10),sticky="ew")
-    Frame_MontoMes = crear_Frame(scrollable_frame,1,15); Frame_MontoMes.grid(column=0,columnspan=2,padx=(10,0),sticky="e")
+    MarcoItem1 = crear_Frame(scrollable_frame,0,5)
+    Frame_Right = crear_Frame(scrollable_frame,0,5); Frame_Right.grid(row=0,column=1,padx=(0,15),sticky="ew")
+    Frame_Left = crear_Frame(scrollable_frame,0,5); Frame_Left.grid(row=0,column=0,padx=(15,10),sticky="ew")
+    Frame_MontoMes = crear_Frame(scrollable_frame,1,15); Frame_MontoMes.grid(column=0,columnspan=2,padx=(20,0),sticky="n")
     Marcos += [Frame_Right,Frame_Left,Frame_MontoMes]
 
     ### ---------- Campos ---------- ###
@@ -130,31 +122,27 @@ def Form_Ingreso_Solicitud(parent):
     Item = crear_entry(Frame_Right, "Ítem Solicitud:",1,0,17)
     Item.grid(padx=(0,7)); limitar_caracteres2(Item)
 
-        #Cantidad Aprobada#
-    Cantidad = crear_entry(Frame_Right, "# Aprobada:",2,0,3)
-    limitar_caracteres(Cantidad,3,1)
-
         #Monto Total Aprobado#
-    Label_MontoTotal = Label(Frame_MontoMes,text="Monto Total Aprobado",font=("Arial",9,"bold")); Label_MontoTotal.grid(row=0,column=0,sticky="ew",padx=(15,0))
-    MontoTotal = Entry(Frame_MontoMes,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10)); MontoTotal.grid(row=1, column=0,sticky="ew",padx=(15,0)); FormatearNumero(MontoTotal,Frame_MontoMes)
-    MontoTotal.bind("<KeyRelease>", lambda e: actualizar_total(Frame_MontoMes, Label_Total))
+    Label_MontoTotal = Label(Frame_Right,text="Total Aprobado:",font=("Arial",9,"bold")); Label_MontoTotal.grid(row=2,column=0,sticky="ew",padx=(0,2),pady=(10,0))
+    MontoTotal = Entry(Frame_Right,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); MontoTotal.grid(row=2, column=1,sticky="ew",padx=(0,7),pady=(10,0))
+    FormatearNumero(MontoTotal,Frame_Right);     MontoTotal.bind("<KeyRelease>", lambda e: actualizar_total(Frame_Right, Label_Total))
     
         #Monto Aprobado#
-    Label_Monto = Label(Frame_MontoMes,text="Monto",anchor="center",font=("Arial",9,"bold")).grid(row=0,column=2,sticky='ew')  
-    Monto = Entry(Frame_MontoMes,width=22,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10)); Monto.grid(row=1, column=2,sticky="w", padx=(0,5)); FormatearNumero(Monto)
-    Monto.bind("<KeyRelease>", lambda e: actualizar_total(Frame_MontoMes, Label_Total))
+    Label_Monto = Label(Frame_MontoMes,text="Monto",anchor="center",font=("Arial",9,"bold")).grid(row=0,column=1,sticky='ew')  
+    Monto = Entry(Frame_MontoMes,width=22,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10)); Monto.grid(row=1, column=1,sticky="w", padx=(0,5))
+    FormatearNumero(Monto);    Monto.bind("<KeyRelease>", lambda e: actualizar_total(Frame_MontoMes, Label_Total))
 
         #Mes#
     Lista_Mes = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
-    Label_Mes = Label(Frame_MontoMes,text="Mes",anchor="center",font=("Arial",9,"bold")).grid(row=0,column=3,sticky="ew")
-    Mes = ttk.Combobox(Frame_MontoMes, values=Lista_Mes,width=15,state="readonly") ; Mes.grid(row=1,column=3,sticky="ew")
+    Label_Mes = Label(Frame_MontoMes,text="Mes",anchor="center",font=("Arial",9,"bold")).grid(row=0,column=2,sticky="ew")
+    Mes = ttk.Combobox(Frame_MontoMes, values=Lista_Mes,width=15,state="readonly") ; Mes.grid(row=1,column=2,sticky="ew")
     Mes.set(Lista_Mes[MesActual])
     
         #Etiqueta para visualizar el total de lo que corresponde a cada mes
-    Label_Total= Label(Frame_MontoMes, text="Total: 0", anchor="w", font=("Arial", 9, "bold")); Label_Total.grid(row=2,column=2,pady=(0,0))
+    Label_Total= Label(Frame_MontoMes, text="Total: 0", anchor="w", font=("Arial", 9, "bold")); Label_Total.grid(row=2,column=1,pady=(0,0))
         
         #Botón para agregar mes de imputación
-    AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total)); AgregarMonto.grid(row=1,column=1,sticky="e",padx=(45,0))
+    AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total)); AgregarMonto.grid(row=1,column=0,sticky="e",padx=(0,0))
 
         # ---------- Automatización OCO/Cuenta/Equipamiento ---------- #    
 
@@ -163,12 +151,12 @@ def Form_Ingreso_Solicitud(parent):
     # --------------------------------------------------------------------------------------------------------------------------------------------#
 
     # ---------- Botones ---------- #
-    Frame_Botones = Frame(parent); Frame_Botones.pack(side="bottom")
+    Frame_Botones = Frame(parent); Frame_Botones.grid(row=1,column=0,columnspan=2,sticky="n",pady=5)
 
     Limpiar = Button(Frame_Botones,text="Limpiar",command=lambda: limpiar_widgets(Marcos),width=10)
     Limpiar.grid(row=0,column=0,sticky="n",padx=(0,20))
 
-    Registrar = Button(Frame_Botones,text="Registrar",command=lambda: Registrar_Valores(Marcos,Checkbox_var,ID_Solicitud,Checkbox2_var,Repeticiones),width=10)
+    Registrar = Button(Frame_Botones,text="Registrar",command=lambda: Registrar_Valores(Marcos,Checkbox_var,ID_Solicitud),width=10)
     Registrar.grid(row=0,column=1,sticky="n",padx=(20,0))
     
     # --------------------------------------------------------------------------------------------------------------------------------------------#
