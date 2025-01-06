@@ -2,6 +2,7 @@ from tkinter import ttk
 from datetime import *
 
 from Paginas.Ingreso_Solicitud import *
+from Paginas.Bitacora import *
 
 def variable_global():
     global Contador, Contador2
@@ -34,7 +35,8 @@ class Registro:
         self.notebook.add(self.Page2, text="Mov. Bitácora")
 
         Form_Ingreso_Solicitud(self.Page1)
-        Form_
+        Form_Bitacora(self.Page2)
+        
 
 if __name__ =="__main__":
     variable_global()
