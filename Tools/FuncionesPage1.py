@@ -208,7 +208,7 @@ def agregar_fila(Frame,Lista,boton,label):
     eliminar = ttk.Button(Frame,text="-",width=3,command=lambda: eliminar_fila(Frame,eliminar)); eliminar.grid(row=fila_actual,column=1,sticky="e")
     boton.grid(row=fila_actual+1)    
 
-def eliminar_item(parent, listamarcos, marco):
+def eliminar_item(marco, listamarcos):
     
     #Extrae el título del Item #
     marconuevo = marco.grid_slaves()[::-1];    marcohijo = marconuevo[0];    marcohijonuevo = marcohijo.grid_slaves()[::-1];    Label = marcohijonuevo[1].cget("text")
@@ -216,11 +216,11 @@ def eliminar_item(parent, listamarcos, marco):
     #Extrae el N° del Item dentro del título y se destruye el Item, actualizando la lista #
     Numero = int(Label[len(Label)-1:])
     
-    
+    print(marconuevo,marcohijonuevo,sep="\n")
     del listamarcos[Numero-1]
     
     Modificar_marcos = listamarcos.copy(); del Modificar_marcos[0]
-
+    marco.destroy()
     for Frame in Modificar_marcos:
         for Frame2 in Frame.grid_slaves():
             for widget in Frame2.grid_slaves():
