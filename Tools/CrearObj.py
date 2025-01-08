@@ -50,7 +50,7 @@ def Frame_de_Item(parent, listamarcos):
 
     MesActual = (datetime.now().month)-1
     Numero = len(listamarcos)
-
+    
     ### ---------- Frames ---------- ###
 
     MarcoItem_Nuevo = crear_Frame(parent,0,0); MarcoItem_Nuevo.grid(row=Numero,sticky="n")
@@ -64,14 +64,14 @@ def Frame_de_Item(parent, listamarcos):
     
     ### ---------- Campos ---------- ###
 
-    LineaSep = agregar_linea(Frame_Titulo,10,0,220,0,"gray",grosor=2); LineaSep.grid(row=0,column=0,columnspan=2,sticky="n")
+    LineaSep = agregar_linea(Frame_Titulo,10,0,350,0,"gray",grosor=2); LineaSep.grid(row=0,column=0,columnspan=2,sticky="n")
 
         #Título Item#
-    Label_Item = tk.Label(Frame_Titulo,text=f"Item {Numero+1}",anchor="center",font=("Times New Roman",11,"bold")); Label_Item.grid(row=1,column=0,sticky="e",pady=(10,0))
+    Label_Item = tk.Label(Frame_Titulo,text=f"Item {Numero+1}",anchor="center",font=("Times New Roman",11,"bold")); Label_Item.grid(row=1,column=0,sticky="e",pady=(10,0),padx=(0,5))
 
         # Boton de eliminar Item#
     Eliminar_Item = Button(Frame_Titulo,text="Eliminar",command=lambda: eliminar_item(MarcoItem_Nuevo,listamarcos),width=8)
-    Eliminar_Item.grid(row=1,column=1,sticky="w",padx=0,pady=(10,0))
+    Eliminar_Item.grid(row=1,column=1,sticky="w",padx=(5,0),pady=(10,0))
 
         #OCO#
     OCO = crear_entry(Frame_Left, "*OCO:",0,0,15)
@@ -112,3 +112,5 @@ def Frame_de_Item(parent, listamarcos):
         
         #Botón para agregar mes de imputación
     AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total)); AgregarMonto.grid(row=1,column=0,sticky="e",padx=(0,0))
+
+    print(len(listamarcos),listamarcos,sep="\n")

@@ -216,7 +216,6 @@ def eliminar_item(marco, listamarcos):
     #Extrae el N° del Item dentro del título y se destruye el Item, actualizando la lista #
     Numero = int(Label[len(Label)-1:])
     
-    print(marconuevo,marcohijonuevo,sep="\n")
     del listamarcos[Numero-1]
     
     Modificar_marcos = listamarcos.copy(); del Modificar_marcos[0]
