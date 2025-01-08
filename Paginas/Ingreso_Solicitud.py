@@ -2,7 +2,7 @@ from Tools.CrearObj import *
 from Tools.FuncionesPage1 import * 
 
 
-def Form_Ingreso_Solicitud(parent):
+def Form_Ingreso_Solicitud(parent,window):
         
     MesActual = (datetime.now().month)-1
     Marcos=[]
@@ -28,7 +28,7 @@ def Form_Ingreso_Solicitud(parent):
 
         #Instancia#
     Instancia = crear_combobox(Frame_Instancia,"Instancia de aprobación:",Lista_Instancia,0,0,12).set(Lista_Instancia[0])  
-    linea = agregar_linea(Frame_Linea,30,0,530,0,"gray",2)
+    linea = agregar_linea(Frame_Linea,10,0,400,0,"gray",2)
 
         #CheckBox ID Solicitud#
     Checkbox_var = tk.BooleanVar()
@@ -94,15 +94,25 @@ def Form_Ingreso_Solicitud(parent):
     canvas.pack(side="left", fill="both", expand=True,padx=(0,15))
     scrollbar.pack(side="right", fill="y")
 
+    # Agrega el scrollable_frame con todo lo que va dentro.     Y aparte agrega una nueva lista de Marcos, util para crear multiples lineas en la BBDD con los multiples items#
+    Marcos += [scrollable_frame]
+    MarcosInternos = []
 
     ### ---------- Frames ---------- ###
-    MarcoItem1 = crear_Frame(scrollable_frame,0,5)
-    Frame_Right = crear_Frame(scrollable_frame,0,5); Frame_Right.grid(row=0,column=1,padx=(0,15),sticky="ew")
-    Frame_Left = crear_Frame(scrollable_frame,0,5); Frame_Left.grid(row=0,column=0,padx=(15,10),sticky="ew")
-    Frame_MontoMes = crear_Frame(scrollable_frame,1,15); Frame_MontoMes.grid(column=0,columnspan=2,padx=(20,0),sticky="n")
-    Marcos += [Frame_Right,Frame_Left,Frame_MontoMes]
+
+    MarcoItem1 = crear_Frame(scrollable_frame,0,0); MarcoItem1.grid(row=0,sticky="n")
+    Frame_Titulo = crear_Frame(MarcoItem1,0,0); Frame_Titulo.grid(row=0,column=0,columnspan=2,sticky="n")
+    Frame_Right = crear_Frame(MarcoItem1,1,5); Frame_Right.grid(column=1,padx=(0,15),sticky="ew")
+    Frame_Left = crear_Frame(MarcoItem1,1,5); Frame_Left.grid(column=0,padx=(15,10),sticky="ew")
+    Frame_MontoMes = crear_Frame(MarcoItem1,2,15); Frame_MontoMes.grid(column=0,columnspan=2,padx=(20,0),sticky="n")
+
+    MarcosInternos += [MarcoItem1]
+
 
     ### ---------- Campos ---------- ###
+
+        #Título Item#
+    Label_Item = Label(Frame_Titulo,text="Item 1",anchor="center",font=("Times New Roman",11,"bold")); Label_Item.grid(row=0,column=0,sticky="n")
 
         #OCO#
     OCO = crear_entry(Frame_Left, "*OCO:",0,0,15)
@@ -157,6 +167,10 @@ def Form_Ingreso_Solicitud(parent):
     Limpiar.grid(row=0,column=0,sticky="n",padx=(0,20))
 
     Registrar = Button(Frame_Botones,text="Registrar",command=lambda: Registrar_Valores(Marcos,Checkbox_var,ID_Solicitud),width=10)
-    Registrar.grid(row=0,column=1,sticky="n",padx=(20,0))
+    Registrar.grid(row=0,column=1,sticky="n",padx=(20,20))
+
+    Nuevo_Item = Button(Frame_Botones,text="Nuevo Item",command=lambda: Frame_de_Item(scrollable_frame,MarcosInternos),width=10)
+    Nuevo_Item.grid(row=0,column=2,sticky="n",padx=(20,0))
+
     
     # --------------------------------------------------------------------------------------------------------------------------------------------#

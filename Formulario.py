@@ -14,7 +14,9 @@ class Registro:
 
         self.window = ventana
         self.window.title("Formulario para Base de Datos")
-        self.window.geometry("1025x450")
+
+        self.window.geometry("1025x425")
+
         self.window.resizable(0,0)
         self.window.config(bd=10)
 
@@ -34,8 +36,8 @@ class Registro:
         self.notebook.add(self.Page1, text="Ingreso Solicitud")
         self.notebook.add(self.Page2, text="Mov. Bitácora")
 
-        Form_Ingreso_Solicitud(self.Page1)
-        Form_Bitacora(self.Page2)
+        Form_Ingreso_Solicitud(self.Page1,self.window)
+        Form_Bitacora(self.Page2,self.window)
         
 
 if __name__ =="__main__":

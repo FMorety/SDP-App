@@ -208,6 +208,37 @@ def agregar_fila(Frame,Lista,boton,label):
     eliminar = ttk.Button(Frame,text="-",width=3,command=lambda: eliminar_fila(Frame,eliminar)); eliminar.grid(row=fila_actual,column=1,sticky="e")
     boton.grid(row=fila_actual+1)    
 
+def eliminar_item(parent, listamarcos, marco):
+    
+    #Extrae el título del Item #
+    marconuevo = marco.grid_slaves()[::-1];    marcohijo = marconuevo[0];    marcohijonuevo = marcohijo.grid_slaves()[::-1];    Label = marcohijonuevo[1].cget("text")
+    
+    #Extrae el N° del Item dentro del título y se destruye el Item, actualizando la lista #
+    Numero = int(Label[len(Label)-1:])
+    
+    
+    del listamarcos[Numero-1]
+    
+    Modificar_marcos = listamarcos.copy(); del Modificar_marcos[0]
+
+    for Frame in Modificar_marcos:
+        for Frame2 in Frame.grid_slaves():
+            for widget in Frame2.grid_slaves():
+                try:
+                    # Verificar si el widget pertenece a la fila actual y a la columna correspondiente
+                    if isinstance(widget,tk.Label) and widget.grid_info()["row"] == 1 and widget.grid_info()["column"] >= 0:
+
+                        textoLabel = widget.cget("text")
+                        NumeroLabel = textoLabel[len(textoLabel)-1:]
+                        widget.config(text=f"Item {NumeroLabel}")
+                        marco.destroy()
+                except tk.TclError:
+                    # Manejar el caso donde el widget ya ha sido destruido
+                    print("Error")
+                    continue
+
+
+
 def SumaMonto(Frame):
     """Calcula la suma de todos los valores en la columna 2 del Frame dado."""
     suma_monto = 0
