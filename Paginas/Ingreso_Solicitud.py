@@ -135,12 +135,12 @@ def Form_Ingreso_Solicitud(parent,window):
         #Monto Total Aprobado#
     Label_MontoTotal = Label(Frame_Right,text="Total Aprobado:",font=("Arial",9,"bold")); Label_MontoTotal.grid(row=2,column=0,sticky="ew",padx=(0,2),pady=(10,0))
     MontoTotal = Entry(Frame_Right,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); MontoTotal.grid(row=2, column=1,sticky="ew",padx=(0,7),pady=(10,0))
-    FormatearNumero(MontoTotal,Frame_Right);     MontoTotal.bind("<KeyRelease>", lambda e: actualizar_total(Frame_Right, Label_Total))
+    FormatearNumero(MontoTotal,Frame_MontoMes);     MontoTotal.bind("<KeyRelease>", lambda e: actualizar_total(Frame_MontoMes, Label_Total, MontoTotal))
     
         #Monto Aprobado#
     Label_Monto = Label(Frame_MontoMes,text="Monto",anchor="center",font=("Arial",9,"bold")).grid(row=0,column=1,sticky='ew')  
     Monto = Entry(Frame_MontoMes,width=22,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10)); Monto.grid(row=1, column=1,sticky="w", padx=(0,5))
-    FormatearNumero(Monto);    Monto.bind("<KeyRelease>", lambda e: actualizar_total(Frame_MontoMes, Label_Total))
+    FormatearNumero(Monto);    Monto.bind("<KeyRelease>", lambda e: actualizar_total(Frame_MontoMes, Label_Total,MontoTotal))
 
         #Mes#
     Lista_Mes = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
@@ -152,7 +152,7 @@ def Form_Ingreso_Solicitud(parent,window):
     Label_Total= Label(Frame_MontoMes, text="Total: 0", anchor="w", font=("Arial", 9, "bold")); Label_Total.grid(row=2,column=1,pady=(0,0))
         
         #Botón para agregar mes de imputación
-    AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total)); AgregarMonto.grid(row=1,column=0,sticky="e",padx=(0,0))
+    AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total,MontoTotal)); AgregarMonto.grid(row=1,column=0,sticky="e",padx=(0,0))
 
         # ---------- Automatización OCO/Cuenta/Equipamiento ---------- #    
 
@@ -161,6 +161,7 @@ def Form_Ingreso_Solicitud(parent,window):
     # --------------------------------------------------------------------------------------------------------------------------------------------#
 
     # ---------- Botones ---------- #
+
     Frame_Botones = Frame(parent); Frame_Botones.grid(row=1,column=0,columnspan=2,sticky="n",pady=5)
 
     Limpiar = Button(Frame_Botones,text="Limpiar",command=lambda: limpiar_widgets(Marcos),width=10)
@@ -172,5 +173,4 @@ def Form_Ingreso_Solicitud(parent,window):
     Nuevo_Item = Button(Frame_Botones,text="Nuevo Item",command=lambda: Frame_de_Item(scrollable_frame,MarcosInternos),width=10)
     Nuevo_Item.grid(row=0,column=2,sticky="n",padx=(20,0))
 
-    
     # --------------------------------------------------------------------------------------------------------------------------------------------#

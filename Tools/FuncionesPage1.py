@@ -123,7 +123,7 @@ def FormatearNumero(entry_widget,Frames=None):
     
     def validar_out_focus2(event):
         if Frames != None:
-            widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-4]
+            widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-2]
             formatted_value = format_money(widget_insert.get())
             widget_insert.delete(0, 'end')
             widget_insert.insert(0, formatted_value)
@@ -150,7 +150,7 @@ def FormatearNumero(entry_widget,Frames=None):
         elif len(entry_widget.get())==0 and event.char=="0":
             return
         
-        widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-4]
+        widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-2]
 
         if event.keysym in ("BackSpace", "Delete"):
             widget_insert.delete(len(widget_insert.get()) - 1, tk.END)
@@ -159,7 +159,7 @@ def FormatearNumero(entry_widget,Frames=None):
         
 
 
-    entry_widget.bind("<KeyPress>", validar_entrada)
+    entry_widget.bind("<KeyPress>", validar_entrada if Frames != None else None)
     entry_widget.bind('<FocusOut>', validar_focusout_final)
 
 def format_money(value):
@@ -196,16 +196,16 @@ def eliminar_fila(Frame, boton):
             # Manejar el caso donde el widget ya ha sido destruido
             continue
 
-def agregar_fila(Frame,Lista,boton,label):
+def agregar_fila(Frame,Lista,boton,label,Montoaprobado):
     # Obtener la posición actual del botón
     fila_actual = boton.grid_info()["row"]
     for widget in Frame.grid_slaves():
         if widget.grid_info()["row"] > fila_actual:
             widget.grid(row=fila_actual+2)
-    Monto = Entry(Frame,width=22,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10)); Monto.grid(row=fila_actual+1, column=2,sticky="w", padx=(0,5)); FormatearNumero(Monto)
-    Monto.bind("<KeyRelease>", lambda e: actualizar_total(Frame, label))
-    Mes = ttk.Combobox(Frame, values=Lista,width=15,state="readonly"); Mes.grid(row=fila_actual+1,column=3,sticky="ew"); Mes.set(Mes["values"][datetime.now().month -1])
-    eliminar = ttk.Button(Frame,text="-",width=3,command=lambda: eliminar_fila(Frame,eliminar)); eliminar.grid(row=fila_actual,column=1,sticky="e")
+    Monto = Entry(Frame,width=22,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10)); Monto.grid(row=fila_actual+1, column=1,sticky="w", padx=(0,5)); FormatearNumero(Monto)
+    Monto.bind("<KeyRelease>", lambda e: actualizar_total(Frame, label,Montoaprobado))
+    Mes = ttk.Combobox(Frame, values=Lista,width=15,state="readonly"); Mes.grid(row=fila_actual+1,column=2,sticky="ew"); Mes.set(Mes["values"][datetime.now().month -1])
+    eliminar = ttk.Button(Frame,text="-",width=3,command=lambda: eliminar_fila(Frame,eliminar)); eliminar.grid(row=fila_actual,column=0,sticky="e")
     boton.grid(row=fila_actual+1)    
 
 def eliminar_item(marco, listamarcos):
@@ -243,13 +243,12 @@ def eliminar_item(marco, listamarcos):
 
     del listamarcos[Numero]
 
-
 def SumaMonto(Frame):
     """Calcula la suma de todos los valores en la columna 2 del Frame dado."""
     suma_monto = 0
     for widget in Frame.grid_slaves():
         try:
-            if widget.grid_info()["column"] == 2 and isinstance(widget,Entry):  # Verificar columna 2
+            if widget.grid_info()["column"] == 1 and isinstance(widget,Entry):  # Verificar columna 2
                 valor = widget.get()
                 if valor:  # Verificar que no esté vacío
                     valor_sin_puntos = int(valor.replace('.',''))  # Eliminar puntos y convertir a entero
@@ -258,14 +257,18 @@ def SumaMonto(Frame):
             continue  # Ignorar entradas no válidas
     return f"Total: {suma_monto:,}".replace(",", ".") # Formatear con puntos como separadores
 
-def actualizar_total(Frame, Label_Total):
+def actualizar_total(Frame, Label_Total, Montoaprobado):
     """
     Actualiza el texto del Label con el total sumado.
     """
     Label_Total.config(text=SumaMonto(Frame))
-    if int(Frame.grid_slaves()[len(Frame.grid_slaves())-2].get().replace(".","")) != int(Label_Total.cget("text").replace("Total: ","").replace(".","")):
+    if (Montoaprobado.get() == "" and int(Label_Total.cget("text").replace("Total: ","").replace(".","")) != 0) or (Montoaprobado.get() != "" and int(Label_Total.cget("text").replace("Total: ","").replace(".","")) == 0):
         Label_Total.config(fg="red")
-    elif int(Label_Total.cget("text").replace("Total: ","").replace(".",""))==0:
+
+    elif Montoaprobado.get() != "" and int(Montoaprobado.get().replace(".","")) != int(Label_Total.cget("text").replace("Total: ","").replace(".","")):
+        Label_Total.config(fg="red")
+        
+    elif int(Label_Total.cget("text").replace("Total: ","").replace(".","")) ==0  and Montoaprobado.get()=="":
         Label_Total.config(fg="black")
     else:
         Label_Total.config(fg="dark green")
