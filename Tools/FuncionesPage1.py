@@ -214,28 +214,34 @@ def eliminar_item(marco, listamarcos):
     marconuevo = marco.grid_slaves()[::-1];    marcohijo = marconuevo[0];    marcohijonuevo = marcohijo.grid_slaves()[::-1];    Label = marcohijonuevo[1].cget("text")
     
     #Extrae el N° del Item dentro del título y se destruye el Item, actualizando la lista #
-    Numero = int(Label[len(Label)-1:])
-    
-    del listamarcos[Numero-1]
+    Numero = int(Label[len(Label)-1:])-1
     
     Modificar_marcos = listamarcos.copy(); del Modificar_marcos[0]
-    marco.destroy()
-    for Frame in Modificar_marcos:
-        for Frame2 in Frame.grid_slaves():
-            for widget in Frame2.grid_slaves():
-                try:
-                    # Verificar si el widget pertenece a la fila actual y a la columna correspondiente
-                    if isinstance(widget,tk.Label) and widget.grid_info()["row"] == 1 and widget.grid_info()["column"] >= 0:
+    
+    #if len(listamarcos)==1:
+    #    marco.destroy()
+    if marco == listamarcos[-1]:
+        marco.destroy()
+    else:
+        for Frame in Modificar_marcos:
+            if Frame.grid_info()['row'] > Numero:
 
-                        textoLabel = widget.cget("text")
-                        NumeroLabel = textoLabel[len(textoLabel)-1:]
-                        widget.config(text=f"Item {NumeroLabel}")
-                        marco.destroy()
-                except tk.TclError:
-                    # Manejar el caso donde el widget ya ha sido destruido
-                    print("Error")
-                    continue
+                for Frame2 in Frame.grid_slaves():
+                    for widget in Frame2.grid_slaves():
+                        try:
+                            # Verificar si el widget pertenece a la fila actual y a la columna correspondiente
+                            if isinstance(widget,tk.Label) and widget.master.winfo_name() == "!frame":
+                                textoLabel = widget.cget("text")
+                                NumeroLabel = int(textoLabel[len(textoLabel)-1:])
+                                widget.config(text=f"Item {NumeroLabel-1}")
+                                marco.destroy()
+                        except tk.TclError:
+                            # Manejar el caso donde el widget ya ha sido destruido
+                            print("Error")
+                            continue
+                Frame.grid(row=Frame.grid_info()['row']-1)
 
+    del listamarcos[Numero]
 
 
 def SumaMonto(Frame):

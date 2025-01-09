@@ -50,10 +50,12 @@ def Frame_de_Item(parent, listamarcos):
 
     MesActual = (datetime.now().month)-1
     Numero = len(listamarcos)
+    Ult_fila = len(parent.grid_slaves())
     
+    print(Numero,Ult_fila,sep="\n")
     ### ---------- Frames ---------- ###
 
-    MarcoItem_Nuevo = crear_Frame(parent,0,0); MarcoItem_Nuevo.grid(row=Numero,sticky="n")
+    MarcoItem_Nuevo = crear_Frame(parent,0,0); MarcoItem_Nuevo.grid(row=Ult_fila,sticky="n")
     Frame_Titulo = crear_Frame(MarcoItem_Nuevo,0,0); Frame_Titulo.grid(row=0,column=0,columnspan=2,sticky="n")
     Frame_Right = crear_Frame(MarcoItem_Nuevo,1,5); Frame_Right.grid(column=1,padx=(0,15),sticky="ew")
     Frame_Left = crear_Frame(MarcoItem_Nuevo,1,5); Frame_Left.grid(column=0,padx=(15,10),sticky="ew")
@@ -112,5 +114,3 @@ def Frame_de_Item(parent, listamarcos):
         
         #Botón para agregar mes de imputación
     AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total)); AgregarMonto.grid(row=1,column=0,sticky="e",padx=(0,0))
-
-    print(len(listamarcos),listamarcos,sep="\n")
