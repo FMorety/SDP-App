@@ -50,11 +50,11 @@ def Frame_de_Item(parent, listamarcos):
 
     MesActual = (datetime.now().month)-1
     Numero = len(listamarcos)
-    Ult_fila = len(parent.grid_slaves())
+    print(Numero)
     
     ### ---------- Frames ---------- ###
 
-    MarcoItem_Nuevo = crear_Frame(parent,0,0); MarcoItem_Nuevo.grid(row=Ult_fila,sticky="n")
+    MarcoItem_Nuevo = crear_Frame(parent,0,0); MarcoItem_Nuevo.grid(row=Numero,sticky="n")
     Frame_Titulo = crear_Frame(MarcoItem_Nuevo,0,0); Frame_Titulo.grid(row=0,column=0,columnspan=2,sticky="n")
     Frame_Right = crear_Frame(MarcoItem_Nuevo,1,5); Frame_Right.grid(column=1,padx=(0,15),sticky="ew")
     Frame_Left = crear_Frame(MarcoItem_Nuevo,1,5); Frame_Left.grid(column=0,padx=(15,10),sticky="ew")

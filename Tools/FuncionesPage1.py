@@ -285,35 +285,46 @@ def actualizar_Division_ID(entry_widget1,entry_widget2,checkbox):
             entry_widget2.insert(0,nuevo_codigo)
     entry_widget1.bind("<<ComboboxSelected>>", validar_click)
 
-def limpiar_widgets(Frames):
-    for Frame in Frames:
+def limpiar_widgets(Frames,FramesInternos):
+
+    Marcos = Frames.copy(); del Marcos[len(Marcos)-1]
+    OCOS = [300,5000,4000,4500,12100]
+
+    for Frame in Marcos:
         for widget in Frame.grid_slaves():
             try:
-                if isinstance(widget,ttk.Combobox):
-                    if widget.grid_info()["column"]==3 and widget.grid_info()["row"]==1:
-                        widget.set(widget['values'][datetime.now().month-1])
-                    elif widget.grid_info()["column"]==3 and widget.grid_info()["row"]>1:
-                        widget.destroy()
-                    else:
-                        widget.set(widget['values'][0])
-                elif isinstance(widget,Entry):
-                    if widget.grid_info()["column"]==2 and widget.grid_info()["row"]>1:
-                        widget.destroy()
-                    else:
+                if isinstance(widget,Entry):
                         widget.delete(0,tk.END)
                 elif isinstance(widget,Text):
-                    widget.delete('1.0',tk.END)
-                elif isinstance(widget,ttk.Button):
-                    if widget.grid_info()["row"]>=1 and widget.cget("text")=="-":
-                        widget.destroy()
-                    elif widget.cget("text")=="+":
-                        widget.grid(row=1)           
+                    widget.delete('1.0',tk.END)         
             except:
                 continue
-    FrameUlt = Frames[len(Frames)-1].grid_slaves()
-    FrameUlt[1].config(text="Total: 0",fg="black")
+    
+    MarcoItem = FramesInternos[0]
+    for Frame in FramesInternos:
+        if Frame != FramesInternos[0]:
+            Frame.destroy()
+    
+    FramesInternos = FramesInternos[:1]
 
-    return print("Campos limpiados.")
+    for Frame in MarcoItem.grid_slaves():
+        for widget in Frame.grid_slaves():
+            try:
+                if isinstance(widget,Entry):
+                    if widget.grid_info()["row"] == 0:
+                        for OCO in OCOS:  # Recorre la lista con índice
+                            if str(OCO) in widget.get():  # Verifica si el valor está como subsección
+                                widget.delete(0,tk.END)
+                                widget.insert(0,OCO)
+                    else:
+                        widget.delete(0,tk.END)
+                elif isinstance(widget,ttk.Combobox) and widget.master.winfo_name() == "!frame4":
+                    widget.set(widget['values'][datetime.now().month -1])         
+            except:
+                continue
+
+
+    return print("Campos limpiados.",FramesInternos,sep="\n")
 
 def limpiar_widgets2(Frames):
     Frame1 = Frames[len(Frames)-1]

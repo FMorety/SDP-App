@@ -164,7 +164,7 @@ def Form_Ingreso_Solicitud(parent,window):
 
     Frame_Botones = Frame(parent); Frame_Botones.grid(row=1,column=0,columnspan=2,sticky="n",pady=5)
 
-    Limpiar = Button(Frame_Botones,text="Limpiar",command=lambda: limpiar_widgets(Marcos),width=10)
+    Limpiar = Button(Frame_Botones,text="Limpiar",command=lambda: limpiar_widgets(Marcos,MarcosInternos),width=10)
     Limpiar.grid(row=0,column=0,sticky="n",padx=(0,20))
 
     Registrar = Button(Frame_Botones,text="Registrar",command=lambda: Registrar_Valores(Marcos,Checkbox_var,ID_Solicitud),width=10)
