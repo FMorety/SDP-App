@@ -301,12 +301,14 @@ def limpiar_widgets(Frames,FramesInternos):
                 continue
     
     MarcoItem = FramesInternos[0]
-    for Frame in FramesInternos:
-        if Frame != FramesInternos[0]:
-            Frame.destroy()
     
-    FramesInternos = FramesInternos[:1]
+    for Frame in FramesInternos[1:]:
+            Frame.destroy()
 
+    # Mantener solo el primer elemento modificando la lista original
+    while len(FramesInternos) > 1:
+        FramesInternos.pop()
+    
     for Frame in MarcoItem.grid_slaves():
         for widget in Frame.grid_slaves():
             try:
