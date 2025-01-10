@@ -653,59 +653,77 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera):
 
     validar_click_Division(event=None)
 
-def Ejecutor_Auto(Ejecutor, OCO, Cuenta, TipItem):
+def Ejecutor_Auto(Ejecutor, FramesInternos):
     
     EjeOCO = {
         "SEDE": 300,
-        "DSI": 5000,
-        "DGSD": 4000,
-        "BIB": 4500,
-        "CC": 12100,
+        "DSI": 500,
+        "DGSD": 400,
+        "BIB": 450,
+        "CC": 1210,
     }
     
     TipodeItems = ["Equipamiento", "Mobiliario", "Tecnología", "Infraestructura"]
 
     def validar_entrada(event):
 
-        if event == None:
-            Ejecutor.set(Ejecutor['values'][0])
-            TipItem.set(TipItem['values'][0])
+        for Frames in FramesInternos:
+            OCO = Frames.grid_slaves()[1].grid_slaves()[4]
+            Cuenta = Frames.grid_slaves()[1].grid_slaves()[0]
+            TipoItem = Frames.grid_slaves()[2].grid_slaves()[4]
 
-        Cod_OCO = str(EjeOCO[Ejecutor.get()])
-        OCO.delete(0,tk.END)
-        OCO.insert(0,Cod_OCO)
+            if event == None:
+                Ejecutor.set(Ejecutor['values'][0])
+                TipoItem.set(TipoItem['values'][0])
 
-        if Ejecutor.get() == "DSI":
-            Cuenta.set(Cuenta['values'][2])
-            TipItem.config(values=["Infraestructura","Mobiliario"]); TipItem.set(TipItem['values'][0])
-        else:
-            Cuenta.set(Cuenta['values'][0])
-            TipItem.config(values= TipodeItems if Ejecutor.get() != "DGSD" else ["Tecnología"]); TipItem.set(TipItem['values'][0])
-            
-    def validar_tecla(event):
+            Cod_OCO = str(EjeOCO[Ejecutor.get()])
+            OCO.delete(0,tk.END)
+            OCO.insert(0,Cod_OCO)
 
-        Cod_OCO = str(EjeOCO[Ejecutor.get()])
-
-        # Obtener el largo máximo permitido según la condición
-        limite = 9 if Ejecutor.get() == "CC" else 8
-
-        # Manejo de teclas de borrado
-        if event.keysym in ("BackSpace", "Delete"):
-            if len(OCO.get()) <= len(Cod_OCO):
-                return "break"  # Bloquear si intenta borrar antes del prefijo
+            if Ejecutor.get() == "DSI":
+                Cuenta.set(Cuenta['values'][2])
+                TipoItem.config(values=["Infraestructura","Mobiliario"]); TipoItem.set(TipoItem['values'][0])
             else:
-                return  # Permitir borrar
-
-        # Bloquear caracteres no numéricos
-        if not event.char.isdigit():
-            return "break"
-
-        # Bloquear si excede el límite de caracteres
-        if len(OCO.get()) >= limite:
-            return "break"
-
-    Ejecutor.bind("<<ComboboxSelected>>",validar_entrada)
-    OCO.bind("<KeyPress>", validar_tecla)
+                Cuenta.set(Cuenta['values'][0])
+                TipoItem.config(values= TipodeItems if Ejecutor.get() != "DGSD" else ["Tecnología"]); TipoItem.set(TipoItem['values'][0])
 
     validar_entrada(event=None)
+    Ejecutor.bind("<<ComboboxSelected>>",validar_entrada)
+    
+
+def Formato_OCO(widget,Ejecutor,event):
+    
+    EjeOCO = {
+        "SEDE": 300,
+        "DSI": 500,
+        "DGSD": 400,
+        "BIB": 450,
+        "CC": 1210,
+    }
+
+    OCO = widget
+    
+    Cod_OCO = str(EjeOCO[Ejecutor.get()])
+
+
+    # Obtener el largo máximo permitido según la condición
+    limite = 9 if Ejecutor.get() == "CC" else 8
+
+    # Manejo de teclas de borrado
+    if event.keysym in ("BackSpace", "Delete"):
+        if len(OCO.get()) <= len(Cod_OCO):
+            return "break"  # Bloquear si intenta borrar antes del prefijo
+        else:
+            return  # Permitir borrar
+
+    # Bloquear caracteres no numéricos
+    if not event.char.isdigit():
+        return "break"
+
+    # Bloquear si excede el límite de caracteres
+    if len(OCO.get()) >= limite:
+        return "break"
+    
+
+
 

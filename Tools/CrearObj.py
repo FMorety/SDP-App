@@ -46,11 +46,10 @@ def agregar_linea(parent, x1, y1, x2, y2, color="black", grosor=1):
     canvas.grid(sticky="n")
     return canvas
 
-def Frame_de_Item(parent, listamarcos):
+def Frame_de_Item(parent, listamarcos,widget_Ejecutor):
 
     MesActual = (datetime.now().month)-1
     Numero = len(listamarcos)
-    print(Numero)
     
     ### ---------- Frames ---------- ###
 
@@ -76,6 +75,7 @@ def Frame_de_Item(parent, listamarcos):
 
         #OCO#
     OCO = crear_entry(Frame_Left, "*OCO:",0,0,15)
+    OCO.bind("<KeyPress>",lambda event: Formato_OCO(OCO,widget_Ejecutor,event))
     
         #CECO#
     CECO = crear_entry(Frame_Left, "CECO:",1,0,15)
@@ -113,3 +113,13 @@ def Frame_de_Item(parent, listamarcos):
         
         #Botón para agregar mes de imputación
     AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total,MontoTotal)); AgregarMonto.grid(row=1,column=0,sticky="e",padx=(0,0))
+
+    Cuenta.set(listamarcos[0].grid_slaves()[1].grid_slaves()[0].get())
+    TipoItem.set(listamarcos[0].grid_slaves()[2].grid_slaves()[4].get())
+
+    TipoOCO = listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:1]
+    print(TipoOCO)
+    if TipoOCO == "1":
+        OCO.insert(0,listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:4])
+    else:
+        OCO.insert(0,listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:3])

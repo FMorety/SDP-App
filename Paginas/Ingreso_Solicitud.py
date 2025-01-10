@@ -116,6 +116,7 @@ def Form_Ingreso_Solicitud(parent,window):
 
         #OCO#
     OCO = crear_entry(Frame_Left, "*OCO:",0,0,15)
+    OCO.bind("<KeyPress>",lambda event: Formato_OCO(OCO,Ejecutor,event))
     
         #CECO#
     CECO = crear_entry(Frame_Left, "CECO:",1,0,15)
@@ -154,10 +155,6 @@ def Form_Ingreso_Solicitud(parent,window):
         #Botón para agregar mes de imputación
     AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total,MontoTotal)); AgregarMonto.grid(row=1,column=0,sticky="e",padx=(0,0))
 
-        # ---------- Automatización OCO/Cuenta/Equipamiento ---------- #    
-
-    Ejecutor_Auto(Ejecutor, OCO, Cuenta, TipoItem)
-
     # --------------------------------------------------------------------------------------------------------------------------------------------#
 
     # ---------- Botones ---------- #
@@ -170,7 +167,11 @@ def Form_Ingreso_Solicitud(parent,window):
     Registrar = Button(Frame_Botones,text="Registrar",command=lambda: Registrar_Valores(Marcos,Checkbox_var,ID_Solicitud),width=10)
     Registrar.grid(row=0,column=1,sticky="n",padx=(20,20))
 
-    Nuevo_Item = Button(Frame_Botones,text="Nuevo Item",command=lambda: Frame_de_Item(scrollable_frame,MarcosInternos),width=10)
+    Nuevo_Item = Button(Frame_Botones,text="Nuevo Item",command=lambda: Frame_de_Item(scrollable_frame,MarcosInternos,Ejecutor),width=10)
     Nuevo_Item.grid(row=0,column=2,sticky="n",padx=(20,0))
 
+        # ---------- Automatización OCO/Cuenta/Equipamiento ---------- #    
+
+    Ejecutor_Auto(Ejecutor, MarcosInternos)
+    
     # --------------------------------------------------------------------------------------------------------------------------------------------#
