@@ -367,7 +367,6 @@ def obtener_variables(Frames):
     p=0
 
     # Extrae todos los valores de las celdas/objetos visibles (Excepto CheckBox) y los registra en la lista Datos
-    # Además, se ase.
     for Frame in Frames:
         DarVuelta = []
         for widget in Frame.grid_slaves():
@@ -380,7 +379,7 @@ def obtener_variables(Frames):
                 DarVuelta.append(widget.get("1.0", tk.END).strip())  # Obtener todo el texto
             else:
                 try:
-                    if widget.get()=="" and (widget.grid_info()['row']!=0 or widget.grid_info()['column']!=1): 
+                    if widget.get()=="": 
                         Campos_Vacios=True
                     else:
                         DarVuelta.append(widget.get())  # Para otros widgets que soportan .get()
@@ -390,7 +389,6 @@ def obtener_variables(Frames):
 
     # Mensaje de error por si encuentra campos vacios
     if Campos_Vacios==True:
-        print(Datos)
         return messagebox.showerror("Error",f"Tiene campos sin completar.\nFavor llenar el formulario con todos los campos obligatorios.")
     
     for i in range(len(Datos)):
@@ -402,37 +400,11 @@ def obtener_variables(Frames):
     if isinstance(Datos[1],int):
         p=1
         Division = Datos[2]
-    elif Datos[1].replace("-","").isdigit():
-        if isinstance(Datos[2],int):
-            p=2
-            Division = Datos[3]
-        else:
-            p=1
-            Division = Datos[2]
     else:
         Division = Datos[1]
         p=0
 
-    Datos[16+p:16+p] = [Datos[0]]   ;      del Datos[0]
-    Datos[15+p:15+p] = [Datos[1+p]] ;      del Datos[1+p]
-    Datos[10+p:10+p] = [Datos[1+p]] ;      del Datos[1+p]
-
-    # Mensaje de error por si no se cumplen las restricciones
-    LabelMonto = int(Frames[len(Frames)-1].grid_slaves()[1].cget("text").replace("Total: ","").replace(".",""))
-    MontoTotal = Datos[13+p]
-    if LabelMonto != MontoTotal:
-        return (messagebox.showerror(
-            "Error: Revisar montos ingresados",
-            f"""Por favor, asegurarse de que la casilla 'Monto Total Aprobado' tenga el mismo monto que el total acumulado que se indica en la etiqueta de color rojo.
-            
-        Monto Total Aprobado: {format_money(MontoTotal)}
-                   Total Acumulado: {format_money(LabelMonto)}"""), print("No se ejecutó la acción."))   
-    if MontoTotal>150000000:
-        result = messagebox.askyesno("Advertencia: Monto elevado","Se ha asignado un 'Monto Total' a la solicitud que supera los $150.000.000 CLP.\n\n¿Desea registrar la solicitud de todas formas?")
-        if not result:
-            return
-
-    return Datos,Division
+    return Datos,Division,p
 
 def Registrar_Valores(Frames,Check_var,Col1,Check_var2,Col2):
 

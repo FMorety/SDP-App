@@ -95,7 +95,6 @@ def Form_Ingreso_Solicitud(parent,window):
     scrollbar.pack(side="right", fill="y")
 
     # Agrega el scrollable_frame con todo lo que va dentro.     Y aparte agrega una nueva lista de Marcos, util para crear multiples lineas en la BBDD con los multiples items#
-    Marcos += [scrollable_frame]
     MarcosInternos = []
 
     ### ---------- Frames ---------- ###
@@ -166,7 +165,7 @@ def Form_Ingreso_Solicitud(parent,window):
     Limpiar = Button(Frame_Botones,text="Limpiar",command=lambda: limpiar_widgets(Marcos,MarcosInternos),width=10)
     Limpiar.grid(row=0,column=0,sticky="n",padx=(0,20))
 
-    Registrar = Button(Frame_Botones,text="Registrar",command=lambda: Registrar_Valores(Marcos,Checkbox_var,ID_Solicitud),width=10)
+    Registrar = Button(Frame_Botones,text="Registrar",command=lambda: obtener_variables(Marcos),width=10)
     Registrar.grid(row=0,column=1,sticky="n",padx=(20,20))
 
     Nuevo_Item = Button(Frame_Botones,text="Nuevo Item",command=lambda: Frame_de_Item(scrollable_frame,MarcosInternos,Ejecutor),width=10)
