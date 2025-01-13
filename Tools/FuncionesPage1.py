@@ -675,6 +675,7 @@ def Ejecutor_Auto(Ejecutor, FramesInternos):
             if event == None:
                 Ejecutor.set(Ejecutor['values'][0])
                 TipoItem.set(TipoItem['values'][0])
+                Cuenta.config(state=DISABLED); Cuenta.set("61070000")
 
             Cod_OCO = str(EjeOCO[Ejecutor.get()])
             OCO.delete(0,tk.END)
@@ -686,11 +687,12 @@ def Ejecutor_Auto(Ejecutor, FramesInternos):
             else:
                 Cuenta.set(Cuenta['values'][0])
                 TipoItem.config(values= TipodeItems if Ejecutor.get() != "DGSD" else ["Tecnología"]); TipoItem.set(TipoItem['values'][0])
-
+            
+            Cruce_TipoItem_Cuenta(TipoItem,Cuenta,["61070000","61075000","61080000"])
+    
     validar_entrada(event=None)
     Ejecutor.bind("<<ComboboxSelected>>",validar_entrada)
     
-
 def Formato_OCO(widget,Ejecutor,event):
     
     EjeOCO = {
@@ -724,6 +726,12 @@ def Formato_OCO(widget,Ejecutor,event):
     if len(OCO.get()) >= limite:
         return "break"
     
+def Cruce_TipoItem_Cuenta(TipoItem_Entry,Cuenta_Entry,lista):
 
-
-
+    if TipoItem_Entry.get() in ["Equipamiento","Mobiliario"]:
+        Cuenta_Entry.config(state=DISABLED); Cuenta_Entry.set("61070000")
+    elif TipoItem_Entry.get() == "Infraestructura":
+        Cuenta_Entry.config(state=DISABLED); Cuenta_Entry.set("61080000")
+    elif TipoItem_Entry.get() == "Tecnología":
+        Cuenta_Entry.config(state="readonly",values=lista); Cuenta_Entry.set(Cuenta_Entry['values'][0])
+        

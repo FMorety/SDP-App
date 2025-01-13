@@ -123,12 +123,14 @@ def Form_Ingreso_Solicitud(parent,window):
     limitar_caracteres(CECO,15,1)
     
         #Cuenta#
-    Cuenta = crear_combobox(Frame_Left, "Cuenta:", [61070000,61075000,61080000],2,0,12); Cuenta.set(Cuenta['values'][0])
+    Lista_Cuenta = [61070000,61075000,61080000]
+    Cuenta = crear_combobox(Frame_Left, "Cuenta:", Lista_Cuenta,2,0,12); Cuenta.set(Cuenta['values'][0])
 
         #Tipo ítem#
     Lista_TipoItem = ["Equipamiento", "Mobiliario", "Tecnología", "Infraestructura"]
     TipoItem = crear_combobox(Frame_Right, "Tipo de ítem:",Lista_TipoItem,0,0,14)
-
+    TipoItem.bind("<<ComboboxSelected>>",lambda event: Cruce_TipoItem_Cuenta(TipoItem,Cuenta,Lista_Cuenta))
+        
         #Ítem#
     Item = crear_entry(Frame_Right, "Ítem Solicitud:",1,0,17)
     Item.grid(padx=(0,7)); limitar_caracteres2(Item)
