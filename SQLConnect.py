@@ -52,7 +52,6 @@ def SQLConsulta(Query,lista=[],pandas=False):
         elif Query.strip().lower().startswith('select'):
             cursor.execute(Query)
             results = cursor.fetchall()
-            messagebox.showinfo("Resultado","La consulta fue realizada con éxito.")
             return int(results[0][0])
                      
     except pyodbc.Error as e:

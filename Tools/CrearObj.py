@@ -120,7 +120,6 @@ def Frame_de_Item(parent, listamarcos,widget_Ejecutor):
     TipoItem.set(listamarcos[0].grid_slaves()[2].grid_slaves()[4].get())
 
     TipoOCO = listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:1]
-    print(TipoOCO)
     if TipoOCO == "1":
         OCO.insert(0,listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:4])
     else:
