@@ -99,6 +99,9 @@ def Frame_de_Item(parent, listamarcos,widget_Ejecutor):
     MontoTotal = Entry(Frame_Right,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); MontoTotal.grid(row=2, column=1,sticky="ew",padx=(0,7),pady=(10,0))
     FormatearNumero(MontoTotal, Frame_MontoMes);     MontoTotal.bind("<KeyRelease>", lambda e: actualizar_total(Frame_MontoMes, Label_Total, MontoTotal))
     
+        #Etiqueta para visualizar el total de lo que corresponde a cada mes
+    Label_Total= Label(Frame_MontoMes, text="Total: 0", anchor="w", font=("Arial", 9, "bold")); Label_Total.grid(row=2,column=1,pady=(0,0))
+
         #Monto Aprobado#
     Label_Monto = Label(Frame_MontoMes,text="Monto",anchor="center",font=("Arial",9,"bold")).grid(row=0,column=1,sticky='ew')  
     Monto = Entry(Frame_MontoMes,width=22,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10)); Monto.grid(row=1, column=1,sticky="w", padx=(0,5))
@@ -109,9 +112,6 @@ def Frame_de_Item(parent, listamarcos,widget_Ejecutor):
     Label_Mes = Label(Frame_MontoMes,text="Mes",anchor="center",font=("Arial",9,"bold")).grid(row=0,column=2,sticky="ew")
     Mes = ttk.Combobox(Frame_MontoMes, values=Lista_Mes,width=15,state="readonly") ; Mes.grid(row=1,column=2,sticky="ew")
     Mes.set(Lista_Mes[MesActual])
-    
-        #Etiqueta para visualizar el total de lo que corresponde a cada mes
-    Label_Total= Label(Frame_MontoMes, text="Total: 0", anchor="w", font=("Arial", 9, "bold")); Label_Total.grid(row=2,column=1,pady=(0,0))
         
         #Botón para agregar mes de imputación
     AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total,MontoTotal)); AgregarMonto.grid(row=1,column=0,sticky="e",padx=(0,0))

@@ -123,7 +123,7 @@ def FormatearNumero(entry_widget,Frames=None):
     
     def validar_out_focus2(event):
         if Frames != None:
-            widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-2]
+            widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-3]
             formatted_value = format_money(widget_insert.get())
             widget_insert.delete(0, 'end')
             widget_insert.insert(0, formatted_value)
@@ -150,7 +150,7 @@ def FormatearNumero(entry_widget,Frames=None):
         elif len(entry_widget.get())==0 and event.char=="0":
             return
         
-        widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-2]
+        widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-3]
 
         if event.keysym in ("BackSpace", "Delete"):
             widget_insert.delete(len(widget_insert.get()) - 1, tk.END)
@@ -326,7 +326,7 @@ def limpiar_widgets(Frames,FramesInternos):
                 continue
 
 
-    return print("Campos limpiados.",FramesInternos,sep="\n")
+    return print("Campos limpiados.")
 
 def limpiar_widgets2(Frames):
     Frame1 = Frames[len(Frames)-1]
@@ -362,6 +362,7 @@ def limpiar_widgets2(Frames):
     return print("Campos limpiados.")
 
 def obtener_variables(Frames):
+
     Datos=[]
     Campos_Vacios=False
     p=0
@@ -397,7 +398,7 @@ def obtener_variables(Frames):
             nuevo = int(texto.replace(".",""))
             Datos[i]=nuevo
 
-    if isinstance(Datos[1],int):
+    if str(datetime.now().year) in Datos[1]:
         p=1
         Division = Datos[2]
     else:
@@ -407,6 +408,10 @@ def obtener_variables(Frames):
     return Datos,Division,p
 
 def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
+
+    # --------------------------------------------------------------------------------------------------------------------------------------------- #
+
+    # Info preeliminar #
 
     global Contador
 
@@ -435,33 +440,73 @@ def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
         raise Exception("Error al obtener el archivo SQL desde GitHub")
     
         #Lista con los datos ingresados en el formulario
+
     DatosGenerales, Division, p = obtener_variables(Frames)
 
         #Se extrae el ID Solicitud maximo 
     ID_Solicitud_Max = SQL(SQL_Select)
-        
-        #Extrae los datos del Item, y distribuye los montos en la Matriz_Planificacion
+
+    # --------------------------------------------------------------------------------------------------------------------------------------------- #
+
+
+    #Extrae los datos del Item, y distribuye los montos en la Matriz_Planificacion
     for Frame in FramesInternos:
+
         Matriz_Planificacion = [0,0,0,0,0,0,0,0,0,0,0,0]
         DatosItem, *_ = obtener_variables(Frame.grid_slaves())
-        
+
+        # Restricción de montos ingresados iguales #
+        Frame_de_Label = Frame.grid_slaves()[0].grid_slaves()
+        Label_Monto = int(Frame_de_Label[len(Frame_de_Label)-1].cget("text").replace("Total: ","").replace(".",""))
+        Monto_Aprobado = DatosItem[len(DatosItem)-1]
+
+        if Label_Monto != Monto_Aprobado:
+            return (messagebox.showerror(
+            "Error: Revisar montos ingresados",
+            f"""Por favor, asegurarse de que la casilla 'Total Aprobado' se igual al monto del total acumulado que se indica en la etiqueta de color rojo.
+            
+        Monto Total Aprobado: {format_money(Monto_Aprobado)}
+                   Total Acumulado: {format_money(Label_Monto)}"""), print("No se ejecutó la acción."))   
+                    
+        # --------------------------------------------------------------------------------------------------------------------------------------------- #
+
         #Extrae la planificación del monto aprobado y lo distribuye en la Matriz_Planificacion
         for i in range(len(DatosItem)):
+            NumeroM = None
             n = (2*i)+1
             if DatosItem[n] in MesesNumero:
-                Matriz_Planificacion[MesesNumero[DatosItem[n]]]=DatosItem[n-1]
+                Matriz_Planificacion[MesesNumero[DatosItem[n]]] = DatosItem[n-1]
             else:
+                DatosItem.append(   (   next(   (k for k, v in MesesNumero.items() if v == ( datetime.now().month -1 ) ), None )  ).upper()   )
                 del DatosItem[:n-1]
                 break
-        print(DatosGenerales,DatosItem,Matriz_Planificacion,sep="\n")
 
-    
-    
+        # Unifica los datos y reordena la información para que esté en el orden que sale en la matriz
 
-    
+        DatosItem[len(DatosItem)-2:len(DatosItem)-2] = [1]
+        DatosItem[len(DatosItem)-2:len(DatosItem)-2] = DatosItem[:3];       del DatosItem[:3]
+        Datos = DatosGenerales+DatosItem
+
+        Datos[len(Datos)-1:len(Datos)-1] = [Datos[2+p]]; del Datos[2+p]
+        Datos[len(Datos)-1:len(Datos)-1] = [Datos[2+p]]; del Datos[2+p]
+        Datos[len(Datos)-1:len(Datos)-1] = [Datos[0]]; del Datos[0]
+
+        Datos += Matriz_Planificacion
 
 
-    
+        # Advertencia de monto ingresado e impresión #
+        if Monto_Aprobado > 150000000:
+            result = messagebox.askokcancel(
+                "Advertencia: Monto elevado",
+                "Se ha asignado un 'Monto Total' a la solicitud que supera los $150.000.000 CLP.\n\n¿Desea registrar la solicitud de todas formas?"
+            )
+            if not result:
+                print("Operación cancelada por el usuario.")  # Mensaje en caso de "Cancelar"
+                return
+            elif result:
+                print(Datos)
+        else:
+            print(Datos)
 
 
 def Sabana_2025(Division,Escuela,Carrera,Subcartera):
@@ -565,7 +610,7 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera):
 
     validar_click_Division(event=None)
 
-def Ejecutor_Auto(Ejecutor, FramesInternos):
+def Ejecutor_Auto(Ejecutor, MacroAgr, FramesInternos):
     
     EjeOCO = {
         "SEDE": 300,

@@ -64,8 +64,8 @@ def Form_Ingreso_Solicitud(parent,window):
     DesSol = crear_text(Frame_Bottom,"*Descripción Solicitud:",3,0); limitar_caracteres2(DesSol)
 
         #Justificación Solicitud#
-    Lista_JusSol = ["Avance de malla", "Renovación, actualización o mejoramiento", "Reposición por daños o incidentes", "Requerimiento normativa externa"]
-    JusSol = crear_combobox(Frame_Bottom, "Justificación Solicitud:",Lista_JusSol,4,0).set(Lista_JusSol[1])
+    Lista_MacroAgr = ["Accesibilidad Universal","Biblioteca","Desarrollo Informático","DIAITT","Infraestructura Crítica","Renovación Tecnológica 2020","Sala de Lactancia","Seguridad Integral"]
+    MacroAgrupacion = crear_combobox(Frame_Bottom, "Macroagrupación:",Lista_MacroAgr,4,0)
 
     # --------------------------------------------------------------------------------------------------------------------------------------------#
         
@@ -138,6 +138,9 @@ def Form_Ingreso_Solicitud(parent,window):
     Label_MontoTotal = Label(Frame_Right,text="Total Aprobado:",font=("Arial",9,"bold")); Label_MontoTotal.grid(row=2,column=0,sticky="ew",padx=(0,2),pady=(10,0))
     MontoTotal = Entry(Frame_Right,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); MontoTotal.grid(row=2, column=1,sticky="ew",padx=(0,7),pady=(10,0))
     FormatearNumero(MontoTotal,Frame_MontoMes);     MontoTotal.bind("<KeyRelease>", lambda e: actualizar_total(Frame_MontoMes, Label_Total, MontoTotal))
+
+        #Etiqueta para visualizar el total de lo que corresponde a cada mes
+    Label_Total= Label(Frame_MontoMes, text="Total: 0", anchor="w", font=("Arial", 9, "bold")); Label_Total.grid(row=2,column=1,pady=(0,0))
     
         #Monto Aprobado#
     Label_Monto = Label(Frame_MontoMes,text="Monto",anchor="center",font=("Arial",9,"bold")).grid(row=0,column=1,sticky='ew')  
@@ -149,9 +152,7 @@ def Form_Ingreso_Solicitud(parent,window):
     Label_Mes = Label(Frame_MontoMes,text="Mes",anchor="center",font=("Arial",9,"bold")).grid(row=0,column=2,sticky="ew")
     Mes = ttk.Combobox(Frame_MontoMes, values=Lista_Mes,width=15,state="readonly") ; Mes.grid(row=1,column=2,sticky="ew")
     Mes.set(Lista_Mes[MesActual])
-    
-        #Etiqueta para visualizar el total de lo que corresponde a cada mes
-    Label_Total= Label(Frame_MontoMes, text="Total: 0", anchor="w", font=("Arial", 9, "bold")); Label_Total.grid(row=2,column=1,pady=(0,0))
+
         
         #Botón para agregar mes de imputación
     AgregarMonto = ttk.Button(Frame_MontoMes,text="+",width=3,command=lambda: agregar_fila(Frame_MontoMes,Lista_Mes,AgregarMonto,Label_Total,MontoTotal)); AgregarMonto.grid(row=1,column=0,sticky="e",padx=(0,0))
@@ -173,6 +174,6 @@ def Form_Ingreso_Solicitud(parent,window):
 
         # ---------- Automatización OCO/Cuenta/Equipamiento ---------- #    
 
-    Ejecutor_Auto(Ejecutor, MarcosInternos)
+    Ejecutor_Auto(Ejecutor, MacroAgrupacion, MarcosInternos)
     
     # --------------------------------------------------------------------------------------------------------------------------------------------#
