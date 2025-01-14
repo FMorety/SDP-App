@@ -475,7 +475,7 @@ def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
             NumeroM = None
             n = (2*i)+1
             if DatosItem[n] in MesesNumero:
-                Matriz_Planificacion[MesesNumero[DatosItem[n]]] = DatosItem[n-1]
+                Matriz_Planificacion[MesesNumero[DatosItem[n]]] += DatosItem[n-1]
             else:
                 DatosItem.append(   (   next(   (k for k, v in MesesNumero.items() if v == ( datetime.now().month -1 ) ), None )  ).upper()   )
                 del DatosItem[:n-1]
@@ -492,6 +492,19 @@ def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
         Datos[len(Datos)-1:len(Datos)-1] = [Datos[0]]; del Datos[0]
 
         Datos += Matriz_Planificacion
+
+        if p == 0:
+            cod_Div = Divisiones[Division]
+            Codigo_ID_Solicitud_Nuevo = ["2025-"+str(cod_Div).zfill(4)+"-"+str(ID_Solicitud_Max+1).zfill(4)]
+            Datos[0:0]=Codigo_ID_Solicitud_Nuevo
+            
+        elif p == 1:
+            if len(Datos[0]) != 14:
+                return (messagebox.showerror("Error: Revisar ID Solicitud ingresada manualmente.",f"Por favor, completar el ID Solicitud con el formato solicitado en la casilla.\n\nFormato del ID Solicitud: {datetime.now().year}-XXXX-XXXX"), print("No se ejecutó la acción."))
+            
+            elif str(datetime.now().year) in Datos[0] and str(Divisiones[Division]) in Datos[0]:
+                Codigo_ID_Solicitud_Nuevo = Datos[0]
+                
 
 
         # Advertencia de monto ingresado e impresión #
@@ -640,10 +653,10 @@ def Ejecutor_Auto(Ejecutor, MacroAgr, FramesInternos):
 
             if Ejecutor.get() == "DSI":
                 Cuenta.set(Cuenta['values'][2])
-                TipoItem.config(values=["Infraestructura","Mobiliario"]); TipoItem.set(TipoItem['values'][0])
+                TipoItem.config(values=["Infraestructura","Mobiliario"]); TipoItem.set(TipoItem['values'][0]) if TipoItem.get() not in TipoItem['values'] else None
             else:
                 Cuenta.set(Cuenta['values'][0])
-                TipoItem.config(values= TipodeItems if Ejecutor.get() != "DGSD" else ["Tecnología"]); TipoItem.set(TipoItem['values'][0])
+                TipoItem.config(values= TipodeItems if Ejecutor.get() != "DGSD" else ["Tecnología"]); TipoItem.set(TipoItem['values'][0]) if TipoItem.get() not in TipoItem['values'] else None
             
             Cruce_TipoItem_Cuenta(TipoItem,Cuenta,["61070000","61075000","61080000"])
     

@@ -46,7 +46,7 @@ def agregar_linea(parent, x1, y1, x2, y2, color="black", grosor=1):
     canvas.grid(sticky="n")
     return canvas
 
-def Frame_de_Item(parent, listamarcos,widget_Ejecutor):
+def Frame_de_Item(parent, listamarcos, widget_Ejecutor):
 
     MesActual = (datetime.now().month)-1
     Numero = len(listamarcos)
@@ -124,3 +124,5 @@ def Frame_de_Item(parent, listamarcos,widget_Ejecutor):
         OCO.insert(0,listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:4])
     else:
         OCO.insert(0,listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:3])
+    
+    widget_Ejecutor.event_generate("<<ComboboxSelected>>")  
