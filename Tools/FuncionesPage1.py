@@ -35,7 +35,6 @@ Divisiones = {
     "Liceo Renca": 700,
     "Campus Virtual": 6000
 }
-Contador = 0
 Contador2 = 0
 
 def MostrarID(checkbox, Col1, NumCol,Frames):
@@ -321,44 +320,14 @@ def limpiar_widgets(Frames,FramesInternos):
                     else:
                         widget.delete(0,tk.END)
                 elif isinstance(widget,ttk.Combobox) and widget.master.winfo_name() == "!frame4":
-                    widget.set(widget['values'][datetime.now().month -1])         
+                    widget.set(widget['values'][datetime.now().month -1])
+                elif isinstance(widget,Label) and "Total: " in widget.cget("text"):
+                    widget.config(text="Total: 0",fg="black")
+
             except:
                 continue
 
 
-    return print("Campos limpiados.")
-
-def limpiar_widgets2(Frames):
-    Frame1 = Frames[len(Frames)-1]
-    Frame2 = Frames[len(Frames)-2]
-    Frame3 = Frames[len(Frames)-3]
-    for Frame in [Frame1,Frame2,Frame3]:
-        for widget in Frame.grid_slaves():
-            try:
-                if isinstance(widget,ttk.Combobox):
-                    if widget.grid_info()["column"]==3 and widget.grid_info()["row"]==1:
-                        widget.set(widget['values'][datetime.now().month-1])
-                    elif widget.grid_info()["column"]==3 and widget.grid_info()["row"]>1:
-                        widget.destroy()
-                    else:
-                        widget.set(widget['values'][0])
-                elif isinstance(widget,Entry):
-                    if widget.grid_info()["column"]==2 and widget.grid_info()["row"]>1:
-                        widget.destroy()
-                    else:
-                        widget.delete(0,tk.END)
-                elif isinstance(widget,Text):
-                    widget.delete('1.0',tk.END)
-                elif isinstance(widget,ttk.Button):
-                    if widget.grid_info()["row"]>=1 and widget.cget("text")=="-":
-                        widget.destroy()
-                    elif widget.cget("text")=="+":
-                        widget.grid(row=1)
-                elif isinstance(widget,Label) and widget.grid_info()["column"]==2:
-                    widget.config(text="Total: 0")
-                
-            except:
-                continue
     return print("Campos limpiados.")
 
 def obtener_variables(Frames):
@@ -412,8 +381,6 @@ def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
     # --------------------------------------------------------------------------------------------------------------------------------------------- #
 
     # Info preeliminar #
-
-    global Contador
 
     MesesNumero = {
         'Enero': 0,
@@ -518,8 +485,11 @@ def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
                 return
             elif result:
                 print(Datos)
+                
         else:
             print(Datos)
+    
+    limpiar_widgets(Frames,FramesInternos)
 
 
 def Sabana_2025(Division,Escuela,Carrera,Subcartera):

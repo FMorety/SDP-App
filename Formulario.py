@@ -5,7 +5,7 @@ from Paginas.Ingreso_Solicitud import *
 from Paginas.Bitacora import *
 
 def variable_global():
-    global Contador, Contador2
+    global Contador2
 
 
 class Registro:
