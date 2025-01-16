@@ -272,24 +272,11 @@ def actualizar_total(Frame, Label_Total, Montoaprobado):
     else:
         Label_Total.config(fg="dark green")
 
-def actualizar_Division_ID(entry_widget1,entry_widget2,checkbox):
-    
-    def validar_click(event):
-        if checkbox.get():
-            codigo = entry_widget2.get()
-            partes = codigo.split("-")
-            partes[1] = str(Divisiones[entry_widget1.get()]).zfill(4)
-            nuevo_codigo = "-".join(partes)
-            entry_widget2.delete(0,tk.END)
-            entry_widget2.insert(0,nuevo_codigo)
-    entry_widget1.bind("<<ComboboxSelected>>", validar_click)
-
 def limpiar_widgets(Frames,FramesInternos):
 
-    Marcos = Frames.copy(); del Marcos[len(Marcos)-1]
     OCOS = [300,5000,4000,4500,12100]
 
-    for Frame in Marcos:
+    for Frame in Frames:
         for widget in Frame.grid_slaves():
             try:
                 if isinstance(widget,Entry):
@@ -323,7 +310,8 @@ def limpiar_widgets(Frames,FramesInternos):
                     widget.set(widget['values'][datetime.now().month -1])
                 elif isinstance(widget,Label) and "Total: " in widget.cget("text"):
                     widget.config(text="Total: 0",fg="black")
-
+                elif isinstance(widget,ttk.Button) and widget.cget("text") == "-":
+                    widget.invoke()
             except:
                 continue
 
@@ -492,7 +480,7 @@ def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
     limpiar_widgets(Frames,FramesInternos)
 
 
-def Sabana_2025(Division,Escuela,Carrera,Subcartera):
+def Sabana_2025(Division,Escuela,Carrera,Subcartera,checkbox,ID_Sol_Widget):
     
     github_url = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/main/SQL-Querys/Consulta_Codigos.sql"
     response = requests.get(github_url)
@@ -537,6 +525,14 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera):
 
     def validar_click_Division(event):
 
+        if checkbox.get():
+            codigo = ID_Sol_Widget.get()
+            partes = codigo.split("-")
+            partes[1] = str(Divisiones[Division.get()]).zfill(4)
+            nuevo_codigo = "-".join(partes)
+            ID_Sol_Widget.delete(0,tk.END)
+            ID_Sol_Widget.insert(0,nuevo_codigo)
+        
         if Division.get() == "Casa Central":
             Direcciones.append("Operación Sede"); Escuela.config(values=Direcciones); Escuela.set(Escuela['values'][0]) if Escuela.get() in ["Operación Sede","Infraestructura Sede"] else None
             Subcartera.config(values="Corporativo"); Subcartera.set(Subcartera['values'][0])
@@ -586,6 +582,7 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera):
 
             Lista_Carreras = list(Lista_Carreras);  Lista_Carreras2 = [" ".join([palabra.capitalize() if (len(palabra) > 3 and '/' not in palabra) else palabra.lower() for palabra in s.split()]) for s in Lista_Carreras];     Lista_Carreras2[0:0] = ["Todas"]
             Carrera.config(state="readonly",values=Lista_Carreras2); Carrera.set(Carrera['values'][0]) if Carrera.get() not in Carreras else None
+
 
     Division.bind("<<ComboboxSelected>>", validar_click_Division)
     Subcartera.bind("<<ComboboxSelected>>", validar_click_Division)

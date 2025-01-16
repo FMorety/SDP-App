@@ -41,7 +41,6 @@ def Form_Ingreso_Solicitud(parent,window):
 
         #División#
     Division = crear_combobox(Frame_Mid,"División:",[],0,0,15)
-    actualizar_Division_ID(Division,ID_Solicitud,Checkbox_var)
 
         #Ejecutor#
     Lista_Ejecutor = ["SEDE","CC","DSI","DGSD","BIB"]
@@ -71,7 +70,7 @@ def Form_Ingreso_Solicitud(parent,window):
         
         # ---------- Listados provenientes de SQL ---------- #    
     
-    Sabana_2025(Division,UnidadEscuela,Carrera,Subcartera);    Division.set(Division['values'][0]);       UnidadEscuela.set(UnidadEscuela['values'][0])
+    Sabana_2025(Division,UnidadEscuela,Carrera,Subcartera,Checkbox_var,ID_Solicitud);    Division.set(Division['values'][0]);       UnidadEscuela.set(UnidadEscuela['values'][0])
 
     # --------------------------------------------------------------------------------------------------------------------------------------------#
 
