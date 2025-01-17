@@ -57,7 +57,9 @@ def Form_Ingreso_Solicitud(parent,window):
     Carrera = crear_combobox(Frame_Bottom,"Carrera de destino:",[],1,0)
 
         #Nombre Solicitud#
-    NomSol = crear_entry(Frame_Bottom,"Nombre Solicitud:",2,0); limitar_caracteres2(NomSol)
+    Verbos = ["Adquisición","Ampliación","Construcción","Habilitación","Instalación","Mejoramiento","Normalización","Regularización","Renovación","Reparación"]
+    NomSol = crear_combobox(Frame_Bottom,"Nombre Solicitud:",Verbos,2,0,estado="normal"); NomSol.set(NomSol['values'][0])
+    NomSol.bind("<KeyPress>",lambda event: Formato_NomSol(NomSol,NomSol['values'],event))
 
         #Descripción Solicitud#
     DesSol = crear_text(Frame_Bottom,"*Descripción Solicitud:",3,0); limitar_caracteres2(DesSol)

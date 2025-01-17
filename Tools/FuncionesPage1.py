@@ -53,6 +53,20 @@ def MostrarID(checkbox, Col1, NumCol,Frames):
         Col1.grid_forget()  # Ocultar la fila adicional
         Col1.delete(0,tk.END)
 
+def Formato_NomSol(widget,listaverbos,event):
+    
+    NomSol = widget
+    Verbo = NomSol.get().split(" ")[0]
+    
+    while Verbo not in listaverbos:
+        Verbo = Verbo[:-1]
+
+    if event.keysym in ("BackSpace", "Delete"):
+        if len(NomSol.get()) <= len(Verbo):
+            return "break"  # Bloquear si intenta borrar antes del prefijo
+        else:
+            return  # Permitir borrar
+
 def limitar_caracteres(entry_widget, max_length, EsNumero=0):
     """
     Limita la cantidad de caracteres que se pueden ingresar en un widget Entry.
@@ -166,6 +180,39 @@ def format_money(value):
         return f"{value:,}".replace(",", ".")
     else:
         return
+
+def Formato_OCO(widget,Ejecutor,event):
+    
+    EjeOCO = {
+        "SEDE": 300,
+        "DSI": 500,
+        "DGSD": 400,
+        "BIB": 450,
+        "CC": 1210,
+    }
+
+    OCO = widget
+    
+    Cod_OCO = str(EjeOCO[Ejecutor.get()])
+
+
+    # Obtener el largo máximo permitido según la condición
+    limite = 9 if Ejecutor.get() == "CC" else 8
+
+    # Manejo de teclas de borrado
+    if event.keysym in ("BackSpace", "Delete"):
+        if len(OCO.get()) <= len(Cod_OCO):
+            return "break"  # Bloquear si intenta borrar antes del prefijo
+        else:
+            return  # Permitir borrar
+
+    # Bloquear caracteres no numéricos
+    if not event.char.isdigit():
+        return "break"
+
+    # Bloquear si excede el límite de caracteres
+    if len(OCO.get()) >= limite:
+        return "break"
 
 def eliminar_fila(Frame, boton):
     fila_actual = boton.grid_info()["row"]
@@ -479,7 +526,6 @@ def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
     
     limpiar_widgets(Frames,FramesInternos)
 
-
 def Sabana_2025(Division,Escuela,Carrera,Subcartera,checkbox,ID_Sol_Widget):
     
     github_url = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/main/SQL-Querys/Consulta_Codigos.sql"
@@ -621,47 +667,28 @@ def Ejecutor_Auto(Ejecutor, MacroAgr, FramesInternos):
             if Ejecutor.get() == "DSI":
                 Cuenta.set(Cuenta['values'][2])
                 TipoItem.config(values=["Infraestructura","Mobiliario"]); TipoItem.set(TipoItem['values'][0]) if TipoItem.get() not in TipoItem['values'] else None
+            elif Ejecutor.get()== "BIB":
+                TipoItem.config(values=["Equipamiento"]); TipoItem.set(TipoItem['values'][0]) if TipoItem.get() not in TipoItem['values'] else None
             else:
                 Cuenta.set(Cuenta['values'][0])
                 TipoItem.config(values= TipodeItems if Ejecutor.get() != "DGSD" else ["Tecnología"]); TipoItem.set(TipoItem['values'][0]) if TipoItem.get() not in TipoItem['values'] else None
+
+            if Ejecutor.get() == "DSI":
+                MacroAgr.config(values=["Accesibilidad Universal","Infraestructura Crítica","Sala de Lactancia"])
+            elif Ejecutor.get() == "DGSD":
+                MacroAgr.config(values=["Desarrollo Informático","Renovación Tecnológica 2020"])
+            elif Ejecutor.get() == "SEDE":
+                MacroAgr.config(values=["Accesibilidad Universal","DIAITT","Sala de Lactancia"])
+            elif Ejecutor.get() == "CC":
+                MacroAgr.config(values=["Seguridad Integral","DIAITT"])
+            elif Ejecutor.get() == "BIB":
+                MacroAgr.config(values=["Biblioteca"])
+            
             
             Cruce_TipoItem_Cuenta(TipoItem,Cuenta,["61070000","61075000","61080000"])
     
     validar_entrada(event=None)
     Ejecutor.bind("<<ComboboxSelected>>",validar_entrada)
-    
-def Formato_OCO(widget,Ejecutor,event):
-    
-    EjeOCO = {
-        "SEDE": 300,
-        "DSI": 500,
-        "DGSD": 400,
-        "BIB": 450,
-        "CC": 1210,
-    }
-
-    OCO = widget
-    
-    Cod_OCO = str(EjeOCO[Ejecutor.get()])
-
-
-    # Obtener el largo máximo permitido según la condición
-    limite = 9 if Ejecutor.get() == "CC" else 8
-
-    # Manejo de teclas de borrado
-    if event.keysym in ("BackSpace", "Delete"):
-        if len(OCO.get()) <= len(Cod_OCO):
-            return "break"  # Bloquear si intenta borrar antes del prefijo
-        else:
-            return  # Permitir borrar
-
-    # Bloquear caracteres no numéricos
-    if not event.char.isdigit():
-        return "break"
-
-    # Bloquear si excede el límite de caracteres
-    if len(OCO.get()) >= limite:
-        return "break"
     
 def Cruce_TipoItem_Cuenta(TipoItem_Entry,Cuenta_Entry,lista):
 
