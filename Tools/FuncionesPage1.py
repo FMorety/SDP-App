@@ -326,8 +326,14 @@ def limpiar_widgets(Frames,FramesInternos):
     for Frame in Frames:
         for widget in Frame.grid_slaves():
             try:
-                if isinstance(widget,Entry):
-                        widget.delete(0,tk.END)
+                if isinstance(widget,ttk.Combobox) and widget.grid_info()["row"] == 2:
+                        Verbo = widget.get().split(" ")[0]
+                        while Verbo not in widget["values"]:
+                            Verbo = Verbo[:-1]
+                        
+                        if Verbo in widget["values"]:
+                            widget.delete(0,tk.END)
+                            widget.set(Verbo)
                 elif isinstance(widget,Text):
                     widget.delete('1.0',tk.END)         
             except:
@@ -636,7 +642,7 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera,checkbox,ID_Sol_Widget):
 
     validar_click_Division(event=None)
 
-def Ejecutor_Auto(Ejecutor, MacroAgr, FramesInternos):
+def Ejecutor_Auto(Ejecutor, NombreSolicitud, MacroAgr, FramesInternos):
     
     EjeOCO = {
         "SEDE": 300,
@@ -664,6 +670,7 @@ def Ejecutor_Auto(Ejecutor, MacroAgr, FramesInternos):
             OCO.delete(0,tk.END)
             OCO.insert(0,Cod_OCO)
 
+            #Vinculo del Ejecutor con el Tipo de Ítem
             if Ejecutor.get() == "DSI":
                 Cuenta.set(Cuenta['values'][2])
                 TipoItem.config(values=["Infraestructura","Mobiliario"]); TipoItem.set(TipoItem['values'][0]) if TipoItem.get() not in TipoItem['values'] else None
@@ -673,6 +680,7 @@ def Ejecutor_Auto(Ejecutor, MacroAgr, FramesInternos):
                 Cuenta.set(Cuenta['values'][0])
                 TipoItem.config(values= TipodeItems if Ejecutor.get() != "DGSD" else ["Tecnología"]); TipoItem.set(TipoItem['values'][0]) if TipoItem.get() not in TipoItem['values'] else None
 
+            #Vinculo del Ejecutor con la MacroAgrupación
             if Ejecutor.get() == "DSI":
                 MacroAgr.config(values=["Accesibilidad Universal","Infraestructura Crítica","Sala de Lactancia"])
             elif Ejecutor.get() == "DGSD":
@@ -683,8 +691,24 @@ def Ejecutor_Auto(Ejecutor, MacroAgr, FramesInternos):
                 MacroAgr.config(values=["Seguridad Integral","DIAITT"])
             elif Ejecutor.get() == "BIB":
                 MacroAgr.config(values=["Biblioteca"])
-            
-            
+
+            #Vinculo del Ejecutor con el Verbo de Nombre de la Solicitud
+            if Ejecutor.get() == "DGSD":
+                NombreSolicitud.config(values=["Adquisición","Construcción","Habilitación","Renovación"])
+                NombreSolicitud.set(NombreSolicitud['values'][0]) if NombreSolicitud.get() not in NombreSolicitud['values'] else None
+            elif Ejecutor.get() == "DSI":
+                NombreSolicitud.config(values=["Ampliación","Construcción","Habilitación","Mejoramiento","Normalización","Reparación"])
+                NombreSolicitud.set(NombreSolicitud['values'][0]) if NombreSolicitud.get() not in NombreSolicitud['values'] else None
+            elif Ejecutor.get() == "CC":
+                NombreSolicitud.config(values=["Adquisición","Construcción","Habilitación","Mejoramiento","Normalización","Renovación"])
+                NombreSolicitud.set(NombreSolicitud['values'][0]) if NombreSolicitud.get() not in NombreSolicitud['values'] else None
+            elif Ejecutor.get() == "BIB":
+                NombreSolicitud.config(values=["Adquisición","Renovación"])
+                NombreSolicitud.set(NombreSolicitud['values'][0]) if NombreSolicitud.get() not in NombreSolicitud['values'] else None
+            elif Ejecutor.get() == "DSI":
+                NombreSolicitud.config(values=["Adquisición","Ampliación","Construcción","Habilitación","Instalación","Mejoramiento","Normalización","Regularización","Renovación","Reparación"])
+                NombreSolicitud.set(NombreSolicitud['values'][0]) if NombreSolicitud.get() not in NombreSolicitud['values'] else None
+
             Cruce_TipoItem_Cuenta(TipoItem,Cuenta,["61070000","61075000","61080000"])
     
     validar_entrada(event=None)

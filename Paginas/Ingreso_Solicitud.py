@@ -175,6 +175,6 @@ def Form_Ingreso_Solicitud(parent,window):
 
         # ---------- Automatización OCO/Cuenta/Equipamiento ---------- #    
 
-    Ejecutor_Auto(Ejecutor, MacroAgrupacion, MarcosInternos)
+    Ejecutor_Auto(Ejecutor, NomSol, MacroAgrupacion, MarcosInternos)
     
     # --------------------------------------------------------------------------------------------------------------------------------------------#
