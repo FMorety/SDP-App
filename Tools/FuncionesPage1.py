@@ -417,7 +417,7 @@ def obtener_variables(Frames):
 
     return Datos,Division,p
 
-def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
+def Registrar_Valores(Frames,FramesInternos):
 
     # --------------------------------------------------------------------------------------------------------------------------------------------- #
 
@@ -439,11 +439,11 @@ def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
     }
     FrameCheckBox = Frames[1]
 
-    github_url = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/main/SQL-Querys/ID_Max.sql"
-    response = requests.get(github_url)
+    github_url1 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/main/SQL-Querys/ID_Max.sql"
+    response1 = requests.get(github_url1)
 
-    if response.status_code == 200:
-        SQL_Select = response.text.strip()
+    if response1.status_code == 200:
+        SQL_Select1 = response1.text.strip()
     else:
         raise Exception("Error al obtener el archivo SQL desde GitHub")
     
@@ -451,8 +451,9 @@ def Registrar_Valores(Frames,FramesInternos,Check_var,Col1):
 
     DatosGenerales, Division, p = obtener_variables(Frames)
 
-        #Se extrae el ID Solicitud maximo 
-    ID_Solicitud_Max = SQL(SQL_Select)
+        #Se extrae el ID Solicitud e ID Activo maximo 
+    ID_Solicitud_Max = SQL(SQL_Select1)
+    
 
     # --------------------------------------------------------------------------------------------------------------------------------------------- #
 
