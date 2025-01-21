@@ -530,7 +530,15 @@ def Registrar_Valores(Frames,FramesInternos):
                 Codigo_ID_Solicitud_Nuevo = Datos[0]
                 
         Datos[0:0] = [ID_Activo_Max]
+        Datos[8:8] = [str(Datos[5].split(" ")[0])]
 
+        if len(str(Datos[12])) != 8 and len(str(Datos[12])) != 9:
+            return (messagebox.showerror("Error: Revisar OCO ingresada.",f"Por favor, ingrese una OCO con un formato valido según corresponda. (Las OCOS cuentan con 8 o 9 digitos.)"))
+        elif len(str(Datos[14])) != 8:
+            return (messagebox.showerror("Error: Revisar Cuenta ingresada.",f"Por favor, ingrese una Cuenta con un formato valido según corresponda. (Las cuentas cuentan con 8 digitos.)"))
+        elif len(Datos[5].split(" "))==1:
+            return (messagebox.showerror("Error: Revisar Nombre Solicitud ingresado.",f"Celda 'Nombre Solicitud' vacio. Por favor, llene la solicitud con un nombre adecuado para el proyecto que contemple uno de los verbos propuestos."))
+        
         # Advertencia de monto ingresado e impresión #
         if Monto_Aprobado > 150000000:
             result = messagebox.askokcancel(
