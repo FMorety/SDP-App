@@ -439,11 +439,14 @@ def Registrar_Valores(Frames,FramesInternos):
     }
     FrameCheckBox = Frames[1]
 
-    github_url1 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/main/SQL-Querys/ID_Max.sql"
+    github_url1 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Sol_Max.sql"
+    github_url2 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Act_Max.sql"
     response1 = requests.get(github_url1)
+    response2 = requests.get(github_url2)
 
-    if response1.status_code == 200:
+    if response1.status_code == 200 and response2.status_code == 200:
         SQL_Select1 = response1.text.strip()
+        SQL_Select2 = response2.text.strip()
     else:
         raise Exception("Error al obtener el archivo SQL desde GitHub")
     
@@ -453,6 +456,7 @@ def Registrar_Valores(Frames,FramesInternos):
 
         #Se extrae el ID Solicitud e ID Activo maximo 
     ID_Solicitud_Max = SQL(SQL_Select1)
+    ID_Activo_Max = SQL(SQL_Select2)
     
 
     # --------------------------------------------------------------------------------------------------------------------------------------------- #

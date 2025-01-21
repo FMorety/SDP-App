@@ -6,7 +6,7 @@ def SQLConsulta(Query,lista=[],pandas=False):
 
 
     server = 'CCDNBA12021461\SQLEXPRESS'  # Ejemplo: 'localhost' o '192.168.1.100'
-    database = 'SDPrueba'  # Ejemplo: 'mi_base_de_datos'
+    database = 'Subdireccion de Proyectos BBDD'  # Ejemplo: 'mi_base_de_datos'
     username = 'Admin'  # Tu nombre de usuario
     password = 'duoc2025.'  # Tu contraseña
 
@@ -56,6 +56,7 @@ def SQLConsulta(Query,lista=[],pandas=False):
                      
     except pyodbc.Error as e:
         messagebox.showinfo("Resultado",f"Error al ejecutar la consulta. Revisar código. {e}")
+        print(e)
 
     finally:
         # Cerrar el cursor y la conexión

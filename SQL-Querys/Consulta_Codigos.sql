@@ -6,4 +6,4 @@ SELECT
     [Cod_Escuela],
     [Carrera_Generica] AS Carrera,
     [Cod_Carrera]
-FROM [SDPrueba].[dbo].[Sabana_CARRERAS];
+FROM [Subdireccion de Proyectos BBDD].[dbo].[Sabana_Carreras];
