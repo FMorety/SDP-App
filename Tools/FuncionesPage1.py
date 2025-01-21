@@ -382,8 +382,18 @@ def obtener_variables(Frames):
         DarVuelta = []
         for widget in Frame.grid_slaves():
             if isinstance(widget,ttk.Combobox):
-                if widget.get()!="":
-                    DarVuelta.append(widget.get())                    
+                if widget.get()!="" or widget.grid_info()["row"]==4:
+                    if widget.grid_info()["row"] == 2:
+                        if widget.get().split(" ")[0] not in widget['value']:
+                            messagebox.showerror("Error: Revisar nombre de la solicitud.","""Por favor, asegurese de cumplir las siguientes consideraciones:\n\n
+1.- Haber ingresado un nombre al proyecto y no haber dejado solo el Verbo.
+2.- Utilizar alguno de los verbos del listado.
+3.- Separar el verbo del resto del texto.""")
+                            break
+                        else: 
+                            DarVuelta.append(widget.get())
+                    else:
+                        DarVuelta.append(widget.get())                    
                 else:
                     Campos_Vacios=True
             elif isinstance(widget, Text):  # Caso específico para Text
@@ -511,6 +521,7 @@ def Registrar_Valores(Frames,FramesInternos):
             Codigo_ID_Solicitud_Nuevo = ["2025-"+str(cod_Div).zfill(4)+"-"+str(ID_Solicitud_Max+1).zfill(4)]
             Datos[0:0]=Codigo_ID_Solicitud_Nuevo
             
+            
         elif p == 1:
             if len(Datos[0]) != 14:
                 return (messagebox.showerror("Error: Revisar ID Solicitud ingresada manualmente.",f"Por favor, completar el ID Solicitud con el formato solicitado en la casilla.\n\nFormato del ID Solicitud: {datetime.now().year}-XXXX-XXXX"), print("No se ejecutó la acción."))
@@ -518,7 +529,7 @@ def Registrar_Valores(Frames,FramesInternos):
             elif str(datetime.now().year) in Datos[0] and str(Divisiones[Division]) in Datos[0]:
                 Codigo_ID_Solicitud_Nuevo = Datos[0]
                 
-
+        Datos[0:0] = [ID_Activo_Max]
 
         # Advertencia de monto ingresado e impresión #
         if Monto_Aprobado > 150000000:
@@ -539,7 +550,7 @@ def Registrar_Valores(Frames,FramesInternos):
 
 def Sabana_2025(Division,Escuela,Carrera,Subcartera,checkbox,ID_Sol_Widget):
     
-    github_url = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/main/SQL-Querys/Consulta_Codigos.sql"
+    github_url = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/Consulta_Codigos.sql"
     response = requests.get(github_url)
 
     if response.status_code == 200:

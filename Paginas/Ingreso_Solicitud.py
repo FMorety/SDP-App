@@ -64,7 +64,7 @@ def Form_Ingreso_Solicitud(parent,window):
         #Descripción Solicitud#
     DesSol = crear_text(Frame_Bottom,"*Descripción Solicitud:",3,0); limitar_caracteres2(DesSol)
 
-        #Justificación Solicitud#
+        #MacroAgrupación#
     Lista_MacroAgr = ["Accesibilidad Universal","Biblioteca","Desarrollo Informático","DIAITT","Infraestructura Crítica","Renovación Tecnológica 2020","Sala de Lactancia","Seguridad Integral"]
     MacroAgrupacion = crear_combobox(Frame_Bottom, "Macroagrupación:",Lista_MacroAgr,4,0)
 
