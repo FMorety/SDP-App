@@ -468,7 +468,7 @@ def Registrar_Valores(Frames,FramesInternos):
     DatosGenerales, Division, p = obtener_variables(Frames)
 
         #Se extrae el ID Solicitud e ID Activo maximo 
-    ID_Solicitud_Max = SQL(SQL_Select1)
+    ID_Solicitud_Max = SQL(SQL_Select1)+1
     ID_Activo_Max = SQL(SQL_Select2)
     
 
@@ -497,13 +497,15 @@ def Registrar_Valores(Frames,FramesInternos):
         # --------------------------------------------------------------------------------------------------------------------------------------------- #
 
         #Extrae la planificación del monto aprobado y lo distribuye en la Matriz_Planificacion
+        dia_actual = datetime.now().day
+        mes_actual = datetime.now().month - 1 if dia_actual <= 23 else datetime.now().month
         for i in range(len(DatosItem)):
             NumeroM = None
             n = (2*i)+1
             if DatosItem[n] in MesesNumero:
                 Matriz_Planificacion[MesesNumero[DatosItem[n]]] += DatosItem[n-1]
             else:
-                DatosItem.append(   (   next(   (k for k, v in MesesNumero.items() if v == ( datetime.now().month -1 ) ), None )  ).upper()   )
+                DatosItem.append(   (   next(   (k for k, v in MesesNumero.items() if v == ( mes_actual) ), None )  ).upper()   )
                 del DatosItem[:n-1]
                 break
 
@@ -521,7 +523,7 @@ def Registrar_Valores(Frames,FramesInternos):
 
         if p == 0:
             cod_Div = Divisiones[Division]
-            Codigo_ID_Solicitud_Nuevo = ["2025-"+str(cod_Div).zfill(4)+"-"+str(ID_Solicitud_Max+1).zfill(4)]
+            Codigo_ID_Solicitud_Nuevo = ["2025-"+str(cod_Div).zfill(4)+"-"+str(ID_Solicitud_Max).zfill(4)]
             Datos[0:0]=Codigo_ID_Solicitud_Nuevo
             
             
@@ -532,8 +534,10 @@ def Registrar_Valores(Frames,FramesInternos):
             elif str(datetime.now().year) in Datos[0] and str(Divisiones[Division]) in Datos[0]:
                 Codigo_ID_Solicitud_Nuevo = Datos[0]
                 
-        Datos[0:0] = [ID_Activo_Max+1]
+        ID_Activo_Max += 1
+        Datos[0:0] = [ID_Activo_Max]
         Datos[8:8] = [str(Datos[5].split(" ")[0])]
+        Datos[15] = 0
         
         if len(str(Datos[12])) != 8 and len(str(Datos[12])) != 9:
             return (messagebox.showerror("Error: Revisar OCO ingresada.",f"Por favor, ingrese una OCO con un formato valido según corresponda. (Las OCOS cuentan con 8 o 9 digitos.)"))

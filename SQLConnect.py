@@ -46,7 +46,6 @@ def SQLConsulta(Query,lista=[],pandas=False):
             print(Query)
             cursor.execute(Query)
             conn.commit()
-            messagebox.showinfo("Resultado","La información fue subida con éxito.")
 
         # Recuperar resultados en caso de consultas SELECT
         elif Query.strip().lower().startswith('select'):
