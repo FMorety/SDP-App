@@ -64,9 +64,3 @@
 
     # Crear la consulta SQL sin especificar columnas
        
-    Lista_a_subir=Datos+Matriz_Planificacion
-    
-    placeholders = ", ".join("?" for _ in range(len(Lista_a_subir)))
-    SQL_Insert = f"INSERT INTO [SDPrueba].[dbo].[Matriz] VALUES ("
-    
-    SQL(SQL_Insert,lista=Lista_a_subir)

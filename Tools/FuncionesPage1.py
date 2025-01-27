@@ -57,7 +57,7 @@ def Formato_NomSol(widget,listaverbos,event):
     
     NomSol = widget
     Verbo = NomSol.get().split(" ")[0]
-    
+
     while Verbo not in listaverbos:
         Verbo = Verbo[:-1]
 
@@ -66,6 +66,9 @@ def Formato_NomSol(widget,listaverbos,event):
             return "break"  # Bloquear si intenta borrar antes del prefijo
         else:
             return  # Permitir borrar
+
+def Prohibir_Seleccion(event):
+    return "break"
 
 def limitar_caracteres(entry_widget, max_length, EsNumero=0):
     """

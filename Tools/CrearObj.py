@@ -76,6 +76,8 @@ def Frame_de_Item(parent, listamarcos, widget_Ejecutor):
         #OCO#
     OCO = crear_entry(Frame_Left, "OCO:",0,0,15)
     OCO.bind("<KeyPress>",lambda event: Formato_OCO(OCO,widget_Ejecutor,event))
+    OCO.bind("<B1-Motion>",lambda event: Prohibir_Seleccion(event))
+    OCO.bind("<Double-1>",lambda event: Prohibir_Seleccion(event))
     
         #CECO#
     CECO = crear_entry(Frame_Left, "CECO:",1,0,15)

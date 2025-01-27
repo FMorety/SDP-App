@@ -60,6 +60,8 @@ def Form_Ingreso_Solicitud(parent,window):
     Verbos = ["Adquisición","Ampliación","Construcción","Habilitación","Instalación","Mejoramiento","Normalización","Regularización","Renovación","Reparación"]
     NomSol = crear_combobox(Frame_Bottom,"Nombre Solicitud:",Verbos,2,0,estado="normal"); NomSol.set(NomSol['values'][0])
     NomSol.bind("<KeyPress>",lambda event: Formato_NomSol(NomSol,NomSol['values'],event))
+    NomSol.bind("<B1-Motion>",lambda event: Prohibir_Seleccion(event))
+    NomSol.bind("<Double-1>",lambda event: Prohibir_Seleccion(event))
 
         #Descripción Solicitud#
     DesSol = crear_text(Frame_Bottom,"*Descripción Solicitud:",3,0); limitar_caracteres2(DesSol)
@@ -117,6 +119,8 @@ def Form_Ingreso_Solicitud(parent,window):
         #OCO#
     OCO = crear_entry(Frame_Left, "*OCO:",0,0,15)
     OCO.bind("<KeyPress>",lambda event: Formato_OCO(OCO,Ejecutor,event))
+    OCO.bind("<B1-Motion>",lambda event: Prohibir_Seleccion(event))
+    OCO.bind("<Double-1>",lambda event: Prohibir_Seleccion(event))
     
         #CECO#
     CECO = crear_entry(Frame_Left, "CECO:",1,0,15)
