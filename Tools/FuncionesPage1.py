@@ -529,15 +529,17 @@ def Registrar_Valores(Frames,FramesInternos):
             elif str(datetime.now().year) in Datos[0] and str(Divisiones[Division]) in Datos[0]:
                 Codigo_ID_Solicitud_Nuevo = Datos[0]
                 
-        Datos[0:0] = [ID_Activo_Max]
+        Datos[0:0] = [ID_Activo_Max+1]
         Datos[8:8] = [str(Datos[5].split(" ")[0])]
-
+        
         if len(str(Datos[12])) != 8 and len(str(Datos[12])) != 9:
             return (messagebox.showerror("Error: Revisar OCO ingresada.",f"Por favor, ingrese una OCO con un formato valido según corresponda. (Las OCOS cuentan con 8 o 9 digitos.)"))
         elif len(str(Datos[14])) != 8:
             return (messagebox.showerror("Error: Revisar Cuenta ingresada.",f"Por favor, ingrese una Cuenta con un formato valido según corresponda. (Las cuentas cuentan con 8 digitos.)"))
         elif len(Datos[5].split(" "))==1:
             return (messagebox.showerror("Error: Revisar Nombre Solicitud ingresado.",f"Celda 'Nombre Solicitud' vacio. Por favor, llene la solicitud con un nombre adecuado para el proyecto que contemple uno de los verbos propuestos."))
+        
+        Datos[12:12] = ['']
         
         # Advertencia de monto ingresado e impresión #
         if Monto_Aprobado > 150000000:
@@ -550,9 +552,17 @@ def Registrar_Valores(Frames,FramesInternos):
                 return
             elif result:
                 print(Datos)
+                placeholders = ", ".join("?" for _ in range(len(Datos)))
+                SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] VALUES ("
+                
+                SQL(SQL_Insert,lista=Datos)
                 
         else:
             print(Datos)
+            placeholders = ", ".join("?" for _ in range(len(Datos)))
+            SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] VALUES ("
+            
+            SQL(SQL_Insert,lista=Datos)
     
     limpiar_widgets(Frames,FramesInternos)
 
@@ -715,6 +725,7 @@ def Ejecutor_Auto(Ejecutor, NombreSolicitud, MacroAgr, FramesInternos):
                 MacroAgr.config(values=["Seguridad Integral","DIAITT"])
             elif Ejecutor.get() == "BIB":
                 MacroAgr.config(values=["Biblioteca"])
+            MacroAgr.config(values=['']+list(MacroAgr['values']))
 
             #Vinculo del Ejecutor con el Verbo de Nombre de la Solicitud
             if Ejecutor.get() == "DGSD":

@@ -74,7 +74,7 @@ def Frame_de_Item(parent, listamarcos, widget_Ejecutor):
     Eliminar_Item.grid(row=1,column=1,sticky="w",padx=(5,0),pady=(10,0))
 
         #OCO#
-    OCO = crear_entry(Frame_Left, "*OCO:",0,0,15)
+    OCO = crear_entry(Frame_Left, "OCO:",0,0,15)
     OCO.bind("<KeyPress>",lambda event: Formato_OCO(OCO,widget_Ejecutor,event))
     
         #CECO#
@@ -120,9 +120,19 @@ def Frame_de_Item(parent, listamarcos, widget_Ejecutor):
     TipoItem.set(listamarcos[0].grid_slaves()[2].grid_slaves()[4].get())
 
     TipoOCO = listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:1]
+    OCO_Original=listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()
     if TipoOCO == "1":
         OCO.insert(0,listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:4])
     else:
         OCO.insert(0,listamarcos[0].grid_slaves()[1].grid_slaves()[4].get()[:3])
     
-    widget_Ejecutor.event_generate("<<ComboboxSelected>>")  
+    listaOCOS = []
+    for frame in listamarcos:
+        listaOCOS.append(frame.grid_slaves()[1].grid_slaves()[4].get())
+    
+    widget_Ejecutor.event_generate("<<ComboboxSelected>>")
+
+    for n in range(len(listamarcos)):
+        listamarcos[n].grid_slaves()[1].grid_slaves()[4].delete(0,tk.END)
+        listamarcos[n].grid_slaves()[1].grid_slaves()[4].insert(0,listaOCOS[n])
+    
