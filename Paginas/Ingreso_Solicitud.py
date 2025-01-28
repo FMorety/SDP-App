@@ -3,8 +3,10 @@ from Tools.FuncionesPage1 import *
 
 
 def Form_Ingreso_Solicitud(parent,window):
-        
-    MesActual = (datetime.now().month)-1
+
+    DiaActual = datetime.now().day
+    MesActual = datetime.now().month - 1 if DiaActual <= 23 else datetime.now().month   
+
     Marcos=[]
     global Checkbox_var
 

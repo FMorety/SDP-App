@@ -48,7 +48,9 @@ def agregar_linea(parent, x1, y1, x2, y2, color="black", grosor=1):
 
 def Frame_de_Item(parent, listamarcos, widget_Ejecutor):
 
-    MesActual = (datetime.now().month)-1
+    DiaActual = datetime.now().day
+    MesActual = datetime.now().month - 1 if DiaActual <= 23 else datetime.now().month
+    
     Numero = len(listamarcos)
     
     ### ---------- Frames ---------- ###

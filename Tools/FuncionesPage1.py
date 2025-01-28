@@ -62,7 +62,8 @@ def Formato_NomSol(widget,listaverbos,event):
         Verbo = Verbo[:-1]
 
     if event.keysym in ("BackSpace", "Delete"):
-        if len(NomSol.get()) <= len(Verbo):
+        Posicion_Cursor = NomSol.index(tk.INSERT)
+        if Posicion_Cursor < len(Verbo)+1:
             return "break"  # Bloquear si intenta borrar antes del prefijo
         else:
             return  # Permitir borrar
@@ -184,28 +185,18 @@ def format_money(value):
     else:
         return
 
-def Formato_OCO(widget,Ejecutor,event):
+def Formato_OCO(widget, Ejecutor, event):
     
-    EjeOCO = {
-        "SEDE": 300,
-        "DSI": 500,
-        "DGSD": 400,
-        "BIB": 450,
-        "CC": 1210,
-    }
-
     OCO = widget
-    
-    Cod_OCO = str(EjeOCO[Ejecutor.get()])
-
 
     # Obtener el largo máximo permitido según la condición
-    limite = 9 if Ejecutor.get() == "CC" else 8
+    limite, limite2 = (9, 5) if Ejecutor.get() == "CC" else (8, 4)
 
     # Manejo de teclas de borrado
     if event.keysym in ("BackSpace", "Delete"):
-        if len(OCO.get()) <= len(Cod_OCO):
-            return "break"  # Bloquear si intenta borrar antes del prefijo
+        Posicion_Cursor = OCO.index(tk.INSERT)
+        if Posicion_Cursor < limite2:
+            return "break"  # Bloquear si intenta borrar antes del prefijo o antes del 3er carácter
         else:
             return  # Permitir borrar
 
@@ -247,13 +238,14 @@ def eliminar_fila(Frame, boton):
 
 def agregar_fila(Frame,Lista,boton,label,Montoaprobado):
     # Obtener la posición actual del botón
+    
     fila_actual = boton.grid_info()["row"]
     for widget in Frame.grid_slaves():
         if widget.grid_info()["row"] > fila_actual:
             widget.grid(row=fila_actual+2)
     Monto = Entry(Frame,width=22,bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10)); Monto.grid(row=fila_actual+1, column=1,sticky="w", padx=(0,5)); FormatearNumero(Monto)
     Monto.bind("<KeyRelease>", lambda e: actualizar_total(Frame, label,Montoaprobado))
-    Mes = ttk.Combobox(Frame, values=Lista,width=15,state="readonly"); Mes.grid(row=fila_actual+1,column=2,sticky="ew"); Mes.set(Mes["values"][datetime.now().month -1])
+    Mes = ttk.Combobox(Frame, values=Lista,width=15,state="readonly"); Mes.grid(row=fila_actual+1,column=2,sticky="ew"); Mes.set(Mes["values"][datetime.now().month - 1 if datetime.now().day <= 23 else datetime.now().month])
     eliminar = ttk.Button(Frame,text="-",width=3,command=lambda: eliminar_fila(Frame,eliminar)); eliminar.grid(row=fila_actual,column=0,sticky="e")
     boton.grid(row=fila_actual+1)    
 
