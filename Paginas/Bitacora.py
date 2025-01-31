@@ -2,7 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 from Tools.CrearObj import *
 
+from Tools.FuncionesPage2 import *
+
 def Form_Bitacora(parent,window):
+
+    Matriz_CAPEX = Data_Bitacora()
 
     marco = tk.LabelFrame(parent,text="Planilla Bitácora",font=("Arial",10,"bold")); marco.pack(side="top",padx=12,pady=5 ,ipady=5, ipadx=5, fill="both", expand="yes")
 
@@ -10,7 +14,8 @@ def Form_Bitacora(parent,window):
     AgregarMovimiento.grid(row=1,column=0,sticky="e",padx=(8,0))
     
     Label_ID_Activo = tk.Label(marco, text="ID Activo",font=("Arial",9,"bold")); Label_ID_Activo.grid(row=0,column=1,padx=5,pady=2)
-    ID_Activo = tk.Entry(marco,bd=1, highlightthickness=1, highlightbackground="gray",width=8,font=("Arial",9)); ID_Activo.grid(row=1,column=1,padx=5)
+    ID_Activo = tk.Entry(marco,bd=1, highlightthickness=1, highlightbackground="gray",width=8,justify="center",font=("Open Sans",10)); ID_Activo.grid(row=1,column=1,padx=5)
+    ID_Activo.bind("<KeyPress>",lambda event: Entrega_Info(ID_Activo,marco,Matriz_CAPEX,event))
 
     Label_ID_Solicitud = tk.Label(marco, text="ID Solicitud",font=("Arial",9,"bold")); Label_ID_Solicitud.grid(row=0,column=2,padx=5,pady=2)
     ID_Solicitud = tk.Label(marco, text="-",font=("Arial",9)); ID_Solicitud.grid(row=1,column=2,padx=5)
