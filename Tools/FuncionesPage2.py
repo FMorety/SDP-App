@@ -26,7 +26,6 @@ def Entrega_Info(ID,parent,matriz,event):
     elif len(ID.get()) >= 4:
         return "break"
     
-    
     #Luego, se busca el ID en la matriz de la Bitácora, asegurándose de que no esté vacío el campo ID_Activo
 
     ID_Activo = ID.get()+event.char
@@ -49,13 +48,14 @@ def Entrega_Info(ID,parent,matriz,event):
             elif key == 'OCO':
                 value = int(value)
             elif key == 'Post_Resolucion':
-                value = "${:,.0f}".format(float(value))
+                value = "${:,.0f}".format(int(value)).replace(',', '.')
 
             for widget in parent.grid_slaves():
+                
                 fila_actual = ID.grid_info()["row"]
+                
                 if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual and widget.grid_info()["column"] == columna:
                     widget.config(text=value)
-
                     break
     else:
         for widget in parent.grid_slaves():
