@@ -64,7 +64,7 @@ def Form_Bitacora(parent,window):
 
     Label_Movimiento = tk.Label(scrollable_frame, text="Monto",font=("Arial",9,"bold")); Label_Movimiento.grid(row=0,column=12,padx=(20,5),pady=2)
     Movimiento = tk.Entry(scrollable_frame, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=1,column=12,padx=(20,5))
-    Movimiento.bind("<KeyPress>",lambda event: Formato_Monto(Movimiento,event))
+    Movimiento.bind("<KeyPress>",lambda event: Formato_Monto(Movimiento,Monto_PostRe,Motivo,event))
 
     Label_Motivo = tk.Label(scrollable_frame, text="Motivo",font=("Arial",9,"bold")); Label_Motivo.grid(row=0,column=13,pady=2,padx=5)
     Motivo = ttk.Combobox(scrollable_frame, values=["Ahorro","Suplemento","Postergación","Cierre"], state="readonly"); Motivo.grid(row=1,column=13,padx=5)

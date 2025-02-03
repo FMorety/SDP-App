@@ -154,22 +154,46 @@ def Eliminar_Movimiento(boton,parent_in,linea):
             widget.grid(row=widget.grid_info()["row"]-1)
     
     # Se obtiene la altura actual de la línea y se le restan 40 unidades. Se actualiza el rowspan de la línea también.+
+
     current_rowspan = int(linea.grid_info().get("rowspan", 1))
     linea.destroy()
     linea = agregar_linea(parent_in, 0, 5, 0, 80 + 40 * (current_rowspan-3))
     linea.grid(row=0, column=11, rowspan=2+(current_rowspan-3), sticky="ew")
     
-def Formato_Monto(monto, event):
-    # Primero se restringe el ingreso de caracteres no numéricos y se limita la cantidad de caracteres
-    if event.keysym in ("BackSpace", "Delete"):
-        try:
-            monto_value = monto.get().replace('$','').replace('.','')[:-1]
-            monto_value = re.sub(r'[^\d]', '', monto_value)
-            monto_value = "${:,.0f}".format(int(monto_value)).replace(',', '.')
-        except:
-            monto_value = ""
+def Formato_Monto(monto, postre, motivo, event):
+    
+    # Se formatea el monto ingresado
+    postre_value = int(postre.cget("text").replace('$','').replace('.',''))
+    
+    def formatear_e_insertar(monto_value, postre_value):
+        postre_value = "${:,.0f}".format(postre_value).replace(',', '.')
+        postre.config(text=postre_value)
+        monto_value = re.sub(r'[^\d]', '', str(monto_value))
+        monto_value = "${:,.0f}".format(int(monto_value)).replace(',', '.')
         monto.delete(0, tk.END)
         monto.insert(0, monto_value)
+
+    # Se obtiene el valor actual de la Post Resolución
+    postre_value = int(postre.cget("text").replace('$','').replace('.',''))
+
+    # Primero se restringe el ingreso de caracteres no numéricos y se limita la cantidad de caracteres
+    if event.keysym in ("BackSpace", "Delete"):
+        if monto.get() == "":
+            return "break"
+        monto_value = monto.get().replace('$','').replace('.','')
+        try:
+            if motivo.get() == "Ahorro":
+                postre_value = postre_value + int(monto_value) - int(monto_value[:-1])
+            elif motivo.get() == "Suplemento":
+                postre_value = postre_value - int(monto_value) + int(monto_value[:-1])
+            formatear_e_insertar(monto_value[:-1], postre_value)
+        except:
+            if motivo.get() == "Ahorro":
+                postre_value = postre_value + int(monto_value)
+            elif motivo.get() == "Suplemento":
+                postre_value = postre_value - int(monto_value)
+            formatear_e_insertar(123, postre_value)
+            monto.delete(0, tk.END)
         return 'break'
     elif event.keysym == "Tab":
         return
@@ -177,13 +201,20 @@ def Formato_Monto(monto, event):
         return "break"
     elif len(monto.get()) == 12:
         return "break"
-
-
+    
     # Formatea el monto ingresado para que se vea mejor en la interfaz
-    monto_value = monto.get() + (event.char if event.char.isdigit() else "")
-    monto_value = re.sub(r'[^\d]', '', monto_value)
-    monto_value = "${:,.0f}".format(int(monto_value)).replace(',', '.')
-    monto.delete(0, tk.END)
-    monto.insert(0, monto_value)
+    monto_value = monto.get().replace('$','').replace('.','') + (event.char if event.char.isdigit() else "")
+
+    if motivo.get() == "Ahorro":
+        postre_value = postre_value + int(monto_value[:-1] if monto.get()!='' else 0) - int(monto_value)
+        if postre_value < 0:
+            return "break"
+    elif motivo.get() == "Suplemento":
+        postre_value = postre_value - int(monto_value[:-1] if monto.get()!='' else 0) + int(monto_value)
+    
+    formatear_e_insertar(monto_value, postre_value)
+    
     return "break"  # Prevent the default behavior of inserting the character twice
+
+
 
