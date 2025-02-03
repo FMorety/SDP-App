@@ -94,7 +94,7 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
 
     boton.grid(row=fila_nueva)
 
-    Eliminar_fila = ttk.Button(parent,text="-",width=3,command=lambda: Eliminar_Movimiento())
+    Eliminar_fila = ttk.Button(parent,text="-",width=3,command=lambda: Eliminar_Movimiento(Eliminar_fila,parent,linea))
     Eliminar_fila.grid(row=fila_nueva-1,column=0,sticky="e",padx=(8,0))
     
     ID_Activo = tk.Entry(parent,bd=1, highlightthickness=1, highlightbackground="gray",width=4,justify="center",font=("Open Sans",10)); ID_Activo.grid(row=fila_nueva,column=1)
@@ -118,8 +118,6 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
 
     Monto_PostRe = tk.Label(parent, text="-",font=("Arial",9)); Monto_PostRe.grid(row=fila_nueva,column=10,padx=(4,20))
 
-    linea = agregar_linea(parent,0,5,0,80); linea.grid(row=0,column=11,rowspan=2,sticky="ew") 
-
     Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=fila_nueva,column=12,padx=(20,5))
 
     Motivo = ttk.Combobox(parent, values=["Ahorro","Suplemento","Postergación","Cierre"], state="readonly"); Motivo.grid(row=fila_nueva,column=13,padx=5)
@@ -129,8 +127,25 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
      # Obtener la altura actual de la línea y agregarle 40 unidades. Actualizar el rowspan de la línea también.
 
     current_rowspan = int(linea.grid_info().get("rowspan", 1))
+    linea.destroy()
     linea = agregar_linea(parent, 0, 5, 0, 80 + 40 * (fila_nueva-1) )
     linea.grid(row=0, column=11, rowspan=2+(fila_nueva-1), sticky="ew")
 
-def Eliminar_Movimiento(boton,parent,linea):
-    pass
+def Eliminar_Movimiento(boton,parent_in,linea):
+    # Elimina la fila de la Bitácora y reacomoda las filas restantes
+    # Se elimina el botón de eliminación de fila y se reacomodan los botones restantes
+
+    fila = boton.grid_info()["row"]
+
+    for widget in parent_in.grid_slaves():
+        if widget.grid_info()["row"] == fila:
+            widget.destroy()
+        elif widget.grid_info()["row"] > fila:
+            widget.grid(row=widget.grid_info()["row"]-1)
+    
+    # Se obtiene la altura actual de la línea y se le restan 40 unidades. Se actualiza el rowspan de la línea también.+
+    current_rowspan = int(linea.grid_info().get("rowspan", 1))
+    linea.destroy()
+    linea = agregar_linea(parent_in, 0, 5, 0, 80 + 40 * (current_rowspan-3))
+    linea.grid(row=0, column=11, rowspan=2+(current_rowspan-3), sticky="ew")
+    
