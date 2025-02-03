@@ -20,69 +20,71 @@ def Data_Bitacora():
 
     return Data
 
-def Entrega_Info(ID,parent,matriz,event):
+def Entrega_Info(ID, parent, matriz, event):
+    def actualizar_info(info, ID, parent):
+        columna = 0
+        n = 0
+        if info is not None and not info.empty:
+            info_dict = info.to_dict('records')[0]
+            for key, value in info_dict.items():
+                columna += 1 + 1 * n
 
-    #Primero se restringe el ingreso de caracteres no numéricos y se limita la cantidad de caracteres
+                # Se formatean los datos para que se vean mejor en la interfaz
+                if key == 'ID_Activo':
+                    continue
+                elif key == 'OCO':
+                    value = int(value)
+                elif key == 'Post_Resolucion':
+                    value = "${:,.0f}".format(int(value)).replace(',', '.')
+                elif key == 'Nombre_Solicitud' or key == 'Item':
+                    value = value[:50] + "..." if len(value) > 50 else value
+
+                n = 1
+
+                for widget in parent.grid_slaves():
+                    fila_actual = ID.grid_info()["row"]
+
+                    if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual and widget.grid_info()["column"] == columna:
+                        widget.config(text=value)
+                        if key == "Nombre_Solicitud" or key == "Item":
+                            widget.grid(padx=70 - len(value))
+                        elif key == "OCO" or key == "ID_Solicitud":
+                            widget.grid(padx=25 - len(str(value)))
+                        break
+        else:
+            for widget in parent.grid_slaves():
+                fila_actual = ID.grid_info()["row"]
+                if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
+                    widget.config(text="-")
+
+    # Se busca el ID en la matriz de la Bitácora, asegurándose de que no esté vacío el campo ID_Activo
+    ID_Activo = ID.get() + (event.char if event.char.isdigit() else "")
+    
+    if ID_Activo == "":
+        return "break"
+
+    info = matriz.loc[matriz['ID_Activo'] == int(ID_Activo)] if ID_Activo.isdigit() else None
+
+    # Primero se restringe el ingreso de caracteres no numéricos y se limita la cantidad de caracteres
     if event.keysym in ("BackSpace", "Delete"):
+
+        # Extrae el último caracter de la celda y busca la información en la matriz
+        info = matriz.loc[matriz['ID_Activo'] == int(ID_Activo[:-1])] if ID_Activo[:-1] != "" else None
+
         if ID.get()[:-1] == "":
             for widget in parent.grid_slaves():
                 fila_actual = ID.grid_info()["row"]
                 if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
                     widget.config(text="-")
-        return    
+        else:
+            actualizar_info(info, ID, parent)
+        
     elif not event.char.isdigit():
         return "break"
     elif len(ID.get()) >= 4:
         return "break"
-    
-    #Luego, se busca el ID en la matriz de la Bitácora, asegurándose de que no esté vacío el campo ID_Activo
 
-    ID_Activo = ID.get()+event.char
-    
-    if ID_Activo == "":
-        return "break"
-
-    info = matriz.loc[matriz['ID_Activo'] == int(ID_Activo)]
-    columna = 0; n=0
-
-    print(info) if not info.empty else print("No se encontró información")
-
-    if not info.empty:
-        info_dict = info.to_dict('records')[0]
-        for key, value in info_dict.items():
-            columna += 1+1*n
-            
-            #Se formatean los datos para que se vean mejor en la interfaz
-            if key == 'ID_Activo':
-                continue
-            elif key == 'OCO':
-                value = int(value)
-            elif key == 'Post_Resolucion':
-                value = "${:,.0f}".format(int(value)).replace(',', '.')
-            elif key == 'Nombre_Solicitud' or key == 'Item':
-                value = value[:50]+"..." if len(value) > 50 else value
-
-            n=1
-
-            for widget in parent.grid_slaves():
-                
-                fila_actual = ID.grid_info()["row"]
-                
-                if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual and widget.grid_info()["column"] == columna:
-                    widget.config(text=value)
-                    if key == "Nombre_Solicitud" or key == "Item":
-                        widget.grid(padx=70-len(value))
-                    elif key == "OCO" or key == "ID_Solicitud":
-                        widget.grid(padx=25-len(str(value)))
-                    
-                        
-                    
-                    break
-    else:
-        for widget in parent.grid_slaves():
-                fila_actual = ID.grid_info()["row"]
-                if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
-                    widget.config(text="-")
+    actualizar_info(info, ID, parent)
 
 def Agregar_Movimiento(boton,parent,matriz,linea):
     #Se crea una nueva fila en la Bitácora
@@ -91,6 +93,9 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
     fila_nueva = boton.grid_info()["row"]+1
 
     boton.grid(row=fila_nueva)
+
+    Eliminar_fila = ttk.Button(parent,text="-",width=3,command=lambda: Eliminar_Movimiento())
+    Eliminar_fila.grid(row=fila_nueva-1,column=0,sticky="e",padx=(8,0))
     
     ID_Activo = tk.Entry(parent,bd=1, highlightthickness=1, highlightbackground="gray",width=4,justify="center",font=("Open Sans",10)); ID_Activo.grid(row=fila_nueva,column=1)
     ID_Activo.bind("<KeyPress>",lambda event: Entrega_Info(ID_Activo,parent,matriz,event))
@@ -111,16 +116,21 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
 
     linea4 = agregar_linea(parent,0,0,0,20); linea4.grid(row=fila_nueva,column=9,sticky="ew")
 
-    Monto_PostRe = tk.Label(parent, text="-",font=("Arial",9)); Monto_PostRe.grid(row=fila_nueva,column=10,padx=(4,10))
+    Monto_PostRe = tk.Label(parent, text="-",font=("Arial",9)); Monto_PostRe.grid(row=fila_nueva,column=10,padx=(4,20))
 
     linea = agregar_linea(parent,0,5,0,80); linea.grid(row=0,column=11,rowspan=2,sticky="ew") 
 
-    Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=fila_nueva,column=12,padx=(10,5))
+    Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=fila_nueva,column=12,padx=(20,5))
 
     Motivo = ttk.Combobox(parent, values=["Ahorro","Suplemento","Postergación","Cierre"], state="readonly"); Motivo.grid(row=fila_nueva,column=13,padx=5)
 
     Ticket = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray"); Ticket.grid(row=fila_nueva,column=14,padx=5)
 
+     # Obtener la altura actual de la línea y agregarle 40 unidades. Actualizar el rowspan de la línea también.
 
-    
-    
+    current_rowspan = int(linea.grid_info().get("rowspan", 1))
+    linea = agregar_linea(parent, 0, 5, 0, 80 + 40 * (fila_nueva-1) )
+    linea.grid(row=0, column=11, rowspan=2+(fila_nueva-1), sticky="ew")
+
+def Eliminar_Movimiento(boton,parent,linea):
+    pass

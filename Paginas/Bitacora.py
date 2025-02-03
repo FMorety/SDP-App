@@ -57,13 +57,13 @@ def Form_Bitacora(parent,window):
 
     linea4 = agregar_linea(scrollable_frame,0,0,0,20); linea4.grid(row=1,column=9,sticky="ew")
 
-    Label_Monto_PostRe = tk.Label(scrollable_frame, text="Post Resolución",font=("Arial",9,"bold")); Label_Monto_PostRe.grid(row=0,column=10,padx=(4,10),pady=2)
-    Monto_PostRe = tk.Label(scrollable_frame, text="-",font=("Arial",9)); Monto_PostRe.grid(row=1,column=10,padx=(4,10))
+    Label_Monto_PostRe = tk.Label(scrollable_frame, text="Post Resolución",font=("Arial",9,"bold")); Label_Monto_PostRe.grid(row=0,column=10,padx=(4,20),pady=2)
+    Monto_PostRe = tk.Label(scrollable_frame, text="-",font=("Arial",9)); Monto_PostRe.grid(row=1,column=10,padx=(4,20))
 
     linea = agregar_linea(scrollable_frame,0,5,0,80); linea.grid(row=0,column=11,rowspan=2,sticky="ew") 
 
-    Label_Movimiento = tk.Label(scrollable_frame, text="Monto",font=("Arial",9,"bold")); Label_Movimiento.grid(row=0,column=12,padx=(10,5),pady=2)
-    Movimiento = tk.Entry(scrollable_frame, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=1,column=12,padx=(10,5))
+    Label_Movimiento = tk.Label(scrollable_frame, text="Monto",font=("Arial",9,"bold")); Label_Movimiento.grid(row=0,column=12,padx=(20,5),pady=2)
+    Movimiento = tk.Entry(scrollable_frame, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=1,column=12,padx=(20,5))
 
     Label_Motivo = tk.Label(scrollable_frame, text="Motivo",font=("Arial",9,"bold")); Label_Motivo.grid(row=0,column=13,pady=2,padx=5)
     Motivo = ttk.Combobox(scrollable_frame, values=["Ahorro","Suplemento","Postergación","Cierre"], state="readonly"); Motivo.grid(row=1,column=13,padx=5)
