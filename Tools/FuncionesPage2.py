@@ -79,10 +79,14 @@ def Entrega_Info(ID, parent, matriz, event):
         else:
             actualizar_info(info, ID, parent)
         
+    elif event.keysym == "Tab":
+        return
+    
     elif not event.char.isdigit():
         return "break"
     elif len(ID.get()) >= 4:
         return "break"
+    
 
     actualizar_info(info, ID, parent)
 
@@ -121,13 +125,17 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
     Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=fila_nueva,column=12,padx=(20,5))
 
     Motivo = ttk.Combobox(parent, values=["Ahorro","Suplemento","Postergación","Cierre"], state="readonly"); Motivo.grid(row=fila_nueva,column=13,padx=5)
+    Motivo.set(Motivo['values'][1])
 
     Ticket = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray"); Ticket.grid(row=fila_nueva,column=14,padx=5)
 
      # Obtener la altura actual de la línea y agregarle 40 unidades. Actualizar el rowspan de la línea también.
 
-    current_rowspan = int(linea.grid_info().get("rowspan", 1))
-    linea.destroy()
+    for widget in parent.grid_slaves():
+        if widget.grid_info()["column"] == 11:
+            widget.destroy()
+            break
+
     linea = agregar_linea(parent, 0, 5, 0, 80 + 40 * (fila_nueva-1) )
     linea.grid(row=0, column=11, rowspan=2+(fila_nueva-1), sticky="ew")
 
@@ -138,7 +146,9 @@ def Eliminar_Movimiento(boton,parent_in,linea):
     fila = boton.grid_info()["row"]
 
     for widget in parent_in.grid_slaves():
-        if widget.grid_info()["row"] == fila:
+        if widget.grid_info()["column"] == 11:
+            linea = widget
+        elif widget.grid_info()["row"] == fila:
             widget.destroy()
         elif widget.grid_info()["row"] > fila:
             widget.grid(row=widget.grid_info()["row"]-1)
@@ -149,3 +159,31 @@ def Eliminar_Movimiento(boton,parent_in,linea):
     linea = agregar_linea(parent_in, 0, 5, 0, 80 + 40 * (current_rowspan-3))
     linea.grid(row=0, column=11, rowspan=2+(current_rowspan-3), sticky="ew")
     
+def Formato_Monto(monto, event):
+    # Primero se restringe el ingreso de caracteres no numéricos y se limita la cantidad de caracteres
+    if event.keysym in ("BackSpace", "Delete"):
+        try:
+            monto_value = monto.get().replace('$','').replace('.','')[:-1]
+            monto_value = re.sub(r'[^\d]', '', monto_value)
+            monto_value = "${:,.0f}".format(int(monto_value)).replace(',', '.')
+        except:
+            monto_value = ""
+        monto.delete(0, tk.END)
+        monto.insert(0, monto_value)
+        return 'break'
+    elif event.keysym == "Tab":
+        return
+    elif not event.char.isdigit():
+        return "break"
+    elif len(monto.get()) == 12:
+        return "break"
+
+
+    # Formatea el monto ingresado para que se vea mejor en la interfaz
+    monto_value = monto.get() + (event.char if event.char.isdigit() else "")
+    monto_value = re.sub(r'[^\d]', '', monto_value)
+    monto_value = "${:,.0f}".format(int(monto_value)).replace(',', '.')
+    monto.delete(0, tk.END)
+    monto.insert(0, monto_value)
+    return "break"  # Prevent the default behavior of inserting the character twice
+

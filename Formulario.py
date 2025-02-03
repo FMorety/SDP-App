@@ -7,7 +7,6 @@ from Paginas.Bitacora import *
 def variable_global():
     global Contador2
 
-
 class Registro:
 
     def __init__ (self,ventana):
@@ -36,8 +35,8 @@ class Registro:
         self.notebook.add(self.Page1, text="Ingreso Solicitud")
         self.notebook.add(self.Page2, text="Mov. Bitácora")
 
-        Form_Ingreso_Solicitud(self.Page1,self.window)
-        Form_Bitacora(self.Page2,self.window)
+        Form_Ingreso_Solicitud(self.Page1, self.window)
+        Form_Bitacora(self.Page2, self.window)
         
 
 if __name__ =="__main__":
