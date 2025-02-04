@@ -7,6 +7,62 @@ import re
 import requests
 from SQLConnect import SQLConsulta as SQL
 
+Divisiones = {
+    "Alameda": -1000,
+    "Alonso Ovalle": -2600,
+    "Antonio Varas": -800,
+    "Arauco": -2500,
+    "Concepción": -500,
+    "Maipú": -1400,
+    "Melipilla": -2400,
+    "Nacimiento": -2900,
+    "Plaza Norte": -1900,
+    "Plaza Oeste": -1200,
+    "Plaza Vespucio": -1100,
+    "Puente Alto": -1300,
+    "Puerto Montt": -2700,
+    "San Bernardo": -1800,
+    "San Carlos": -900,
+    "San Joaquín": -1600,
+    "Valparaíso": -400,
+    "Villarrica": -2800,
+    "Viña del Mar": -600,
+    "Liceo Renca": -700,
+}
+Fondos_Centrales = {
+    "Ren. Tecnologica": -8,
+    "Des. Informatico": -7,
+    "Seg. Integral": -6,
+    "Acc. Universal": -5,
+    "Infra. Crítica": -4,
+    "Infraestructura": -3,
+    "Contingencia": -2,
+    "Emergentes": -1
+}
+Fondos_DIAITT = {
+    "DIAITT -185": -185,
+    "DIAITT -186": -186,
+    "DIAITT -187": -187,
+    "DIAITT -188": -188,
+    "DIAITT -189": -189,
+    "DIAITT -190": -190,
+    "DIAITT -191": -191,
+    "DIAITT -192": -192,
+}
+
+Fondos_Centrales = dict(reversed(list(Fondos_Centrales.items())))
+
+Fondos = list(Divisiones.keys()) + ["-----------------------"] + list(Fondos_Centrales.keys()) + ["-----------------------"] + list(Fondos_DIAITT.keys())
+
+#Funciones simples para el manejo de los combobox
+def expandir_combobox(event):
+    global valor_previo
+    valor_previo = event.widget.get()  # Almacena el valor anterior
+    event.widget.config(width=20)
+def restaurar_combobox(event):
+    event.widget.config(width=10)
+
+#Funcionalidad general para la hoja Bitacora
 def Data_Bitacora():
     
     github_url = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/Matriz_CAPEX.sql"
@@ -21,43 +77,44 @@ def Data_Bitacora():
 
     return Data
 
-def Entrega_Info(ID, parent, matriz, event):
-    def actualizar_info(info, ID, parent):
-        columna = 0
-        n = 0
-        if info is not None and not info.empty:
-            info_dict = info.to_dict('records')[0]
-            for key, value in info_dict.items():
-                columna += 1 + 1 * n
+def actualizar_info(info, ID, parent):
+    columna = 0
+    n = 0
+    if info is not None and not info.empty:
+        info_dict = info.to_dict('records')[0]
+        for key, value in info_dict.items():
+            columna += 1 + 1 * n
 
-                # Se formatean los datos para que se vean mejor en la interfaz
-                if key == 'ID_Activo':
-                    continue
-                elif key == 'OCO':
-                    value = int(value)
-                elif key == 'Post_Resolucion' or key == 'Post_Resolucion2':
-                    value = "${:,.0f}".format(int(value)).replace(',', '.')
-                elif key == 'Nombre_Solicitud' or key == 'Item':
-                    value = value[:50] + "..." if len(value) > 50 else value
+            # Se formatean los datos para que se vean mejor en la interfaz
+            if key == 'ID_Activo':
+                continue
+            elif key == 'OCO':
+                value = int(value)
+            elif key == 'Post_Resolucion' or key == 'Post_Resolucion2':
+                value = "${:,.0f}".format(int(value)).replace(',', '.')
+            elif key == 'Nombre_Solicitud' or key == 'Item':
+                value = value[:50] + "..." if len(value) > 50 else value
 
-                n = 1
+            n = 1
 
-                for widget in parent.grid_slaves():
-                    fila_actual = ID.grid_info()["row"]
-
-                    if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual and widget.grid_info()["column"] == columna:
-                        widget.config(text=value)
-                        if key == "Nombre_Solicitud" or key == "Item":
-                            widget.grid(padx=70 - len(value))
-                        elif key == "OCO" or key == "ID_Solicitud":
-                            widget.grid(padx=25 - len(str(value)))
-                        break
-        else:
             for widget in parent.grid_slaves():
                 fila_actual = ID.grid_info()["row"]
-                if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
-                    widget.config(text="-")
 
+                if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual and widget.grid_info()["column"] == columna:
+                    widget.config(text=value)
+                    if key == "Nombre_Solicitud" or key == "Item":
+                        widget.grid(padx=70 - len(value))
+                    elif key == "OCO" or key == "ID_Solicitud":
+                        widget.grid(padx=25 - len(str(value)))
+                    break
+    else:
+        for widget in parent.grid_slaves():
+            fila_actual = ID.grid_info()["row"]
+            if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
+                widget.config(text="-")
+
+def Entrega_Info(ID, parent, matriz, event):
+    
     # Se busca el ID en la matriz de la Bitácora, asegurándose de que no esté vacío el campo ID_Activo
     ID_Activo = ID.get() + (event.char if event.char.isdigit() else "")
     
@@ -97,6 +154,10 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
         
     fila_nueva = boton.grid_info()["row"]+1
 
+    for widget in parent.grid_slaves():
+        if widget.grid_info()["row"] >= fila_nueva:
+            widget.grid(row=widget.grid_info()["row"]+1)
+
     boton.grid(row=fila_nueva)
 
     Eliminar_fila = ttk.Button(parent,text="-",width=3,command=lambda: Eliminar_Movimiento(Eliminar_fila,parent,linea))
@@ -105,7 +166,7 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
     ID_Activo = tk.Entry(parent,bd=1, highlightthickness=1, highlightbackground="gray",width=4,justify="center",font=("Open Sans",10)); ID_Activo.grid(row=fila_nueva,column=1)
     ID_Activo.bind("<KeyPress>",lambda event: Entrega_Info(ID_Activo,parent,matriz,event))
 
-    ID_Solicitud = tk.Label(parent, text="-",font=("Arial",9)); ID_Solicitud.grid(row=fila_nueva,column=2,padx=25)
+    ID_Solicitud = tk.Label(parent, text="-",font=("Arial",9)); ID_Solicitud.grid(row=fila_nueva,column=2,padx=(0,25))
 
     linea1 = agregar_linea(parent,0,0,0,20); linea1.grid(row=fila_nueva,column=3,sticky="ew")
 
@@ -139,7 +200,7 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
      # Obtener la altura actual de la línea y agregarle 40 unidades. Actualizar el rowspan de la línea también.
 
     for widget in parent.grid_slaves():
-        if widget.grid_info()["column"] == 13:
+        if widget.grid_info()["column"] == 13 and widget.grid_info()["row"] == 0:
             widget.destroy()
             break
 
@@ -153,7 +214,7 @@ def Eliminar_Movimiento(boton,parent_in,linea):
     fila = boton.grid_info()["row"]
 
     for widget in parent_in.grid_slaves():
-        if widget.grid_info()["column"] == 13:
+        if widget.grid_info()["column"] == 13 and widget.grid_info()["row"] == 0:
             linea = widget
         elif widget.grid_info()["row"] == fila:
             widget.destroy()
@@ -254,81 +315,22 @@ def Motivo_Seleccionado(motivo,postre,saldo,monto):
         monto.config(state="disabled")
         saldo.config(text="${:,.0f}".format(0).replace(',', '.'))
 
-def Entrega_Info_Fondo(ID, parent, matriz, event):
-        
-    def actualizar_info(info, ID, parent):
-        columna = 0
-        n = 0
-        if info is not None and not info.empty:
-            info_dict = info.to_dict('records')[0]
-            for key, value in info_dict.items():
-                columna += 1 + 1 * n
-
-                # Se formatean los datos para que se vean mejor en la interfaz
-                if key == 'ID_Activo':
-                    continue
-                elif key == 'OCO':
-                    value = int(value)
-                elif key == 'Post_Resolucion' or key == 'Post_Resolucion2':
-                    value = "${:,.0f}".format(int(value)).replace(',', '.')
-                elif key == 'Nombre_Solicitud' or key == 'Item':
-                    value = value[:50] + "..." if len(value) > 50 else value
-
-                n = 1
-
-                for widget in parent.grid_slaves():
-                    fila_actual = ID.grid_info()["row"]
-
-                    if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual and widget.grid_info()["column"] == columna:
-                        widget.config(text=value)
-                        if key == "Nombre_Solicitud" or key == "Item":
-                            widget.grid(padx=70 - len(value))
-                        elif key == "OCO" or key == "ID_Solicitud":
-                            widget.grid(padx=25 - len(str(value)))
-                        break
-        else:
-            for widget in parent.grid_slaves():
-                fila_actual = ID.grid_info()["row"]
-                if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
-                    widget.config(text="-")
-    
-    # Se busca el ID en la matriz de la Bitácora, asegurándose de que no esté vacío el campo ID_Activo
-    ID_Activo = ID.get() + (event.char if event.char.isdigit() else "")
+def Entrega_Info_Fondo(ID, parent, matriz):
+    global valor_previo
+    ID_Activo = ID.get()
+    if ID_Activo in Divisiones:
+        ID_Activo = Divisiones[ID_Activo]
+    elif ID_Activo in Fondos_Centrales:
+        ID_Activo = Fondos_Centrales[ID_Activo]
+    elif ID_Activo in Fondos_DIAITT:
+        ID_Activo = Fondos_DIAITT[ID_Activo]
+    else:
+        ID.set(valor_previo)  # Restaura el valor anterior si el ítem no es válido
+        return "break"
     
     if ID_Activo == "":
         return "break"
-    else:
-        if ID.get() == "":
-            ID_Activo = "-" + ID_Activo
-            ID.insert(0, "-")
-    
-    ID_Activo = int(ID_Activo)
 
-    info = matriz.loc[matriz['ID_Activo'] == int(ID_Activo)] if ID_Activo<0 else None
-
-    print(info, ID_Activo,sep="\n")
-
-    # Primero se restringe el ingreso de caracteres no numéricos y se limita la cantidad de caracteres
-    if event.keysym in ("BackSpace", "Delete"):
-
-        # Extrae el último caracter de la celda y busca la información en la matriz
-        info = matriz.loc[matriz['ID_Activo'] == int(ID_Activo[:-1])] if ID_Activo[:-1] != "" else None
-
-        if ID.get()[:-1] == "-":
-            for widget in parent.grid_slaves():
-                fila_actual = ID.grid_info()["row"]
-                if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
-                    widget.config(text="-")
-            ID.delete(0, tk.END)
-        else:
-            actualizar_info(info, ID, parent)
-        
-    elif event.keysym == "Tab":
-        return
-    
-    elif not event.char.isdigit():
-        return "break"
-    elif len(ID.get()) >= 5:
-        return "break"
+    info = matriz.loc[matriz['ID_Activo'] == ID_Activo]
 
     actualizar_info(info, ID, parent)

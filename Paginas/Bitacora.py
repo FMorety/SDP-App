@@ -37,8 +37,8 @@ def Form_Bitacora(parent,window):
     ID_Activo = tk.Entry(scrollable_frame,bd=1, highlightthickness=1, highlightbackground="gray",width=4,justify="center",font=("Open Sans",10)); ID_Activo.grid(row=1,column=1)
     ID_Activo.bind("<KeyPress>",lambda event: Entrega_Info(ID_Activo,scrollable_frame,Matriz_CAPEX,event))
 
-    Label_ID_Solicitud = tk.Label(scrollable_frame, text="ID Solicitud",font=("Arial",9,"bold")); Label_ID_Solicitud.grid(row=0,column=2,pady=2,padx=25)
-    ID_Solicitud = tk.Label(scrollable_frame, text="-",font=("Arial",9)); ID_Solicitud.grid(row=1,column=2,padx=25)
+    Label_ID_Solicitud = tk.Label(scrollable_frame, text="ID Solicitud",font=("Arial",9,"bold")); Label_ID_Solicitud.grid(row=0,column=2,pady=2,padx=(0,25))
+    ID_Solicitud = tk.Label(scrollable_frame, text="-",font=("Arial",9)); ID_Solicitud.grid(row=1,column=2,padx=(0,25))
 
     linea1 = agregar_linea(scrollable_frame,0,0,0,20); linea1.grid(row=1,column=3,sticky="ew")
 
@@ -83,10 +83,12 @@ def Form_Bitacora(parent,window):
 
     linea_horizontal = agregar_linea(scrollable_frame,25,0,1700,0); linea_horizontal.grid(row=2,column=0,columnspan=17,sticky="ew",pady=10)
 
-    ID_Activo_Fondo = tk.Entry(scrollable_frame,bd=1, highlightthickness=1, highlightbackground="gray",width=5,justify="center",font=("Open Sans",10)); ID_Activo_Fondo.grid(row=3,column=1)
-    ID_Activo_Fondo.bind("<KeyPress>",lambda event: Entrega_Info_Fondo(ID_Activo_Fondo,scrollable_frame,Matriz_CAPEX,event))
+    ID_Activo_Fondo = ttk.Combobox(scrollable_frame, values=Fondos, state="readonly",width=10); ID_Activo_Fondo.grid(row=3,column=0,columnspan=2)
+    ID_Activo_Fondo.bind("<Button-1>", expandir_combobox)  # Ajusta el ancho al hacer clic
+    ID_Activo_Fondo.bind("<<ComboboxSelected>>", lambda e: Entrega_Info_Fondo(ID_Activo_Fondo,scrollable_frame,Matriz_CAPEX))  # Restaura el ancho al seleccionar una opción
+    ID_Activo_Fondo.bind("<FocusOut>", restaurar_combobox)  # Restaura el ancho al perder el foco
 
-    ID_Solicitud_Fondo = tk.Label(scrollable_frame, text="-",font=("Arial",9)); ID_Solicitud_Fondo.grid(row=3,column=2,padx=25)
+    ID_Solicitud_Fondo = tk.Label(scrollable_frame, text="-",font=("Arial",9)); ID_Solicitud_Fondo.grid(row=3,column=2,padx=(0,25))
 
     linea1 = agregar_linea(scrollable_frame,0,0,0,20); linea1.grid(row=3,column=3,sticky="ew")
 
@@ -110,10 +112,10 @@ def Form_Bitacora(parent,window):
 
     linea_fondo = agregar_linea(scrollable_frame,0,0,0,30); linea_fondo.grid(row=3,column=13,sticky="ew") 
 
-    Movimiento_Fondo = tk.Entry(scrollable_frame, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14,state="disabled"); Movimiento_Fondo.grid(row=3,column=14,padx=(20,5))
+    Movimiento_Fondo = tk.Label(scrollable_frame, text="-" ,font=("Open Sans",10)); Movimiento_Fondo.grid(row=3,column=14,padx=(20,5))
 
     Motivo_Fondo = ttk.Combobox(scrollable_frame, values=[""], state="disabled"); Motivo_Fondo.grid(row=3,column=15,padx=5)
 
     Ticket_Fondo = tk.Entry(scrollable_frame, bd=1, highlightthickness=1, highlightbackground="gray",width=40); Ticket_Fondo.grid(row=3,column=16,padx=5)
 
-    Label_Fondo = tk.Label(scrollable_frame, text="Fondo",font=("Arial",7,"bold")); Label_Fondo.grid(row=4,column=1)
+    Label_Fondo = tk.Label(scrollable_frame, text="Fondo",font=("Arial",7,"bold")); Label_Fondo.grid(row=4,column=0,columnspan=2,sticky="n")
