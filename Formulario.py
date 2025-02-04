@@ -14,7 +14,9 @@ class Registro:
         self.window = ventana
         self.window.title("Formulario para Base de Datos")
 
-        self.window.geometry("1025x425")
+        self.original_geometry = "1025x425"
+        self.expanded_geometry = "1250x425"
+        self.window.geometry(self.original_geometry)
 
         self.window.resizable(0,0)
         self.window.config(bd=10)
@@ -24,6 +26,9 @@ class Registro:
         self.notebook.pack(expand=True, fill='both')
 
         self.create_pages()
+
+        # Bind the tab change event
+        self.notebook.bind("<<NotebookTabChanged>>", self.on_tab_change)
 
     def create_pages(self):
 
@@ -37,7 +42,13 @@ class Registro:
 
         Form_Ingreso_Solicitud(self.Page1, self.window)
         Form_Bitacora(self.Page2, self.window)
-        
+
+    def on_tab_change(self, event):
+        selected_tab = event.widget.tab(event.widget.index("current"))["text"]
+        if selected_tab == "Mov. Bitácora":
+            self.window.geometry(self.expanded_geometry)
+        else:
+            self.window.geometry(self.original_geometry)
 
 if __name__ =="__main__":
     variable_global()

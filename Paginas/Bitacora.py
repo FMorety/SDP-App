@@ -57,24 +57,25 @@ def Form_Bitacora(parent,window):
 
     linea4 = agregar_linea(scrollable_frame,0,0,0,20); linea4.grid(row=1,column=9,sticky="ew")
 
-    Label_Monto_PostRe = tk.Label(scrollable_frame, text="Post Resolución",font=("Arial",9,"bold")); Label_Monto_PostRe.grid(row=0,column=10,padx=20,pady=2)
-    Monto_PostRe = tk.Label(scrollable_frame, text="-",font=("Arial",9)); Monto_PostRe.grid(row=1,column=10,padx=(4,20))
+    Label_Monto_PostRe = tk.Label(scrollable_frame, text="Post Resolución",font=("Arial",9,"bold")); Label_Monto_PostRe.grid(row=0,column=10,padx=4,pady=2)
+    Monto_PostRe = tk.Label(scrollable_frame, text="-",font=("Arial",9)); Monto_PostRe.grid(row=1,column=10,padx=4)
 
     linea5 = agregar_linea(scrollable_frame,0,0,0,20); linea5.grid(row=1,column=11,sticky="ew")
 
-    Label_Total_PostMov = tk.Label(scrollable_frame, text="Total Post Movimiento",font=("Arial",9,"bold")); Label_Total_PostMov.grid(row=0,column=12,padx=(4,20),pady=2)
-    Total_PostMov = tk.Label(scrollable_frame, text="-",font=("Arial",9)); Total_PostMov.grid(row=1,column=12,padx=(4,20))
+    Label_Saldo = tk.Label(scrollable_frame, text="Saldo PostRe",font=("Arial",9,"bold")); Label_Saldo.grid(row=0,column=12,padx=(4,20),pady=2)
+    Saldo = tk.Label(scrollable_frame, text="-",font=("Arial",9)); Saldo.grid(row=1,column=12,padx=(4,20))
 
     linea = agregar_linea(scrollable_frame,0,5,0,80); linea.grid(row=0,column=13,rowspan=2,sticky="ew") 
 
     Label_Movimiento = tk.Label(scrollable_frame, text="Monto",font=("Arial",9,"bold")); Label_Movimiento.grid(row=0,column=14,padx=(20,5),pady=2)
     Movimiento = tk.Entry(scrollable_frame, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=1,column=14,padx=(20,5))
-    Movimiento.bind("<KeyPress>",lambda event: Formato_Monto(Movimiento,Monto_PostRe,Motivo,event))
+    Movimiento.bind("<KeyPress>",lambda event: Formato_Monto(Movimiento,Saldo,Motivo,event))
 
     Label_Motivo = tk.Label(scrollable_frame, text="Motivo",font=("Arial",9,"bold")); Label_Motivo.grid(row=0,column=15,pady=2,padx=5)
-    Motivo = ttk.Combobox(scrollable_frame, values=["Ahorro","Suplemento","Postergación","Cierre"], state="readonly"); Motivo.grid(row=1,column=15,padx=5)
+    Motivo = ttk.Combobox(scrollable_frame, values=["Ahorro","Suplemento","Postergación","Bajar"], state="readonly"); Motivo.grid(row=1,column=15,padx=5)
     Motivo.set(Motivo['values'][1])
+    Motivo.bind("<<ComboboxSelected>>",lambda event: Motivo_Seleccionado(Motivo,Monto_PostRe,Saldo,Movimiento))
 
-    Label_Ticket = tk.Label(scrollable_frame, text="Ticket/Correo",font=("Arial",9,"bold")); Label_Ticket.grid(row=0,column=16,pady=2,padx=5)
-    Ticket = tk.Entry(scrollable_frame, bd=1, highlightthickness=1, highlightbackground="gray"); Ticket.grid(row=1,column=16,padx=5)
+    Label_Ticket = tk.Label(scrollable_frame, text="Ticket/Correo/Comentario",font=("Arial",9,"bold")); Label_Ticket.grid(row=0,column=16,pady=2,padx=5)
+    Ticket = tk.Entry(scrollable_frame, bd=1, highlightthickness=1, highlightbackground="gray",width=40); Ticket.grid(row=1,column=16,padx=5)
 

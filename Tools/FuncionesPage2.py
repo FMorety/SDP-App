@@ -35,7 +35,7 @@ def Entrega_Info(ID, parent, matriz, event):
                     continue
                 elif key == 'OCO':
                     value = int(value)
-                elif key == 'Post_Resolucion':
+                elif key == 'Post_Resolucion' or key == 'Post_Resolucion2':
                     value = "${:,.0f}".format(int(value)).replace(',', '.')
                 elif key == 'Nombre_Solicitud' or key == 'Item':
                     value = value[:50] + "..." if len(value) > 50 else value
@@ -121,24 +121,30 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
 
     linea4 = agregar_linea(parent,0,0,0,20); linea4.grid(row=fila_nueva,column=9,sticky="ew")
 
-    Monto_PostRe = tk.Label(parent, text="-",font=("Arial",9)); Monto_PostRe.grid(row=fila_nueva,column=10,padx=(4,20))
+    Monto_PostRe = tk.Label(parent, text="-",font=("Arial",9)); Monto_PostRe.grid(row=fila_nueva,column=10,padx=4)
 
-    Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=fila_nueva,column=12,padx=(20,5))
+    linea5 = agregar_linea(parent,0,0,0,20); linea5.grid(row=fila_nueva,column=11,sticky="ew")
 
-    Motivo = ttk.Combobox(parent, values=["Ahorro","Suplemento","Postergación","Cierre"], state="readonly"); Motivo.grid(row=fila_nueva,column=13,padx=5)
+    Saldo = tk.Label(parent, text="-",font=("Arial",9)); Saldo.grid(row=fila_nueva,column=12,padx=(4,20))
+
+    Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=fila_nueva,column=14,padx=(20,5))
+    Movimiento.bind("<KeyPress>",lambda event: Formato_Monto(Movimiento,Saldo,Motivo,event))
+
+    Motivo = ttk.Combobox(parent, values=["Ahorro","Suplemento","Postergación","Bajar"], state="readonly"); Motivo.grid(row=fila_nueva,column=15,padx=5)
     Motivo.set(Motivo['values'][1])
+    Motivo.bind("<<ComboboxSelected>>",lambda event: Motivo_Seleccionado(Motivo,Monto_PostRe,Saldo,Movimiento))
 
-    Ticket = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray"); Ticket.grid(row=fila_nueva,column=14,padx=5)
+    Ticket = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",width=40); Ticket.grid(row=fila_nueva,column=16,padx=5)
 
      # Obtener la altura actual de la línea y agregarle 40 unidades. Actualizar el rowspan de la línea también.
 
     for widget in parent.grid_slaves():
-        if widget.grid_info()["column"] == 11:
+        if widget.grid_info()["column"] == 13:
             widget.destroy()
             break
 
     linea = agregar_linea(parent, 0, 5, 0, 80 + 40 * (fila_nueva-1) )
-    linea.grid(row=0, column=11, rowspan=2+(fila_nueva-1), sticky="ew")
+    linea.grid(row=0, column=13, rowspan=2+(fila_nueva-1), sticky="ew")
 
 def Eliminar_Movimiento(boton,parent_in,linea):
     # Elimina la fila de la Bitácora y reacomoda las filas restantes
@@ -147,7 +153,7 @@ def Eliminar_Movimiento(boton,parent_in,linea):
     fila = boton.grid_info()["row"]
 
     for widget in parent_in.grid_slaves():
-        if widget.grid_info()["column"] == 11:
+        if widget.grid_info()["column"] == 13:
             linea = widget
         elif widget.grid_info()["row"] == fila:
             widget.destroy()
@@ -159,20 +165,20 @@ def Eliminar_Movimiento(boton,parent_in,linea):
     current_rowspan = int(linea.grid_info().get("rowspan", 1))
     linea.destroy()
     linea = agregar_linea(parent_in, 0, 5, 0, 80 + 40 * (current_rowspan-3))
-    linea.grid(row=0, column=11, rowspan=2+(current_rowspan-3), sticky="ew")
+    linea.grid(row=0, column=13, rowspan=2+(current_rowspan-3), sticky="ew")
     
-def Formato_Monto(monto, postre, motivo, event):
+def Formato_Monto(monto, saldo, motivo, event):
     
-    if postre.cget("text") == "-":
+    if saldo.cget("text") == "-":
         messagebox.showerror("ID activo vacío", "Primero debe ingresar un ID de Activo")
         return "break"
     
     # Se obtiene el valor actual de la Post Resolución
-    postre_value = int(postre.cget("text").replace('$','').replace('.',''))
+    saldo_value = int(saldo.cget("text").replace('$','').replace('.',''))
     
-    def formatear_e_insertar(monto_value, postre_value):
-        postre_value = "${:,.0f}".format(postre_value).replace(',', '.')
-        postre.config(text=postre_value)
+    def formatear_e_insertar(monto_value, saldo_value):
+        saldo_value = "${:,.0f}".format(saldo_value).replace(',', '.')
+        saldo.config(text=saldo_value)
         monto_value = re.sub(r'[^\d]', '', str(monto_value))
         monto_value = "${:,.0f}".format(int(monto_value)).replace(',', '.')
         monto.delete(0, tk.END)
@@ -185,16 +191,16 @@ def Formato_Monto(monto, postre, motivo, event):
         monto_value = monto.get().replace('$','').replace('.','')
         try:
             if motivo.get() == "Ahorro":
-                postre_value = postre_value + int(monto_value) - int(monto_value[:-1])
+                saldo_value = saldo_value + int(monto_value) - int(monto_value[:-1])
             elif motivo.get() == "Suplemento":
-                postre_value = postre_value - int(monto_value) + int(monto_value[:-1])
-            formatear_e_insertar(monto_value[:-1], postre_value)
+                saldo_value = saldo_value - int(monto_value) + int(monto_value[:-1])
+            formatear_e_insertar(monto_value[:-1], saldo_value)
         except:
             if motivo.get() == "Ahorro":
-                postre_value = postre_value + int(monto_value)
+                saldo_value = saldo_value + int(monto_value)
             elif motivo.get() == "Suplemento":
-                postre_value = postre_value - int(monto_value)
-            formatear_e_insertar(123, postre_value)
+                saldo_value = saldo_value - int(monto_value)
+            formatear_e_insertar(123, saldo_value)
             monto.delete(0, tk.END)
         return 'break'
     elif event.keysym == "Tab":
@@ -208,15 +214,44 @@ def Formato_Monto(monto, postre, motivo, event):
     monto_value = monto.get().replace('$','').replace('.','') + (event.char if event.char.isdigit() else "")
 
     if motivo.get() == "Ahorro":
-        postre_value = postre_value + int(monto_value[:-1] if monto.get()!='' else 0) - int(monto_value)
-        if postre_value < 0:
+        saldo_value = saldo_value + int(monto_value[:-1] if monto.get()!='' else 0) - int(monto_value)
+        if saldo_value < 0:
             return "break"
     elif motivo.get() == "Suplemento":
-        postre_value = postre_value - int(monto_value[:-1] if monto.get()!='' else 0) + int(monto_value)
+        saldo_value = saldo_value - int(monto_value[:-1] if monto.get()!='' else 0) + int(monto_value)
     
-    formatear_e_insertar(monto_value, postre_value)
+    formatear_e_insertar(monto_value, saldo_value)
     
     return "break"  # Prevent the default behavior of inserting the character twice
 
+def Motivo_Seleccionado(motivo,postre,saldo,monto):
 
+    if monto.get() == "" and motivo.get() != "Bajar":
+        return "break"
 
+    postre_value = int(postre.cget("text").replace('$','').replace('.',''))
+    saldo_value = int(saldo.cget("text").replace('$','').replace('.',''))
+    monto_value = int(monto.get().replace('$','').replace('.','')) if monto.get() != "" else 0
+
+    if motivo.get() != "Bajar":
+        monto.config(state="normal")
+
+    if motivo.get() == "Ahorro" and postre_value < saldo_value:
+        monto.config(state="normal")
+        if postre_value - monto_value < 0:
+            saldo.config(text="${:,.0f}".format(postre_value).replace(',', '.'))
+            monto.delete(0, tk.END)
+        else:
+            saldo.config(text="${:,.0f}".format(postre_value - monto_value).replace(',', '.'))
+    
+    elif motivo.get() == "Suplemento" and postre_value > saldo_value:
+        monto.config(state="normal")
+        saldo.config(text="${:,.0f}".format(postre_value + monto_value).replace(',', '.'))
+
+    elif motivo.get() == "Bajar":
+        monto.delete(0, tk.END)
+        monto.insert(0, "${:,.0f}".format(postre_value).replace(',', '.'))
+        monto.config(state="disabled")
+        saldo.config(text="${:,.0f}".format(0).replace(',', '.'))
+
+    
