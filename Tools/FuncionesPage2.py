@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from Tools.CrearObj import agregar_linea
 
+from tkinter import messagebox
 import re
 import requests
 from SQLConnect import SQLConsulta as SQL
@@ -162,7 +163,11 @@ def Eliminar_Movimiento(boton,parent_in,linea):
     
 def Formato_Monto(monto, postre, motivo, event):
     
-    # Se formatea el monto ingresado
+    if postre.cget("text") == "-":
+        messagebox.showerror("ID activo vacío", "Primero debe ingresar un ID de Activo")
+        return "break"
+    
+    # Se obtiene el valor actual de la Post Resolución
     postre_value = int(postre.cget("text").replace('$','').replace('.',''))
     
     def formatear_e_insertar(monto_value, postre_value):
@@ -172,9 +177,6 @@ def Formato_Monto(monto, postre, motivo, event):
         monto_value = "${:,.0f}".format(int(monto_value)).replace(',', '.')
         monto.delete(0, tk.END)
         monto.insert(0, monto_value)
-
-    # Se obtiene el valor actual de la Post Resolución
-    postre_value = int(postre.cget("text").replace('$','').replace('.',''))
 
     # Primero se restringe el ingreso de caracteres no numéricos y se limita la cantidad de caracteres
     if event.keysym in ("BackSpace", "Delete"):
