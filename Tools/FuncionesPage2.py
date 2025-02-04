@@ -254,4 +254,81 @@ def Motivo_Seleccionado(motivo,postre,saldo,monto):
         monto.config(state="disabled")
         saldo.config(text="${:,.0f}".format(0).replace(',', '.'))
 
+def Entrega_Info_Fondo(ID, parent, matriz, event):
+        
+    def actualizar_info(info, ID, parent):
+        columna = 0
+        n = 0
+        if info is not None and not info.empty:
+            info_dict = info.to_dict('records')[0]
+            for key, value in info_dict.items():
+                columna += 1 + 1 * n
+
+                # Se formatean los datos para que se vean mejor en la interfaz
+                if key == 'ID_Activo':
+                    continue
+                elif key == 'OCO':
+                    value = int(value)
+                elif key == 'Post_Resolucion' or key == 'Post_Resolucion2':
+                    value = "${:,.0f}".format(int(value)).replace(',', '.')
+                elif key == 'Nombre_Solicitud' or key == 'Item':
+                    value = value[:50] + "..." if len(value) > 50 else value
+
+                n = 1
+
+                for widget in parent.grid_slaves():
+                    fila_actual = ID.grid_info()["row"]
+
+                    if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual and widget.grid_info()["column"] == columna:
+                        widget.config(text=value)
+                        if key == "Nombre_Solicitud" or key == "Item":
+                            widget.grid(padx=70 - len(value))
+                        elif key == "OCO" or key == "ID_Solicitud":
+                            widget.grid(padx=25 - len(str(value)))
+                        break
+        else:
+            for widget in parent.grid_slaves():
+                fila_actual = ID.grid_info()["row"]
+                if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
+                    widget.config(text="-")
     
+    # Se busca el ID en la matriz de la Bitácora, asegurándose de que no esté vacío el campo ID_Activo
+    ID_Activo = ID.get() + (event.char if event.char.isdigit() else "")
+    
+    if ID_Activo == "":
+        return "break"
+    else:
+        if ID.get() == "":
+            ID_Activo = "-" + ID_Activo
+            ID.insert(0, "-")
+    
+    ID_Activo = int(ID_Activo)
+
+    info = matriz.loc[matriz['ID_Activo'] == int(ID_Activo)] if ID_Activo<0 else None
+
+    print(info, ID_Activo,sep="\n")
+
+    # Primero se restringe el ingreso de caracteres no numéricos y se limita la cantidad de caracteres
+    if event.keysym in ("BackSpace", "Delete"):
+
+        # Extrae el último caracter de la celda y busca la información en la matriz
+        info = matriz.loc[matriz['ID_Activo'] == int(ID_Activo[:-1])] if ID_Activo[:-1] != "" else None
+
+        if ID.get()[:-1] == "-":
+            for widget in parent.grid_slaves():
+                fila_actual = ID.grid_info()["row"]
+                if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
+                    widget.config(text="-")
+            ID.delete(0, tk.END)
+        else:
+            actualizar_info(info, ID, parent)
+        
+    elif event.keysym == "Tab":
+        return
+    
+    elif not event.char.isdigit():
+        return "break"
+    elif len(ID.get()) >= 5:
+        return "break"
+
+    actualizar_info(info, ID, parent)
