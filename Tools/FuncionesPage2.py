@@ -189,7 +189,7 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
     Saldo = tk.Label(parent, text="-",font=("Arial",9)); Saldo.grid(row=fila_nueva,column=12,padx=(4,20))
 
     Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=fila_nueva,column=14,padx=(20,5))
-    Movimiento.bind("<KeyPress>",lambda event: Formato_Monto(Movimiento,Saldo,Motivo,event))
+    Movimiento.bind("<KeyPress>",lambda event: Reglas_Monto(Movimiento,Saldo,Motivo,parent,event))
 
     Motivo = ttk.Combobox(parent, values=["Ahorro","Suplemento","Postergación","Bajar"], state="readonly"); Motivo.grid(row=fila_nueva,column=15,padx=5)
     Motivo.set(Motivo['values'][1])
@@ -227,6 +227,8 @@ def Eliminar_Movimiento(boton,parent_in,linea):
     linea.destroy()
     linea = agregar_linea(parent_in, 0, 5, 0, 80 + 40 * (current_rowspan-3))
     linea.grid(row=0, column=13, rowspan=2+(current_rowspan-3), sticky="ew")
+
+    Control_Monto_Fondo(parent_in)
     
 def Formato_Monto(monto, saldo, motivo, event):
     
@@ -314,6 +316,8 @@ def Motivo_Seleccionado(motivo,postre,saldo,monto):
         monto.insert(0, "${:,.0f}".format(postre_value).replace(',', '.'))
         monto.config(state="disabled")
         saldo.config(text="${:,.0f}".format(0).replace(',', '.'))
+    
+    Control_Monto_Fondo(monto.master)
 
 def Entrega_Info_Fondo(ID, parent, matriz):
     global valor_previo
@@ -334,3 +338,34 @@ def Entrega_Info_Fondo(ID, parent, matriz):
     info = matriz.loc[matriz['ID_Activo'] == ID_Activo]
 
     actualizar_info(info, ID, parent)
+
+def Control_Monto_Fondo(parent):
+    total = 0
+    for widget in parent.grid_slaves():
+        if widget.winfo_class() == "Entry" and widget.grid_info()["column"] == 14:
+            row = widget.grid_info()["row"]
+            motivo_widget = parent.grid_slaves(row=row, column=15)[0]
+            motivo = motivo_widget.get()
+            monto = widget.get().replace('$', '').replace('.', '')
+            if monto:
+                monto = int(monto)
+                if motivo == "Suplemento":
+                    total -= monto
+                elif motivo in ["Ahorro", "Bajar"]:
+                    total += monto
+
+    Movimiento_Fondo = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=14)[0]
+    Motivo_Fondo = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=15)[0]
+
+    if total < 0:
+        Motivo_Fondo.set("Suplemento")
+    else:
+        Motivo_Fondo.set("Ahorro")
+    Movimiento_Fondo.config(text="${:,.0f}".format(abs(total)).replace(',', '.'))
+
+    return "break" # Previne el comportamiento por defecto de insertar el caracter dos veces
+
+def Reglas_Monto(monto, saldo, motivo, parent, event):
+    Formato_Monto(monto, saldo, motivo, event)
+    Control_Monto_Fondo(parent)
+    return "break"  # Previne el comportamiento por defecto de insertar el caracter dos veces
