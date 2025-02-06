@@ -188,7 +188,7 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
 
     Saldo = tk.Label(parent, text="-",font=("Arial",9)); Saldo.grid(row=fila_nueva,column=12,padx=(4,20))
 
-    Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14); Movimiento.grid(row=fila_nueva,column=14,padx=(20,5))
+    Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14,justify="center"); Movimiento.grid(row=fila_nueva,column=14,padx=(20,5))
     Movimiento.bind("<KeyPress>",lambda event: Reglas_Monto(Movimiento,Saldo,Motivo,parent,event))
 
     Motivo = ttk.Combobox(parent, values=["Ahorro","Suplemento","Postergación","Bajar"], state="readonly"); Motivo.grid(row=fila_nueva,column=15,padx=5)
@@ -338,8 +338,15 @@ def Entrega_Info_Fondo(ID, parent, matriz):
     info = matriz.loc[matriz['ID_Activo'] == ID_Activo]
 
     actualizar_info(info, ID, parent)
+    Control_Monto_Fondo(parent)
 
 def Control_Monto_Fondo(parent):
+    
+    # Se obtiene el ID_Activo_Fondo y se verifica que no esté vacío
+    ID_Activo_Fondo = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=0)[0]
+    if ID_Activo_Fondo.get() == "":
+        return "break"
+
     total = 0
     for widget in parent.grid_slaves():
         if widget.winfo_class() == "Entry" and widget.grid_info()["column"] == 14:
@@ -362,6 +369,27 @@ def Control_Monto_Fondo(parent):
     else:
         Motivo_Fondo.set("Ahorro")
     Movimiento_Fondo.config(text="${:,.0f}".format(abs(total)).replace(',', '.'))
+
+    Saldo_Fondo = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=12)[0]
+    PostResolucion_Fondo_value = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=10)[0] .cget("text").replace('$','').replace('.','')
+    Movimiento_Fondo_value = Movimiento_Fondo.cget("text").replace('$','').replace('.','')
+
+    # Se actualiza el saldo del fondo
+    if motivo in ["Ahorro", "Bajar"]:
+        Saldo_Fondo_value = int(PostResolucion_Fondo_value) + int(Movimiento_Fondo_value)
+    elif motivo == "Suplemento":
+        Saldo_Fondo_value = int(PostResolucion_Fondo_value) - int(Movimiento_Fondo_value)
+    
+    # Se cambia el color del texto si el saldo es negativo
+    if Saldo_Fondo_value < 0:
+        Saldo_Fondo.config(fg="red")
+        Movimiento_Fondo.config(fg="red")
+    else:
+        Saldo_Fondo.config(fg="black")
+        Movimiento_Fondo.config(fg="black")
+            
+    Saldo_Fondo_value = "${:,.0f}".format(Saldo_Fondo_value).replace(',', '.')   
+    Saldo_Fondo.config(text=Saldo_Fondo_value) 
 
     return "break" # Previne el comportamiento por defecto de insertar el caracter dos veces
 
