@@ -52,7 +52,7 @@ Fondos_DIAITT = {
 
 Fondos_Centrales = dict(reversed(list(Fondos_Centrales.items())))
 
-Fondos = list(Divisiones.keys()) + ["-----------------------"] + list(Fondos_Centrales.keys()) + ["-----------------------"] + list(Fondos_DIAITT.keys())
+Fondos = ["-----------------------"] + list(Fondos_Centrales.keys()) + ["-----------------------"] + list(Fondos_DIAITT.keys())
 
 #Funciones simples para el manejo de los combobox
 def expandir_combobox(event):
@@ -117,6 +117,7 @@ def Entrega_Info(ID, parent, matriz, event):
     
     # Se busca el ID en la matriz de la Bitácora, asegurándose de que no esté vacío el campo ID_Activo
     ID_Activo = ID.get() + (event.char if event.char.isdigit() else "")
+    fondos_combobox = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=0)[0]
     
     if ID_Activo == "":
         return "break"
@@ -134,10 +135,12 @@ def Entrega_Info(ID, parent, matriz, event):
                 fila_actual = ID.grid_info()["row"]
                 if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
                     widget.config(text="-")
+            fondos_combobox['values'] = Fondos; fondos_combobox.set("")
+            Entrega_Info_Fondo(fondos_combobox,parent,matriz)
         else:
             actualizar_info(info, ID, parent)
         
-    elif event.keysym == "Tab":
+    if event.keysym == "Tab":
         return
     
     elif not event.char.isdigit():
@@ -145,8 +148,41 @@ def Entrega_Info(ID, parent, matriz, event):
     elif len(ID.get()) >= 4:
         return "break"
     
-
     actualizar_info(info, ID, parent)
+
+    # Obtener a división a la que pertenece el ID_Activo por medio del ID_Solicitud y agregar su fondo al Combobox de los fondos.
+    N_Filas = parent.grid_size()[1] -4
+
+    for fila in range(1,N_Filas+1):
+    
+        ID_Solicitud = parent.grid_slaves(row=fila, column=2)[0].cget("text")
+        ID_Division = -int(ID_Solicitud[5:9])
+        
+        if ID_Solicitud == "-":
+            break
+        
+        Division = next((key for key, value in Divisiones.items() if value == ID_Division), None)
+        print(Division)
+        if Division:
+            fondos_registrados = list(fondos_combobox['values']).copy()
+            lista_Divisiones = list(Divisiones.keys())
+            for indice, valor in enumerate(fondos_registrados):
+                if "---" in valor:
+                    if indice == 0:
+                        fondos_combobox['values'] = [Division] + Fondos
+                    break
+                elif lista_Divisiones.index(Division) < lista_Divisiones.index(valor):
+                    fondos_combobox['values'] = (Division) + fondos_combobox['values']
+                elif lista_Divisiones.index(Division) > lista_Divisiones.index(valor):
+                    fondos_registrados[indice+1:indice+1] = [Division]
+                    fondos_combobox['values'] = fondos_registrados
+
+            if fondos_combobox.get() == "":
+                fondos_combobox.set(Division)
+            Entrega_Info_Fondo(fondos_combobox,parent,matriz)
+        else:
+            if fila == 1:
+                ID_Solicitud.set(ID_Solicitud['values'][1])
 
 def Agregar_Movimiento(boton,parent,matriz,linea):
     #Se crea una nueva fila en la Bitácora
@@ -322,6 +358,12 @@ def Motivo_Seleccionado(motivo,postre,saldo,monto):
 def Entrega_Info_Fondo(ID, parent, matriz):
     global valor_previo
     ID_Activo = ID.get()
+
+    if ID_Activo == "":
+        for widget in parent.grid_slaves(row=ID.grid_info()["row"]):
+            if widget.winfo_class() == "Label":
+                widget.config(text="-")
+
     if ID_Activo in Divisiones:
         ID_Activo = Divisiones[ID_Activo]
     elif ID_Activo in Fondos_Centrales:
@@ -330,10 +372,6 @@ def Entrega_Info_Fondo(ID, parent, matriz):
         ID_Activo = Fondos_DIAITT[ID_Activo]
     else:
         ID.set(valor_previo)  # Restaura el valor anterior si el ítem no es válido
-        return "break"
-    
-    if ID_Activo == "":
-        return "break"
 
     info = matriz.loc[matriz['ID_Activo'] == ID_Activo]
 
@@ -394,6 +432,8 @@ def Control_Monto_Fondo(parent):
     return "break" # Previne el comportamiento por defecto de insertar el caracter dos veces
 
 def Reglas_Monto(monto, saldo, motivo, parent, event):
+    
     Formato_Monto(monto, saldo, motivo, event)
     Control_Monto_Fondo(parent)
+
     return "break"  # Previne el comportamiento por defecto de insertar el caracter dos veces
