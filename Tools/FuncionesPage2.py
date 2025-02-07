@@ -117,7 +117,6 @@ def Entrega_Info(ID, parent, matriz, event):
     
     # Se busca el ID en la matriz de la Bitácora, asegurándose de que no esté vacío el campo ID_Activo
     ID_Activo = ID.get() + (event.char if event.char.isdigit() else "")
-    fondos_combobox = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=0)[0]
     
     if ID_Activo == "":
         return "break"
@@ -135,10 +134,11 @@ def Entrega_Info(ID, parent, matriz, event):
                 fila_actual = ID.grid_info()["row"]
                 if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
                     widget.config(text="-")
-            fondos_combobox['values'] = Fondos; fondos_combobox.set("")
-            Entrega_Info_Fondo(fondos_combobox,parent,matriz)
+            Obtener_Fondos(parent,matriz)
         else:
             actualizar_info(info, ID, parent)
+            Obtener_Fondos(parent,matriz)
+        return
         
     if event.keysym == "Tab":
         return
@@ -149,40 +149,7 @@ def Entrega_Info(ID, parent, matriz, event):
         return "break"
     
     actualizar_info(info, ID, parent)
-
-    # Obtener a división a la que pertenece el ID_Activo por medio del ID_Solicitud y agregar su fondo al Combobox de los fondos.
-    N_Filas = parent.grid_size()[1] -4
-
-    for fila in range(1,N_Filas+1):
-    
-        ID_Solicitud = parent.grid_slaves(row=fila, column=2)[0].cget("text")
-        ID_Division = -int(ID_Solicitud[5:9])
-        
-        if ID_Solicitud == "-":
-            break
-        
-        Division = next((key for key, value in Divisiones.items() if value == ID_Division), None)
-        print(Division)
-        if Division:
-            fondos_registrados = list(fondos_combobox['values']).copy()
-            lista_Divisiones = list(Divisiones.keys())
-            for indice, valor in enumerate(fondos_registrados):
-                if "---" in valor:
-                    if indice == 0:
-                        fondos_combobox['values'] = [Division] + Fondos
-                    break
-                elif lista_Divisiones.index(Division) < lista_Divisiones.index(valor):
-                    fondos_combobox['values'] = (Division) + fondos_combobox['values']
-                elif lista_Divisiones.index(Division) > lista_Divisiones.index(valor):
-                    fondos_registrados[indice+1:indice+1] = [Division]
-                    fondos_combobox['values'] = fondos_registrados
-
-            if fondos_combobox.get() == "":
-                fondos_combobox.set(Division)
-            Entrega_Info_Fondo(fondos_combobox,parent,matriz)
-        else:
-            if fila == 1:
-                ID_Solicitud.set(ID_Solicitud['values'][1])
+    Obtener_Fondos(parent,matriz)
 
 def Agregar_Movimiento(boton,parent,matriz,linea):
     #Se crea una nueva fila en la Bitácora
@@ -437,3 +404,51 @@ def Reglas_Monto(monto, saldo, motivo, parent, event):
     Control_Monto_Fondo(parent)
 
     return "break"  # Previne el comportamiento por defecto de insertar el caracter dos veces
+
+def Obtener_Fondos(parent,matriz):
+
+    fondos_combobox = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=0)[0]
+    # Obtener a división a la que pertenece el ID_Activo por medio del ID_Solicitud y agregar su fondo al Combobox de los fondos.
+    N_Filas = parent.grid_size()[1]-4
+    fondos_combobox['values'] = Fondos
+    fondos_registrados = list(fondos_combobox['values']).copy()
+    lista_Divisiones = list(Divisiones.keys())
+
+    switch = False
+
+    for fila in range(1,N_Filas+1):
+    
+        ID_Solicitud = parent.grid_slaves(row=fila, column=2)[0].cget("text")
+        if ID_Solicitud == "-":
+            continue
+        else:
+            switch = True
+        ID_Division = -int(ID_Solicitud[5:9])
+        
+        Division = next((key for key, value in Divisiones.items() if value == ID_Division), None)
+
+        if Division and Division not in fondos_registrados:
+
+            for indice, valor in enumerate(fondos_registrados):
+                if "---" in valor:
+                    if Division not in fondos_registrados:
+                        fondos_registrados[indice:indice] = [Division]
+                        fondos_combobox['values'] = fondos_registrados
+
+                    elif Division in fondos_registrados:
+                        break
+                elif lista_Divisiones.index(Division) < lista_Divisiones.index(valor):
+                    fondos_registrados[indice:indice] = [Division]
+                    fondos_combobox['values'] = fondos_registrados
+                elif lista_Divisiones.index(Division) > lista_Divisiones.index(valor):
+                    pass
+
+    if "---" in fondos_registrados[0]:
+        if switch:
+            fondos_combobox.set(fondos_registrados[1])
+        else:
+            fondos_combobox.set("")
+    else:
+        fondos_combobox.set(fondos_registrados[0])
+
+    Entrega_Info_Fondo(fondos_combobox,parent,matriz)
