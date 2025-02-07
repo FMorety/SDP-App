@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from Tools.CrearObj import agregar_linea
 
+from datetime import datetime
 from tkinter import messagebox
 import re
 import requests
@@ -53,7 +54,7 @@ Fondos_DIAITT = {
 Fondos_Centrales = dict(reversed(list(Fondos_Centrales.items())))
 
 Fondos = ["-----------------------"] + list(Fondos_Centrales.keys()) + ["-----------------------"] + list(Fondos_DIAITT.keys())
-
+Responsable = ""
 
 #Funciones simples para el manejo de los combobox
 def expandir_combobox(event):
@@ -455,7 +456,9 @@ def Obtener_Fondos(parent,matriz):
 
 def Registrar_Valores(parent):
     
-    github_url1 = ""
+    N_Filas = parent.grid_size()[1]-4
+
+    github_url1 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Evento_Max.sql"
     github_url2 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Corr_Max.sql"
     response1 = requests.get(github_url1)
     response2 = requests.get(github_url2)
@@ -467,7 +470,29 @@ def Registrar_Valores(parent):
         raise Exception("Error al obtener el archivo SQL desde GitHub")
     
         #Se extrae el ID Solicitud e ID Activo maximo 
-    Evento_Max = SQL(SQL_Select1)
+    Evento_Max = SQL(SQL_Select1)+1
     ID_Correlativo_Max = SQL(SQL_Select2)
 
-    
+    fecha_hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    for fila in range(1,N_Filas+1):
+        ID_Correlativo_Max += 1
+        Datos = [];    Datos += [ID_Correlativo_Max];     Datos += [Evento_Max]
+
+        for columna in [1,4,14,15,16]:
+            widget = parent.grid_slaves(row=fila)[columna]
+            valor_widget = widget.get()
+
+            if columna == 5:
+                valor_widget = Responsable
+            elif columna == 6:
+                valor_widget = fecha_hora_actual
+            elif valor_widget.isdigit():
+                valor_widget = int(valor_widget.replace('$','').replace('.',''))
+                
+            if columna == 14:
+                Motivo = parent.grid_slaves(row=fila,column=columna+1).get()
+                if "Ahorro" in Motivo or "Bajar" == Motivo:
+                    valor_widget = -valor_widget
+
+            Datos += [valor_widget]
