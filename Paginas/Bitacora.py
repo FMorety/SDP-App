@@ -72,7 +72,7 @@ def Form_Bitacora(parent,window):
     Movimiento.bind("<KeyPress>",lambda event: Reglas_Monto(Movimiento,Saldo,Motivo,scrollable_frame,event))
 
     Label_Motivo = tk.Label(scrollable_frame, text="Motivo",font=("Arial",9,"bold")); Label_Motivo.grid(row=0,column=15,pady=2,padx=5)
-    Motivo = ttk.Combobox(scrollable_frame, values=["Ahorro","Suplemento","Postergación","Bajar"], state="readonly"); Motivo.grid(row=1,column=15,padx=5)
+    Motivo = ttk.Combobox(scrollable_frame, values=["Ahorro","Suplemento","Ahorro / Cierre","Bajar"], state="readonly"); Motivo.grid(row=1,column=15,padx=5)
     Motivo.set(Motivo['values'][1])
     Motivo.bind("<<ComboboxSelected>>",lambda event: Motivo_Seleccionado(Motivo,Monto_PostRe,Saldo,Movimiento))
 

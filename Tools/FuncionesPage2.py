@@ -452,3 +452,22 @@ def Obtener_Fondos(parent,matriz):
         fondos_combobox.set(fondos_registrados[0])
 
     Entrega_Info_Fondo(fondos_combobox,parent,matriz)
+
+def Registrar_Valores(parent):
+    
+    github_url1 = ""
+    github_url2 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Corr_Max.sql"
+    response1 = requests.get(github_url1)
+    response2 = requests.get(github_url2)
+
+    if response1.status_code == 200 and response2.status_code == 200:
+        SQL_Select1 = response1.text.strip()
+        SQL_Select2 = response2.text.strip()
+    else:
+        raise Exception("Error al obtener el archivo SQL desde GitHub")
+    
+        #Se extrae el ID Solicitud e ID Activo maximo 
+    Evento_Max = SQL(SQL_Select1)
+    ID_Correlativo_Max = SQL(SQL_Select2)
+
+    
