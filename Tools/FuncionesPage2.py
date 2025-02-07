@@ -54,6 +54,7 @@ Fondos_Centrales = dict(reversed(list(Fondos_Centrales.items())))
 
 Fondos = ["-----------------------"] + list(Fondos_Centrales.keys()) + ["-----------------------"] + list(Fondos_DIAITT.keys())
 
+
 #Funciones simples para el manejo de los combobox
 def expandir_combobox(event):
     global valor_previo
@@ -89,7 +90,10 @@ def actualizar_info(info, ID, parent):
             if key == 'ID_Activo':
                 continue
             elif key == 'OCO':
-                value = int(value)
+                try:
+                    value = int(value)
+                except:
+                    value = "Pendiente"
             elif key == 'Post_Resolucion' or key == 'Post_Resolucion2':
                 value = "${:,.0f}".format(int(value)).replace(',', '.')
             elif key == 'Nombre_Solicitud' or key == 'Item':
@@ -163,7 +167,7 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
 
     boton.grid(row=fila_nueva)
 
-    Eliminar_fila = ttk.Button(parent,text="-",width=3,command=lambda: Eliminar_Movimiento(Eliminar_fila,parent,linea))
+    Eliminar_fila = ttk.Button(parent,text="-",width=3,command=lambda: Eliminar_Movimiento(Eliminar_fila,parent,linea,matriz))
     Eliminar_fila.grid(row=fila_nueva-1,column=0,sticky="e",padx=(8,0))
     
     ID_Activo = tk.Entry(parent,bd=1, highlightthickness=1, highlightbackground="gray",width=4,justify="center",font=("Open Sans",10)); ID_Activo.grid(row=fila_nueva,column=1)
@@ -210,7 +214,7 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
     linea = agregar_linea(parent, 0, 5, 0, 80 + 40 * (fila_nueva-1) )
     linea.grid(row=0, column=13, rowspan=2+(fila_nueva-1), sticky="ew")
 
-def Eliminar_Movimiento(boton,parent_in,linea):
+def Eliminar_Movimiento(boton,parent_in,linea,matriz):
     # Elimina la fila de la Bitácora y reacomoda las filas restantes
     # Se elimina el botón de eliminación de fila y se reacomodan los botones restantes
 
@@ -231,6 +235,7 @@ def Eliminar_Movimiento(boton,parent_in,linea):
     linea = agregar_linea(parent_in, 0, 5, 0, 80 + 40 * (current_rowspan-3))
     linea.grid(row=0, column=13, rowspan=2+(current_rowspan-3), sticky="ew")
 
+    Obtener_Fondos(parent_in,matriz)
     Control_Monto_Fondo(parent_in)
     
 def Formato_Monto(monto, saldo, motivo, event):
@@ -417,7 +422,6 @@ def Obtener_Fondos(parent,matriz):
     switch = False
 
     for fila in range(1,N_Filas+1):
-    
         ID_Solicitud = parent.grid_slaves(row=fila, column=2)[0].cget("text")
         if ID_Solicitud == "-":
             continue
@@ -428,20 +432,16 @@ def Obtener_Fondos(parent,matriz):
         Division = next((key for key, value in Divisiones.items() if value == ID_Division), None)
 
         if Division and Division not in fondos_registrados:
-
             for indice, valor in enumerate(fondos_registrados):
                 if "---" in valor:
                     if Division not in fondos_registrados:
-                        fondos_registrados[indice:indice] = [Division]
+                        fondos_registrados.insert(indice, Division)
                         fondos_combobox['values'] = fondos_registrados
-
-                    elif Division in fondos_registrados:
-                        break
+                    break
                 elif lista_Divisiones.index(Division) < lista_Divisiones.index(valor):
-                    fondos_registrados[indice:indice] = [Division]
+                    fondos_registrados.insert(indice, Division)
                     fondos_combobox['values'] = fondos_registrados
-                elif lista_Divisiones.index(Division) > lista_Divisiones.index(valor):
-                    pass
+                    break
 
     if "---" in fondos_registrados[0]:
         if switch:
