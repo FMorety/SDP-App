@@ -195,6 +195,14 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
 
     Saldo = tk.Label(parent, text="-",font=("Arial",9)); Saldo.grid(row=fila_nueva,column=12,padx=(4,20))
 
+    for widget in parent.grid_slaves():
+        if widget.grid_info()["column"] == 13 and widget.grid_info()["row"] == 0:
+            widget.destroy()
+            break
+
+    linea = agregar_linea(parent, 0, 5, 0, 80 + 40 * (fila_nueva-1) )
+    linea.grid(row=0, column=13, rowspan=2+(fila_nueva-1), sticky="ew")
+
     Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14,justify="center"); Movimiento.grid(row=fila_nueva,column=14,padx=(20,5))
     Movimiento.bind("<KeyPress>",lambda event: Reglas_Monto(Movimiento,Saldo,Motivo,parent,event))
 
@@ -205,14 +213,6 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
     Ticket = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",width=40); Ticket.grid(row=fila_nueva,column=16,padx=5)
 
      # Obtener la altura actual de la línea y agregarle 40 unidades. Actualizar el rowspan de la línea también.
-
-    for widget in parent.grid_slaves():
-        if widget.grid_info()["column"] == 13 and widget.grid_info()["row"] == 0:
-            widget.destroy()
-            break
-
-    linea = agregar_linea(parent, 0, 5, 0, 80 + 40 * (fila_nueva-1) )
-    linea.grid(row=0, column=13, rowspan=2+(fila_nueva-1), sticky="ew")
 
 def Eliminar_Movimiento(boton,parent_in,linea,matriz):
     # Elimina la fila de la Bitácora y reacomoda las filas restantes
@@ -480,10 +480,12 @@ def Registrar_Valores(parent,responsable):
 
         Datos_Fila = parent.grid_slaves(row=fila)
         Datos_Fila = Datos_Fila[::-1]
+        print(Datos_Fila)
+        grupo_widgets = [1,4,6,8,14,15,16] if fila == (N_Filas+1) else [0,3,5,7,12,13,14]
 
         for index, widget in enumerate(Datos_Fila):
-            
-            if index in [1,4,6,8,14,15,16]:
+            print(widget.winfo_class())
+            if index in grupo_widgets:
                 try:
                     valor_widget = widget.get()
                 except:
@@ -491,20 +493,21 @@ def Registrar_Valores(parent,responsable):
             else:
                 continue
                         
-            if index == 6:
+            if index == grupo_widgets[2]:
                 valor_widget = responsable
-            elif index == 8:
+            elif index == grupo_widgets[3]:
                 valor_widget = fecha_hora_actual
-            elif index != 4 and valor_widget.isdigit():
+            elif index != grupo_widgets[1] and valor_widget.isdigit():
                 valor_widget = int(valor_widget.replace('$','').replace('.',''))
                 
-            if index == 14:
+            if index == grupo_widgets[4]:
                 Motivo = parent.grid_slaves(row=fila,column=index+1)[0].get()
                 if "Ahorro" in Motivo or "Bajar" == Motivo:
-                    valor_widget = -valor_widget
+                    valor_widget = -int(valor_widget.replace('$','').replace('.',''))
 
             Datos += [valor_widget]
-            print(Datos)
+        
+        print(Datos)
 
 
 
