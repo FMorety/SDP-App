@@ -80,7 +80,7 @@ def solicitar_responsable():
     Button(top, text="Aceptar", command=on_select).pack(pady=10)
     root.mainloop()
 
-if __name__ =="__main__":
+if __name__ == "__main__":
     variable_global()
     solicitar_responsable()
     root = tk.Tk()

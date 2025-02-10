@@ -385,7 +385,7 @@ def Control_Monto_Fondo(parent):
     Movimiento_Fondo_value = Movimiento_Fondo.cget("text").replace('$','').replace('.','')
 
     # Se actualiza el saldo del fondo
-    if motivo in ["Ahorro", "Bajar"]:
+    if motivo in ["Ahorro", "Bajar", "Ahorro / Cierre"]:
         Saldo_Fondo_value = int(PostResolucion_Fondo_value) + int(Movimiento_Fondo_value)
     elif motivo == "Suplemento":
         Saldo_Fondo_value = int(PostResolucion_Fondo_value) - int(Movimiento_Fondo_value)
@@ -480,16 +480,16 @@ def Registrar_Valores(parent,responsable):
 
         Datos_Fila = parent.grid_slaves(row=fila)
         Datos_Fila = Datos_Fila[::-1]
-        print(Datos_Fila)
-        grupo_widgets = [1,4,6,8,14,15,16] if fila == (N_Filas+1) else [0,3,5,7,12,13,14]
+        
+        grupo_widgets = [1,4,6,8,14,15,16] if fila == N_Filas else [0,3,5,7,12,13,14]
 
         for index, widget in enumerate(Datos_Fila):
-            print(widget.winfo_class())
+            
             if index in grupo_widgets:
-                try:
-                    valor_widget = widget.get()
-                except:
+                if widget.winfo_class() == "Label":
                     valor_widget = widget.cget("text")
+                else:
+                    valor_widget = widget.get()
             else:
                 continue
                         
@@ -501,7 +501,7 @@ def Registrar_Valores(parent,responsable):
                 valor_widget = int(valor_widget.replace('$','').replace('.',''))
                 
             if index == grupo_widgets[4]:
-                Motivo = parent.grid_slaves(row=fila,column=index+1)[0].get()
+                Motivo = parent.grid_slaves(row=fila,column=1)[0].get()
                 if "Ahorro" in Motivo or "Bajar" == Motivo:
                     valor_widget = -int(valor_widget.replace('$','').replace('.',''))
 
