@@ -54,7 +54,6 @@ Fondos_DIAITT = {
 Fondos_Centrales = dict(reversed(list(Fondos_Centrales.items())))
 
 Fondos = ["-----------------------"] + list(Fondos_Centrales.keys()) + ["-----------------------"] + list(Fondos_DIAITT.keys())
-Responsable = ""
 
 #Funciones simples para el manejo de los combobox
 def expandir_combobox(event):
@@ -454,8 +453,8 @@ def Obtener_Fondos(parent,matriz):
 
     Entrega_Info_Fondo(fondos_combobox,parent,matriz)
 
-def Registrar_Valores(parent):
-    
+def Registrar_Valores(parent,responsable):
+
     N_Filas = parent.grid_size()[1]-4
 
     github_url1 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Evento_Max.sql"
@@ -479,20 +478,34 @@ def Registrar_Valores(parent):
         ID_Correlativo_Max += 1
         Datos = [];    Datos += [ID_Correlativo_Max];     Datos += [Evento_Max]
 
-        for columna in [1,4,14,15,16]:
-            widget = parent.grid_slaves(row=fila)[columna]
-            valor_widget = widget.get()
+        Datos_Fila = parent.grid_slaves(row=fila)
+        Datos_Fila = Datos_Fila[::-1]
 
-            if columna == 5:
-                valor_widget = Responsable
-            elif columna == 6:
+        for index, widget in enumerate(Datos_Fila):
+            
+            if index in [1,4,6,8,14,15,16]:
+                try:
+                    valor_widget = widget.get()
+                except:
+                    valor_widget = widget.cget("text")
+            else:
+                continue
+                        
+            if index == 6:
+                valor_widget = responsable
+            elif index == 8:
                 valor_widget = fecha_hora_actual
-            elif valor_widget.isdigit():
+            elif index != 4 and valor_widget.isdigit():
                 valor_widget = int(valor_widget.replace('$','').replace('.',''))
                 
-            if columna == 14:
-                Motivo = parent.grid_slaves(row=fila,column=columna+1).get()
+            if index == 14:
+                Motivo = parent.grid_slaves(row=fila,column=index+1)[0].get()
                 if "Ahorro" in Motivo or "Bajar" == Motivo:
                     valor_widget = -valor_widget
 
             Datos += [valor_widget]
+            print(Datos)
+
+
+
+

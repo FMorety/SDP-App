@@ -5,11 +5,12 @@ from Tools.CrearObj import *
 from Tools.FuncionesPage2 import *
 from tkinter import Scrollbar
 
-def Form_Bitacora(parent,window):
+def Form_Bitacora(parent,window,responsable):
 
     Matriz_CAPEX = Data_Bitacora()
 
     marco = tk.LabelFrame(parent,text="Planilla Bitácora",font=("Arial",10,"bold")); marco.pack(side="top",padx=12,pady=5 ,ipady=5, ipadx=5, fill="both", expand="yes")
+    Frame_botones = tk.Frame(marco)
     canvas = tk.Canvas(marco)
     scrollbar_y = tk.Scrollbar(marco, orient="vertical", command=canvas.yview)
     scrollbar_x = tk.Scrollbar(marco, orient="horizontal", command=canvas.xview)
@@ -26,9 +27,13 @@ def Form_Bitacora(parent,window):
     canvas.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
     canvas.config(highlightthickness=0)
 
+    Frame_botones.pack(fill="none",anchor="w",padx=180,pady=5)
     scrollbar_x.pack(side="bottom", fill="x")
     canvas.pack(side="left", fill="both", expand=True)
     scrollbar_y.pack(side="right", fill="y")
+    
+    Registrar_Bitacora = ttk.Button(Frame_botones,text="Registrar Movimientos",width=20,command= lambda: Registrar_Valores(scrollable_frame,responsable))
+    Registrar_Bitacora.pack()
 
     AgregarMovimiento = ttk.Button(scrollable_frame,text="+",width=3,command=lambda: Agregar_Movimiento(AgregarMovimiento,scrollable_frame,Matriz_CAPEX,linea))
     AgregarMovimiento.grid(row=1,column=0,sticky="e",padx=(8,0))
