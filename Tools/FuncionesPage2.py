@@ -457,6 +457,12 @@ def Obtener_Fondos(parent,matriz):
 
     Entrega_Info_Fondo(fondos_combobox,parent,matriz)
 
+def funcion_subida(datos):
+    placeholders = ", ".join("?" for _ in range(len(datos)))
+    SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] VALUES ("
+            
+    SQL(SQL_Insert,lista=datos)
+
 def Registrar_Valores(parent,responsable):
 
     N_Filas = parent.grid_size()[1]-4
@@ -505,15 +511,18 @@ def Registrar_Valores(parent,responsable):
                 valor_widget = int(valor_widget.replace('$','').replace('.',''))
                 
             if index == grupo_widgets[4]:
-                Motivo = parent.grid_slaves(row=fila,column=1)[0].get()
+                Motivo = parent.grid_slaves(row=fila,column=15)[0].get()
+                print(Motivo)
                 if "Ahorro" in Motivo or "Bajar" == Motivo:
                     valor_widget = -int(valor_widget.replace('$','').replace('.',''))
                 else:
                     valor_widget = int(valor_widget.replace('$','').replace('.',''))
 
             Datos += [valor_widget]
-        print(Datos)
-    Datos = [ID_Correlativo_Max,Evento_Max]
+        funcion_subida(Datos)
+
+    # Se reinicia la lista de datos a subir.
+    Datos = [ID_Correlativo_Max+1,Evento_Max]
     Fila_Fondo = parent.grid_slaves(row=N_Filas+2)
     Fila_Fondo = Fila_Fondo[::-1]; grupo_widgets = [0,3,5,7,13,14,15]
 
@@ -542,4 +551,4 @@ def Registrar_Valores(parent,responsable):
         
         Datos += [valor_widget]
 
-    print(Datos)
+    funcion_subida(Datos)
