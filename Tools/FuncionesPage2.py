@@ -206,7 +206,7 @@ def Agregar_Movimiento(boton,parent,matriz,linea):
     Movimiento = tk.Entry(parent, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14,justify="center"); Movimiento.grid(row=fila_nueva,column=14,padx=(20,5))
     Movimiento.bind("<KeyPress>",lambda event: Reglas_Monto(Movimiento,Saldo,Motivo,parent,event))
 
-    Motivo = ttk.Combobox(parent, values=["Ahorro","Suplemento","Postergación","Bajar"], state="readonly"); Motivo.grid(row=fila_nueva,column=15,padx=5)
+    Motivo = ttk.Combobox(parent, values=["Ahorro","Suplemento","Ahorro / Cierre","Bajar"], state="readonly"); Motivo.grid(row=fila_nueva,column=15,padx=5)
     Motivo.set(Motivo['values'][1])
     Motivo.bind("<<ComboboxSelected>>",lambda event: Motivo_Seleccionado(Motivo,Monto_PostRe,Saldo,Movimiento))
 
@@ -307,7 +307,7 @@ def Motivo_Seleccionado(motivo,postre,saldo,monto):
     if motivo.get() != "Bajar":
         monto.config(state="normal")
 
-    if motivo.get() == "Ahorro" and postre_value < saldo_value:
+    if motivo.get() in ["Ahorro","Ahorro / Cierre"] and postre_value < saldo_value:
         monto.config(state="normal")
         if postre_value - monto_value < 0:
             saldo.config(text="${:,.0f}".format(postre_value).replace(',', '.'))
@@ -368,16 +368,20 @@ def Control_Monto_Fondo(parent):
                 monto = int(monto)
                 if motivo == "Suplemento":
                     total -= monto
-                elif motivo in ["Ahorro", "Bajar"]:
+                elif motivo in ["Ahorro", "Bajar","Ahorro / Cierre"]:
                     total += monto
 
     Movimiento_Fondo = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=14)[0]
     Motivo_Fondo = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=15)[0]
 
+    
     if total < 0:
         Motivo_Fondo.set("Suplemento")
-    else:
+    elif total > 0:
         Motivo_Fondo.set("Ahorro")
+    elif total == 0:
+        return "break"
+    
     Movimiento_Fondo.config(text="${:,.0f}".format(abs(total)).replace(',', '.'))
 
     Saldo_Fondo = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=12)[0]
@@ -385,11 +389,11 @@ def Control_Monto_Fondo(parent):
     Movimiento_Fondo_value = Movimiento_Fondo.cget("text").replace('$','').replace('.','')
 
     # Se actualiza el saldo del fondo
-    if motivo in ["Ahorro", "Bajar", "Ahorro / Cierre"]:
+    if Motivo_Fondo.get() in ["Ahorro", "Bajar", "Ahorro / Cierre"]:
         Saldo_Fondo_value = int(PostResolucion_Fondo_value) + int(Movimiento_Fondo_value)
-    elif motivo == "Suplemento":
+    elif Motivo_Fondo.get() == "Suplemento":
         Saldo_Fondo_value = int(PostResolucion_Fondo_value) - int(Movimiento_Fondo_value)
-    
+
     # Se cambia el color del texto si el saldo es negativo
     if Saldo_Fondo_value < 0:
         Saldo_Fondo.config(fg="red")
@@ -397,8 +401,8 @@ def Control_Monto_Fondo(parent):
     else:
         Saldo_Fondo.config(fg="black")
         Movimiento_Fondo.config(fg="black")
-            
-    Saldo_Fondo_value = "${:,.0f}".format(Saldo_Fondo_value).replace(',', '.')   
+    
+    Saldo_Fondo_value = "${:,.0f}".format(Saldo_Fondo_value).replace(',', '.') 
     Saldo_Fondo.config(text=Saldo_Fondo_value) 
 
     return "break" # Previne el comportamiento por defecto de insertar el caracter dos veces
@@ -497,18 +501,45 @@ def Registrar_Valores(parent,responsable):
                 valor_widget = responsable
             elif index == grupo_widgets[3]:
                 valor_widget = fecha_hora_actual
-            elif index != grupo_widgets[1] and valor_widget.isdigit():
+            elif index in [grupo_widgets[0],grupo_widgets[1]] and not isinstance(valor_widget,int):
                 valor_widget = int(valor_widget.replace('$','').replace('.',''))
                 
             if index == grupo_widgets[4]:
                 Motivo = parent.grid_slaves(row=fila,column=1)[0].get()
                 if "Ahorro" in Motivo or "Bajar" == Motivo:
                     valor_widget = -int(valor_widget.replace('$','').replace('.',''))
+                else:
+                    valor_widget = int(valor_widget.replace('$','').replace('.',''))
 
             Datos += [valor_widget]
-        
         print(Datos)
+    Datos = [ID_Correlativo_Max,Evento_Max]
+    Fila_Fondo = parent.grid_slaves(row=N_Filas+2)
+    Fila_Fondo = Fila_Fondo[::-1]; grupo_widgets = [0,3,5,7,13,14,15]
 
+    for index in grupo_widgets:
+        widget = Fila_Fondo[index]
+        if widget.winfo_class() == "Label":
+            valor_widget = widget.cget("text")
+        else:
+            valor_widget = widget.get()
 
+        if index == grupo_widgets[2]:
+            valor_widget = responsable
+        elif index == grupo_widgets[3]:
+            valor_widget = fecha_hora_actual
+        elif index == 3 and not isinstance(valor_widget,int):
+            valor_widget = int(valor_widget.replace('$','').replace('.',''))
+        elif index == grupo_widgets[0]:
+            valor_widget = Divisiones[valor_widget]
 
+        if index == grupo_widgets[4]:
+            Motivo = Fila_Fondo[grupo_widgets[5]].get()
+            if "Suplemento" == Motivo:
+                valor_widget = -int(valor_widget.replace('$','').replace('.',''))
+            else:
+                valor_widget = int(valor_widget.replace('$','').replace('.',''))
+        
+        Datos += [valor_widget]
 
+    print(Datos)
