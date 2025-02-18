@@ -8,7 +8,7 @@ from tkinter import messagebox
 import re
 import requests
 
-from SQLConnect import SQLConsulta as SQL
+from SQLConnect import SQLConsulta as SQL, funcion_subida_matriz, funcion_subida_bitacora
 
 Divisiones = {
     "Alameda": 1000,
@@ -422,7 +422,7 @@ def obtener_variables(Frames):
 
     return Datos,Division,p
 
-def Registrar_Valores(Frames,FramesInternos):
+def Registrar_Valores(Frames,FramesInternos,responsable):
 
     # --------------------------------------------------------------------------------------------------------------------------------------------- #
 
@@ -449,9 +449,16 @@ def Registrar_Valores(Frames,FramesInternos):
     response1 = requests.get(github_url1)
     response2 = requests.get(github_url2)
 
+    github_url3 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Evento_Max.sql"
+    github_url4 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Corr_Max.sql"
+    response3 = requests.get(github_url3)
+    response4 = requests.get(github_url4)
+
     if response1.status_code == 200 and response2.status_code == 200:
         SQL_Select1 = response1.text.strip()
         SQL_Select2 = response2.text.strip()
+        SQL_Select3 = response3.text.strip()
+        SQL_Select4 = response4.text.strip()
     else:
         raise Exception("Error al obtener el archivo SQL desde GitHub")
     
@@ -462,8 +469,13 @@ def Registrar_Valores(Frames,FramesInternos):
         #Se extrae el ID Solicitud e ID Activo maximo 
     ID_Solicitud_Max = SQL(SQL_Select1)+1
     ID_Activo_Max = SQL(SQL_Select2)
-    
 
+        #Se extrae el ID Solicitud e ID Activo maximo de la bitacora
+    Evento_Max = SQL(SQL_Select3)+1
+    ID_Correlativo_Max = SQL(SQL_Select4)+1
+
+    fecha_hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
     # --------------------------------------------------------------------------------------------------------------------------------------------- #
 
 
@@ -530,6 +542,9 @@ def Registrar_Valores(Frames,FramesInternos):
         Datos[0:0] = [ID_Activo_Max]
         Datos[8:8] = [str(Datos[5].split(" ")[0])]
         Datos[15] = 0
+
+        #Extracción de Datos para la Bitacora
+        Datos_Bitacora = [ID_Correlativo_Max,Evento_Max,ID_Activo_Max,Datos[12],responsable,fecha_hora_actual,Monto_Aprobado,"Creación",""]
         
         if len(str(Datos[12])) != 8 and len(str(Datos[12])) != 9:
             return (messagebox.showerror("Error: Revisar OCO ingresada.",f"Por favor, ingrese una OCO con un formato valido según corresponda. (Las OCOS cuentan con 8 o 9 digitos.)"))
@@ -551,17 +566,14 @@ def Registrar_Valores(Frames,FramesInternos):
                 return
             elif result:
                 print(Datos)
-                placeholders = ", ".join("?" for _ in range(len(Datos)))
-                SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] VALUES ("
+                funcion_subida_matriz(Datos)
+                funcion_subida_bitacora(Datos_Bitacora)
                 
-                SQL(SQL_Insert,lista=Datos)
                 
         else:
             print(Datos)
-            placeholders = ", ".join("?" for _ in range(len(Datos)))
-            SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] VALUES ("
-            
-            SQL(SQL_Insert,lista=Datos)
+            funcion_subida_matriz(Datos)
+            funcion_subida_bitacora(Datos_Bitacora)
     
     limpiar_widgets(Frames,FramesInternos)
 

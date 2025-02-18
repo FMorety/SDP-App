@@ -42,7 +42,7 @@ class Registro:
         self.notebook.add(self.Page1, text="Ingreso Solicitud")
         self.notebook.add(self.Page2, text="Mov. Bitácora")
 
-        Form_Ingreso_Solicitud(self.Page1, self.window)
+        Form_Ingreso_Solicitud(self.Page1, self.window,Responsable)
         Form_Bitacora(self.Page2, self.window,Responsable)
 
     def on_tab_change(self, event):

@@ -62,5 +62,16 @@ def SQLConsulta(Query,lista=[],pandas=False):
         cursor.close()
         conn.close()
 
+def funcion_subida_bitacora(datos):
+    placeholders = ", ".join("?" for _ in range(len(datos)))
+    SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Bitacora] VALUES ("
+            
+    SQLConsulta(SQL_Insert,lista=datos)
+
+def funcion_subida_matriz(datos):
+    placeholders = ", ".join("?" for _ in range(len(datos)))
+    SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] VALUES ("
+            
+    SQLConsulta(SQL_Insert,lista=datos)
 
 

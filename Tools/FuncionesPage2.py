@@ -6,7 +6,7 @@ from datetime import datetime
 from tkinter import messagebox
 import re
 import requests
-from SQLConnect import SQLConsulta as SQL
+from SQLConnect import SQLConsulta as SQL, funcion_subida_bitacora
 
 Divisiones = {
     "Alameda": -1000,
@@ -457,12 +457,6 @@ def Obtener_Fondos(parent,matriz):
 
     Entrega_Info_Fondo(fondos_combobox,parent,matriz)
 
-def funcion_subida(datos):
-    placeholders = ", ".join("?" for _ in range(len(datos)))
-    SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] VALUES ("
-            
-    SQL(SQL_Insert,lista=datos)
-
 def Registrar_Valores(parent,responsable):
 
     N_Filas = parent.grid_size()[1]-4
@@ -519,7 +513,7 @@ def Registrar_Valores(parent,responsable):
                     valor_widget = int(valor_widget.replace('$','').replace('.',''))
 
             Datos += [valor_widget]
-        funcion_subida(Datos)
+        funcion_subida_bitacora(Datos)
 
     # Se reinicia la lista de datos a subir.
     Datos = [ID_Correlativo_Max+1,Evento_Max]
@@ -551,4 +545,4 @@ def Registrar_Valores(parent,responsable):
         
         Datos += [valor_widget]
 
-    funcion_subida(Datos)
+    funcion_subida_bitacora(Datos)

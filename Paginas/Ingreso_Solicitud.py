@@ -2,7 +2,7 @@ from Tools.CrearObj import *
 from Tools.FuncionesPage1 import * 
 
 
-def Form_Ingreso_Solicitud(parent,window):
+def Form_Ingreso_Solicitud(parent,window,responsable):
 
     DiaActual = datetime.now().day
     MesActual = datetime.now().month - 1 if DiaActual <= 23 else datetime.now().month   
@@ -173,7 +173,7 @@ def Form_Ingreso_Solicitud(parent,window):
     Limpiar = Button(Frame_Botones,text="Limpiar",command=lambda: limpiar_widgets(Marcos,MarcosInternos),width=10)
     Limpiar.grid(row=0,column=0,sticky="n",padx=(0,20))
 
-    Registrar = Button(Frame_Botones,text="Registrar",command=lambda: Registrar_Valores(Marcos,MarcosInternos),width=10)
+    Registrar = Button(Frame_Botones,text="Registrar",command=lambda: Registrar_Valores(Marcos,MarcosInternos,responsable),width=10)
     Registrar.grid(row=0,column=1,sticky="n",padx=(20,20))
 
     Nuevo_Item = Button(Frame_Botones,text="Nuevo Item",command=lambda: Frame_de_Item(scrollable_frame,MarcosInternos,Ejecutor),width=10)
