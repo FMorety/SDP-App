@@ -414,6 +414,19 @@ def Reglas_Monto(monto, saldo, motivo, parent, event):
 
     return "break"  # Previne el comportamiento por defecto de insertar el caracter dos veces
 
+def limpiar_bitacora(parent,fila,fila_max=None):
+    
+    for widget in parent.grid_slaves(row=fila):
+        if widget.winfo_class() == "Entry":
+            widget.delete(0,tk.END)
+        elif widget.winfo_class() == "TCombobox":
+            if widget.grid_info()["row"] == fila_max:
+                widget.set("")
+            else:
+                widget.set(widget['values'][0])
+        elif widget.winfo_class() == "Label":
+            widget.config(text="-")
+
 def Obtener_Fondos(parent,matriz):
 
     fondos_combobox = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=0)[0]
@@ -478,6 +491,15 @@ def Registrar_Valores(parent,responsable):
 
     fecha_hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    Tickets = parent.grid_slaves(column=16)
+    
+    for ticket in Tickets:
+        if not ticket.get().strip():
+            if messagebox.askyesno("Aprobar ticket vacío", "No se ingresó ticket o comentario en alguno de los movimientos realizados. ¿Desea continuar de todas formas?"):
+                break
+            else:
+                return
+
     for fila in range(1,N_Filas+1):
         ID_Correlativo_Max += 1
         Datos = [];    Datos += [ID_Correlativo_Max];     Datos += [Evento_Max]
@@ -488,7 +510,10 @@ def Registrar_Valores(parent,responsable):
         grupo_widgets = [1,4,6,8,14,15,16] if fila == N_Filas else [0,3,5,7,12,13,14]
 
         for index, widget in enumerate(Datos_Fila):
-            
+
+            if widget.winfo_class() in ["Entry","TCombobox"] and widget.get() == "" and index != grupo_widgets[-1]:
+                return messagebox.showerror("Error: Celdas vacías.", "Se requiere completar la información de las celdas obligatorias. No pueden quedar vacíos los campos, siendo la única excepción la columna de 'Tickets'.")
+                        
             if index in grupo_widgets:
                 if widget.winfo_class() == "Label":
                     valor_widget = widget.cget("text")
@@ -506,13 +531,13 @@ def Registrar_Valores(parent,responsable):
                 
             if index == grupo_widgets[4]:
                 Motivo = parent.grid_slaves(row=fila,column=15)[0].get()
-                print(Motivo)
                 if "Ahorro" in Motivo or "Bajar" == Motivo:
                     valor_widget = -int(valor_widget.replace('$','').replace('.',''))
                 else:
                     valor_widget = int(valor_widget.replace('$','').replace('.',''))
 
             Datos += [valor_widget]
+
         funcion_subida_bitacora(Datos)
 
     # Se reinicia la lista de datos a subir.
@@ -521,7 +546,11 @@ def Registrar_Valores(parent,responsable):
     Fila_Fondo = Fila_Fondo[::-1]; grupo_widgets = [0,3,5,7,13,14,15]
 
     for index in grupo_widgets:
-        widget = Fila_Fondo[index]
+        widget = Fila_Fondo[index]; 
+
+        if widget.winfo_class() in ["Entry","TCombobox"] and widget.get() == "" and index != grupo_widgets[-1]:
+            return messagebox.showerror("Error: Celdas vacías.", "Se requiere completar la información de las celdas obligatorias. No pueden quedar vacíos los campos, siendo la única excepción la columna de 'Tickets'.")
+
         if widget.winfo_class() == "Label":
             valor_widget = widget.cget("text")
         else:
@@ -534,7 +563,11 @@ def Registrar_Valores(parent,responsable):
         elif index == 3 and not isinstance(valor_widget,int):
             valor_widget = int(valor_widget.replace('$','').replace('.',''))
         elif index == grupo_widgets[0]:
-            valor_widget = Divisiones[valor_widget]
+            try:
+                valor_widget = Divisiones[valor_widget]
+            except KeyError:
+                Fondos_NoDiv = Fondos_Centrales | Fondos_DIAITT
+                valor_widget = Fondos_NoDiv[valor_widget]
 
         if index == grupo_widgets[4]:
             Motivo = Fila_Fondo[grupo_widgets[5]].get()
@@ -546,3 +579,6 @@ def Registrar_Valores(parent,responsable):
         Datos += [valor_widget]
 
     funcion_subida_bitacora(Datos)
+    limpiar_bitacora(parent,N_Filas+2,N_Filas+2)
+
+    
