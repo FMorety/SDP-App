@@ -6,7 +6,7 @@ from datetime import datetime
 from tkinter import messagebox
 import re
 import requests
-from SQLConnect import SQLConsulta as SQL, funcion_subida_bitacora
+from SQLConnect import SQLConsulta as SQL, SQLActualizar, funcion_subida_bitacora
 
 Divisiones = {
     "Alameda": -1000,
@@ -54,6 +54,21 @@ Fondos_DIAITT = {
 Fondos_Centrales = dict(reversed(list(Fondos_Centrales.items())))
 
 Fondos = ["-----------------------"] + list(Fondos_Centrales.keys()) + ["-----------------------"] + list(Fondos_DIAITT.keys())
+
+MesesNumero = {
+        'Enero': 0,
+        'Febrero': 1,
+        'Marzo': 2,
+        'Abril': 3,
+        'Mayo': 4,
+        'Junio': 5,
+        'Julio': 6,
+        'Agosto': 7,
+        'Septiembre': 8,
+        'Octubre': 9,
+        'Noviembre': 10,
+        'Diciembre': 11,
+    }
 
 #Funciones simples para el manejo de los combobox
 def expandir_combobox(event):
@@ -428,7 +443,6 @@ def limpiar_bitacora(parent,fila,fila_max=None):
         elif widget.winfo_class() == "Label":
             widget.config(text="-")
 
-
 def Obtener_Fondos(parent,matriz):
 
     fondos_combobox = parent.grid_slaves(row=parent.grid_size()[1] - 2, column=0)[0]
@@ -493,10 +507,14 @@ def Registrar_Valores(parent,responsable):
 
     fecha_hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    dia_actual = datetime.now().day
+    mes_actual = datetime.now().month - 1 if dia_actual <= 23 else datetime.now().month
+    nombre_mes_actual = next(   (Nombre for Nombre, Num in MesesNumero.items() if Num == (mes_actual)), None )
+
     Tickets = parent.grid_slaves(column=16)
-    
+
     for ticket in Tickets:
-        if not ticket.get().strip():
+        if ticket.winfo_class() == "Entry" and not ticket.get().strip():
             if messagebox.askyesno("Aprobar ticket vacío", "No se ingresó ticket o comentario en alguno de los movimientos realizados. ¿Desea continuar de todas formas?"):
                 break
             else:
@@ -540,6 +558,10 @@ def Registrar_Valores(parent,responsable):
 
             Datos += [valor_widget]
 
+        Planificado_Mes = SQL(f"SELECT [{nombre_mes_actual}] FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE [ID_Activo] = {Datos[2]}")
+        Nuevo_Monto_Mes_Actual = int(Planificado_Mes) + Datos[-3]
+
+        SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [{nombre_mes_actual}] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
         funcion_subida_bitacora(Datos)
         limpiar_bitacora(parent,fila,N_Filas+2)
 
@@ -581,6 +603,10 @@ def Registrar_Valores(parent,responsable):
         
         Datos += [valor_widget]
 
+    Planificado_Mes = SQL(f"SELECT [Diciembre] FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE [ID_Activo] = {Datos[2]}")
+    Nuevo_Monto_Mes_Actual = int(Planificado_Mes) + Datos[-3]
+
+    SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [Diciembre] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
     funcion_subida_bitacora(Datos)
     limpiar_bitacora(parent,N_Filas+2,N_Filas+2)
 

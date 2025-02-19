@@ -62,6 +62,32 @@ def SQLConsulta(Query,lista=[],pandas=False):
         cursor.close()
         conn.close()
 
+def SQLActualizar(Query,lista=[],pandas=False):
+
+
+    server = 'CCDNBA12021461\SQLEXPRESS'  # Ejemplo: 'localhost' o '192.168.1.100'
+    database = 'Subdireccion de Proyectos BBDD'  # Ejemplo: 'mi_base_de_datos'
+    username = 'Admin'  # Tu nombre de usuario
+    password = 'duoc2025.'  # Tu contraseña
+
+    # Crear la cadena de conexión
+    conn = pyodbc.connect(f'DRIVER={{ODBC Driver 18 for SQL Server}};'
+                        f'SERVER={server};'
+                        f'DATABASE={database};'
+                        f'UID={username};'
+                        f'PWD={password};'
+                        f'TrustServerCertificate=yes')
+
+   #Query como la consulta SQL predefinida.
+
+    cursor = conn.cursor()
+
+    cursor.execute(Query)
+    conn.commit()                   
+
+    cursor.close()
+    conn.close()
+
 def funcion_subida_bitacora(datos):
     placeholders = ", ".join("?" for _ in range(len(datos)))
     SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Bitacora] VALUES ("
