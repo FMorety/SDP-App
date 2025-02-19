@@ -417,6 +417,7 @@ def Reglas_Monto(monto, saldo, motivo, parent, event):
 def limpiar_bitacora(parent,fila,fila_max=None):
     
     for widget in parent.grid_slaves(row=fila):
+
         if widget.winfo_class() == "Entry":
             widget.delete(0,tk.END)
         elif widget.winfo_class() == "TCombobox":
@@ -426,6 +427,7 @@ def limpiar_bitacora(parent,fila,fila_max=None):
                 widget.set(widget['values'][0])
         elif widget.winfo_class() == "Label":
             widget.config(text="-")
+
 
 def Obtener_Fondos(parent,matriz):
 
@@ -539,6 +541,7 @@ def Registrar_Valores(parent,responsable):
             Datos += [valor_widget]
 
         funcion_subida_bitacora(Datos)
+        limpiar_bitacora(parent,fila,N_Filas+2)
 
     # Se reinicia la lista de datos a subir.
     Datos = [ID_Correlativo_Max+1,Evento_Max]
