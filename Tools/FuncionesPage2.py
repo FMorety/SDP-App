@@ -645,5 +645,3 @@ def Registrar_Valores(parent,responsable):
         SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [Diciembre] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
         funcion_subida_bitacora(Datos)
         limpiar_bitacora(parent,N_Filas+2,N_Filas+2)
-
-    

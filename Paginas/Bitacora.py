@@ -5,7 +5,7 @@ from Tools.CrearObj import *
 from Tools.FuncionesPage2 import *
 from tkinter import Scrollbar
 
-def Form_Bitacora(parent,window,responsable):
+def Form_Bitacora(parent,responsable):
 
     Matriz_CAPEX = Data_Bitacora()
 
