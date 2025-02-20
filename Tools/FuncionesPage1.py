@@ -128,56 +128,57 @@ def FormatearNumero(entry_widget,Frames=None):
 
     global Contador2
     # Función para formatear el monto como moneda (con separación de miles y 2 decimales)
-    def format_money(value):
+    def format_money(value,event):
+        global Contador2
+        if Contador2 == 1:  # Verifica que Contador2 sea 1 para no ejecutar la función
+            return
+        elif not event.char.isdigit():
+            return
+        elif len(entry_widget.get())==0 and event.char=="0":
+            return
+
         # Elimina cualquier caracter que no sea un dígito o punto
         value = re.sub(r'[^\d]', '', value)
         if value:
             # Convierte el valor a un número entero y luego lo formatea
             value = int(value)
             # Aplica el formato de moneda con separación de miles
-            return f"{value:,}".replace(",", ".")
+            return "${:,.0f}".format(int(value)).replace(',', '.')
         return ""  # Devuelve vacío si no hay valor
     
-    def validar_out_focus2(event):
+    def formato_insert(event):
         if Frames != None:
             widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-3]
-            formatted_value = format_money(widget_insert.get())
+            formatted_value = format_money(widget_insert.get(),event)
             widget_insert.delete(0, 'end')
             widget_insert.insert(0, formatted_value)
     
-    def validar_out_focus(event):
-       global Contador2
-       monto_value = entry_widget.get()
-       Contador2=1
+    def formato_entry(event):
+       monto_value = entry_widget.get() + event.char
        if monto_value.strip():
-            formatted_value = format_money(monto_value)
+            formatted_value = format_money(monto_value,event)
             entry_widget.delete(0, 'end')
             entry_widget.insert(0, formatted_value)
 
-    def validar_focusout_final(event):
-        validar_out_focus(event)
-        validar_out_focus2(event)
-   
-    def validar_entrada(event):
+    def validar_focusout(event=None):
         global Contador2
-        if Contador2 == 1:  # Verifica que Contador2 sea 1 para no ejecutar la función
-            return
-        elif not event.char.isdigit() and event.char not in ("\b", "\x7f","."):
-            return
-        elif len(entry_widget.get())==0 and event.char=="0":
-            return
-        
-        widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-3]
+        Contador2 = 1
 
+    def aplicar_formato(event):
+       
+        widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-3]
         if event.keysym in ("BackSpace", "Delete"):
             widget_insert.delete(len(widget_insert.get()) - 1, tk.END)
         else:
             widget_insert.insert(len(widget_insert.get()),event.char)
+
+        formato_entry(event)
+        formato_insert(event)
+
+        return "break"
         
-
-
-    entry_widget.bind("<KeyPress>", validar_entrada if Frames != None else None)
-    entry_widget.bind('<FocusOut>', validar_focusout_final)
+    entry_widget.bind("<KeyPress>", aplicar_formato if Frames != None else None)
+    entry_widget.bind('<FocusOut>', validar_focusout)
 
 def format_money(value):
     if isinstance(value,int):
@@ -292,7 +293,7 @@ def SumaMonto(Frame):
             if widget.grid_info()["column"] == 1 and isinstance(widget,Entry):  # Verificar columna 2
                 valor = widget.get()
                 if valor:  # Verificar que no esté vacío
-                    valor_sin_puntos = int(valor.replace('.',''))  # Eliminar puntos y convertir a entero
+                    valor_sin_puntos = int(valor.replace('$','').replace('.',''))  # Eliminar puntos y convertir a entero
                     suma_monto += valor_sin_puntos
         except ValueError:
             continue  # Ignorar entradas no válidas
@@ -306,7 +307,7 @@ def actualizar_total(Frame, Label_Total, Montoaprobado):
     if (Montoaprobado.get() == "" and int(Label_Total.cget("text").replace("Total: ","").replace(".","")) != 0) or (Montoaprobado.get() != "" and int(Label_Total.cget("text").replace("Total: ","").replace(".","")) == 0):
         Label_Total.config(fg="red")
 
-    elif Montoaprobado.get() != "" and int(Montoaprobado.get().replace(".","")) != int(Label_Total.cget("text").replace("Total: ","").replace(".","")):
+    elif Montoaprobado.get() != "" and int(Montoaprobado.get().replace("$","").replace(".","")) != int(Label_Total.cget("text").replace("Total: ","").replace(".","")):
         Label_Total.config(fg="red")
         
     elif int(Label_Total.cget("text").replace("Total: ","").replace(".","")) ==0  and Montoaprobado.get()=="":
@@ -409,8 +410,8 @@ def obtener_variables(Frames):
     
     for i in range(len(Datos)):
         texto = Datos[i]
-        if texto.isdigit() or texto.replace(".","").isdigit():
-            nuevo = int(texto.replace(".",""))
+        if texto.isdigit() or texto.replace("$","").replace(".","").isdigit():
+            nuevo = int(texto.replace("$","").replace(".",""))
             Datos[i]=nuevo
 
     if str(datetime.now().year) in Datos[1]:

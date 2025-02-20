@@ -373,8 +373,8 @@ def Control_Monto_Fondo(parent):
         return "break"
 
     total = 0
-    for widget in parent.grid_slaves():
-        if widget.winfo_class() == "Entry" and widget.grid_info()["column"] == 14:
+    for widget in parent.grid_slaves(column=14):
+        if widget.winfo_class() == "Entry":
             row = widget.grid_info()["row"]
             motivo_widget = parent.grid_slaves(row=row, column=15)[0]
             motivo = motivo_widget.get()
@@ -395,7 +395,7 @@ def Control_Monto_Fondo(parent):
     elif total > 0:
         Motivo_Fondo.set("Ahorro")
     elif total == 0:
-        return "break"
+        Motivo_Fondo.set("Traslado")
     
     Movimiento_Fondo.config(text="${:,.0f}".format(abs(total)).replace(',', '.'))
 
@@ -410,12 +410,17 @@ def Control_Monto_Fondo(parent):
         Saldo_Fondo_value = int(PostResolucion_Fondo_value) - int(Movimiento_Fondo_value)
 
     # Se cambia el color del texto si el saldo es negativo
-    if Saldo_Fondo_value < 0:
-        Saldo_Fondo.config(fg="red")
-        Movimiento_Fondo.config(fg="red")
-    else:
+    try:
+        if Saldo_Fondo_value < 0:
+            Saldo_Fondo.config(fg="red")
+            Movimiento_Fondo.config(fg="red")
+        elif Saldo_Fondo_value > 0:
+            Saldo_Fondo.config(fg="black")
+            Movimiento_Fondo.config(fg="black")
+    except UnboundLocalError:
         Saldo_Fondo.config(fg="black")
         Movimiento_Fondo.config(fg="black")
+        return "break"
     
     Saldo_Fondo_value = "${:,.0f}".format(Saldo_Fondo_value).replace(',', '.') 
     Saldo_Fondo.config(text=Saldo_Fondo_value) 
@@ -490,6 +495,14 @@ def Registrar_Valores(parent,responsable):
 
     N_Filas = parent.grid_size()[1]-4
 
+    # Restricción de fondo
+    color_Saldo_Fondo = parent.grid_slaves(row=N_Filas+2,column=12)[0].cget("fg")
+    Movimiento_Fondo = int(parent.grid_slaves(row=N_Filas+2,column=14)[0].cget("text").replace('$','').replace('.',''))
+
+    if color_Saldo_Fondo == "red":
+        return messagebox.showerror("Error: Saldo negativo", "El saldo del fondo no puede ser negativo. Por favor, revise los movimientos ingresados.")
+
+
     github_url1 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Evento_Max.sql"
     github_url2 = "https://raw.githubusercontent.com/FMorety/SDP-App/refs/heads/Original/SQL-Querys/ID_Corr_Max.sql"
     response1 = requests.get(github_url1)
@@ -558,6 +571,11 @@ def Registrar_Valores(parent,responsable):
 
             Datos += [valor_widget]
 
+        if Movimiento_Fondo == 0:
+            Datos[-2] = "Traslado"
+        elif Datos[-3] == 0:
+            return messagebox.showerror("Error: Monto cero.", "Existe un movimiento de $0 en el formulario. Favor ingrese un monto valido que sea distinto de $0. Para otros casos especiales, ingresar manualemnte el cambio en la base de datos.")
+
         Planificado_Mes = SQL(f"SELECT [{nombre_mes_actual}] FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE [ID_Activo] = {Datos[2]}")
         Nuevo_Monto_Mes_Actual = int(Planificado_Mes) + Datos[-3]
 
@@ -603,11 +621,14 @@ def Registrar_Valores(parent,responsable):
         
         Datos += [valor_widget]
 
-    Planificado_Mes = SQL(f"SELECT [Diciembre] FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE [ID_Activo] = {Datos[2]}")
-    Nuevo_Monto_Mes_Actual = int(Planificado_Mes) + Datos[-3]
+    if Movimiento_Fondo == 0:
+        return limpiar_bitacora(parent,N_Filas+2,N_Filas+2)
+    else:
+        Planificado_Mes = SQL(f"SELECT [Diciembre] FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE [ID_Activo] = {Datos[2]}")
+        Nuevo_Monto_Mes_Actual = int(Planificado_Mes) + Datos[-3]
 
-    SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [Diciembre] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
-    funcion_subida_bitacora(Datos)
-    limpiar_bitacora(parent,N_Filas+2,N_Filas+2)
+        SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [Diciembre] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
+        funcion_subida_bitacora(Datos)
+        limpiar_bitacora(parent,N_Filas+2,N_Filas+2)
 
     
