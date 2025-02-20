@@ -29,6 +29,9 @@ Divisiones = {
     "Villarrica": -2800,
     "Viña del Mar": -600,
     "Liceo Renca": -700,
+    "Educación Continua": -3000,
+    "Campus Virtual": -6000,
+    "Casa Central": -100
 }
 Fondos_Centrales = {
     "Ren. Tecnologica": -8,
@@ -534,6 +537,8 @@ def Registrar_Valores(parent,responsable):
                 return
 
     for fila in range(1,N_Filas+1):
+        
+        Cierre = False
         ID_Correlativo_Max += 1
         Datos = [];    Datos += [ID_Correlativo_Max];     Datos += [Evento_Max]
 
@@ -568,8 +573,18 @@ def Registrar_Valores(parent,responsable):
                     valor_widget = -int(valor_widget.replace('$','').replace('.',''))
                 else:
                     valor_widget = int(valor_widget.replace('$','').replace('.',''))
+                
+                if "Cierre" in Motivo:
+                    Cierre = True
 
             Datos += [valor_widget]
+
+        if Cierre == True:
+            Nombre_Proyecto = parent.grid_slaves(row=fila,column=6)[0].cget("text")
+            ID_Division = parent.grid_slaves(row=fila,column=2)[0].cget("text")[5:9]
+            Division = next(   (Nombre for Nombre, id in Divisiones.items() if id == -int(ID_Division)), None ) if ID_Division.isdigit() else messagebox.showerror("Error.", "Error.")
+            
+            SQL(f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Cierres] (OCO, Division, Nombre_Solicitud) VALUES ({Datos[3]},'{Division}','{Nombre_Proyecto}'")
 
         if Movimiento_Fondo == 0:
             Datos[-2] = "Traslado"

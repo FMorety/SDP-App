@@ -62,7 +62,7 @@ def SQLConsulta(Query,lista=[],pandas=False):
         cursor.close()
         conn.close()
 
-def SQLActualizar(Query,lista=[],pandas=False):
+def SQLActualizar(Query):
 
 
     server = 'CCDNBA12021461\SQLEXPRESS'  # Ejemplo: 'localhost' o '192.168.1.100'
