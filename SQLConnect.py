@@ -51,7 +51,10 @@ def SQLConsulta(Query,lista=[],pandas=False):
         elif Query.strip().lower().startswith('select'):
             cursor.execute(Query)
             results = cursor.fetchall()
-            return int(results[0][0])
+            try:
+                return int(results[0][0])
+            except ValueError:
+                return results[0][0]
                      
     except pyodbc.Error as e:
         messagebox.showinfo("Resultado",f"Error al ejecutar la consulta. Revisar código. {e}")

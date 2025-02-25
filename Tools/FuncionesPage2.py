@@ -279,13 +279,13 @@ def Formato_Monto(monto, saldo, motivo, event):
             return "break"
         monto_value = monto.get().replace('$','').replace('.','')
         try:
-            if motivo.get() == "Ahorro":
+            if "Ahorro" in motivo.get():
                 saldo_value = saldo_value + int(monto_value) - int(monto_value[:-1])
             elif motivo.get() == "Suplemento":
                 saldo_value = saldo_value - int(monto_value) + int(monto_value[:-1])
             formatear_e_insertar(monto_value[:-1], saldo_value)
         except:
-            if motivo.get() == "Ahorro":
+            if "Ahorro" in motivo.get():
                 saldo_value = saldo_value + int(monto_value)
             elif motivo.get() == "Suplemento":
                 saldo_value = saldo_value - int(monto_value)
@@ -302,7 +302,7 @@ def Formato_Monto(monto, saldo, motivo, event):
     # Formatea el monto ingresado para que se vea mejor en la interfaz
     monto_value = monto.get().replace('$','').replace('.','') + (event.char if event.char.isdigit() else "")
 
-    if motivo.get() == "Ahorro":
+    if "Ahorro" in motivo.get():
         saldo_value = saldo_value + int(monto_value[:-1] if monto.get()!='' else 0) - int(monto_value)
         if saldo_value < 0:
             return "break"
