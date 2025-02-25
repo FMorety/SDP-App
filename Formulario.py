@@ -5,6 +5,8 @@ from Paginas.Ingreso_Solicitud import *
 from Paginas.Bitacora import *
 from Paginas.Cierres import *
 
+responsables_dic = {"DDF": "Deni De Ferrari", "FMR": "Fabio Morety", "MCM": "Maricela Cortez", "PTV": "Pamela Toro", "CFM": "Clara Fuentes"}
+
 def variable_global():
     global Contador2
     global Responsable
@@ -15,11 +17,11 @@ class Registro:
     def __init__ (self,ventana):
 
         self.window = ventana
-        self.window.title("Formulario para Base de Datos")
+        self.window.title(f"Formulario para Base de Datos   -   Responsable: {responsables_dic[Responsable]}")
 
         self.original_geometry = "1025x425"
         self.expanded_geometry = "1250x425"
-        self.little_geometry = "400x150"
+        self.little_geometry = "400x175"
         self.window.geometry(self.original_geometry)
 
         self.window.resizable(0,0)
@@ -70,7 +72,7 @@ def solicitar_responsable():
     top.geometry("300x100")
 
     # Crear un Combobox con valores predefinidos
-    responsables = ["DDF", "FMR", "MCM", "PTV", "CFM"]
+    responsables = list(responsables_dic.keys())
     responsable_var = StringVar()
     label = tk.Label(top,text="Ingrese el responsable:")
     label.pack(side="top")

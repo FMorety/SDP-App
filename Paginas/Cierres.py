@@ -11,16 +11,16 @@ def Form_Cierres(parent,responsable):
 
     Matriz_CAPEX = Data_Bitacora()
 
-    marco = tk.LabelFrame(parent,text="Seguimiento Cierres de OCOS.",font=("Arial",9,"bold")); marco.pack(side="top",padx=12,pady=5 ,ipady=5, ipadx=5, fill="both", expand="yes")
+    marco = tk.LabelFrame(parent,text="Seguimiento Cierre OCOS",font=("Arial",9,"bold")); marco.pack(side="top",padx=12,pady=8 ,ipady=5, ipadx=5, fill="both", expand="yes")
 
-    Label_OCO = tk.Label(marco, text="OCO",font=("Arial",9,"bold")); Label_OCO.grid(row=0,column=0,pady=2,padx=5)
-    OCO = tk.Entry(marco,bd=1, highlightthickness=1, highlightbackground="gray",width=15,justify="center",font=("Open Sans",10)); OCO.grid(row=1,column=0,pady=2,padx=5)
+    Label_OCO = tk.Label(marco, text="OCO",font=("Arial",9,"bold")); Label_OCO.grid(row=0,column=0,pady=(13,7),padx=5)
+    OCO = tk.Entry(marco,bd=1, highlightthickness=1, highlightbackground="gray",width=15,justify="center",font=("Open Sans",10)); OCO.grid(row=1,column=0,pady=2,padx=(20,10))
     OCO.bind("<KeyPress>",lambda event: FormatoOCO(OCO,event))
 
-    Label_Estado = tk.Label(marco, text="Estado Cierre",font=("Arial",9,"bold")); Label_Estado.grid(row=0,column=1,pady=2,padx=5)
+    Label_Estado = tk.Label(marco, text="Estado Cierre",font=("Arial",9,"bold")); Label_Estado.grid(row=0,column=1,pady=(13,7),padx=10)
     Estado = ttk.Combobox(marco, values=["Por Solicitar","Solicitado","Cerrado"], state="readonly",width=10); Estado.grid(row=1,column=1,pady=2,padx=5); Estado.set("Por Solicitar")
 
-    Registrar = tk.Button(marco,text="Registrar",width=8, command= lambda : Registrar_Cierres(responsable,OCO,Estado,Matriz_CAPEX));Registrar.grid(row=1,column=2,pady=2,padx=5)
+    Registrar = tk.Button(marco,text="Registrar",width=8, command= lambda : Registrar_Cierres(responsable,OCO,Estado,Matriz_CAPEX));Registrar.grid(row=1,column=2,pady=2,padx=10)
 
 def FormatoOCO(widget,event):
     
@@ -64,12 +64,9 @@ def Registrar_Cierres(responsable,oco,estado,matriz):
 
     # Obtener el menor ID_Activo
     OCO = oco.get()
-    menor_id_activo = int(matriz.loc[matriz['OCO'] == int(OCO), 'ID_Activo'].min())
        
     # --------------------------------------------------------------------------------------------------------- #
 
-    Datos = [ID_Correlativo_Max, Evento_Max, menor_id_activo, int(OCO), responsable, fecha_hora_actual, 0, f"Estado: {estado.get()}", f"{responsable} ha actualizado el estado de cierre de la OCO {OCO}"]
-    
     if OCO[0] == "1" and len(OCO) != 9:
         return messagebox.showerror("Error: OCO","Ingrese un código de OCO válido. La OCO debe tener 9 digitos.")
     elif OCO[0] != "1" and len(OCO) != 8:
@@ -86,6 +83,8 @@ def Registrar_Cierres(responsable,oco,estado,matriz):
     if not Validacion_Cierre and Validacion_Matriz:
         return messagebox.showerror("Error: OCO","La OCO señalada no se encuentra registrada en la Matriz CAPEX.")
     elif not Validacion_Cierre and not Validacion_Matriz:
+        menor_id_activo = int(matriz.loc[matriz['OCO'] == int(OCO), 'ID_Activo'].min())
+        Datos = [ID_Correlativo_Max, Evento_Max, menor_id_activo, int(OCO), responsable, fecha_hora_actual, 0, f"Estado: {estado.get()}", f"{responsable} ha actualizado el estado de cierre de la OCO {OCO}"]
         cierre_nuevo = messagebox.askyesno("OCO no encontrada.","La OCO señalada no se encontró en el listado de OCOs en proceso de cierre. ¿Desea incluir esta nueva OCO al listado?")
         if cierre_nuevo:
             try:
