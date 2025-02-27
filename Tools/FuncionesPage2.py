@@ -420,6 +420,10 @@ def Control_Monto_Fondo(parent):
         elif Saldo_Fondo_value > 0:
             Saldo_Fondo.config(fg="black")
             Movimiento_Fondo.config(fg="black")
+        else:
+            Saldo_Fondo.config(fg="black")
+            Movimiento_Fondo.config(fg="black")
+            
     except UnboundLocalError:
         Saldo_Fondo.config(fg="black")
         Movimiento_Fondo.config(fg="black")

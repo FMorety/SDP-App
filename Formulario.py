@@ -4,20 +4,24 @@ from datetime import *
 from Paginas.Ingreso_Solicitud import *
 from Paginas.Bitacora import *
 from Paginas.Cierres import *
+import os
 
-responsables_dic = {"DDF": "Deni De Ferrari", "FMR": "Fabio Morety", "MCM": "Maricela Cortez", "PTV": "Pamela Toro", "CFM": "Clara Fuentes"}
+responsables_dic = {"dsantisd": "Deni De Ferrari", "fmorety": "Fabio Morety", "mcortezm": "Maricela Cortez", "ptorov": "Pamela Toro", "cfuentesml": "Clara Fuentes"}
+responsables_bit = {"dsantisd": "DDF", "fmorety": "FMR", "mcortezm": "MCM", "ptorov": "PTV", "cfuentesml": "CFM"}
 
 def variable_global():
     global Contador2
     global Responsable
+    global Responsable_init
     Responsable = ""
+    Responsable_init = ""
 
 class Registro:
 
     def __init__ (self,ventana):
 
         self.window = ventana
-        self.window.title(f"Formulario para Base de Datos   -   Responsable: {responsables_dic[Responsable]}")
+        self.window.title(f"Formulario para Base de Datos   -   Responsable: {responsables_dic[Responsable_init] if Responsable_init in responsables_dic else Responsable}")
 
         self.original_geometry = "1025x425"
         self.expanded_geometry = "1250x425"
@@ -62,32 +66,10 @@ class Registro:
             self.window.geometry(self.little_geometry)
 
 def solicitar_responsable():
-    global Responsable
-    root = Tk()
-    root.withdraw()  # Ocultar la ventana principal temporalmente
-
-    # Crear una ventana emergente para seleccionar el responsable
-    top = Toplevel(root)
-    top.title("Responsable")
-    top.geometry("300x100")
-
-    # Crear un Combobox con valores predefinidos
-    responsables = list(responsables_dic.keys())
-    responsable_var = StringVar()
-    label = tk.Label(top,text="Ingrese el responsable:")
-    label.pack(side="top")
-    combobox = ttk.Combobox(top, textvariable=responsable_var, values=responsables, state="readonly")
-    combobox.pack(pady=5)
-
-    def on_select():
-        global Responsable
-        Responsable = responsable_var.get()
-        top.destroy()
-        root.destroy()
-
-        # Botón para confirmar la selección
-    Button(top, text="Aceptar", command=on_select).pack(pady=10)
-    root.mainloop()
+    global Responsable, Responsable_init
+    Responsable = os.getlogin()
+    Responsable = responsables_bit[Responsable]
+    Responsable_init = os.getlogin()
 
 if __name__ == "__main__":
     variable_global()

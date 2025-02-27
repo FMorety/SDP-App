@@ -66,7 +66,7 @@ def Form_Ingreso_Solicitud(parent,responsable):
     NomSol.bind("<Double-1>",lambda event: Prohibir_Seleccion(event))
 
         #Descripción Solicitud#
-    DesSol = crear_text(Frame_Bottom,"*Descripción Solicitud:",3,0); limitar_caracteres2(DesSol)
+    DesSol = crear_text(Frame_Bottom,"Descripción Solicitud:",3,0); limitar_caracteres2(DesSol)
 
         #MacroAgrupación#
     Lista_MacroAgr = ["Accesibilidad Universal","Biblioteca","Desarrollo Informático","DIAITT","Infraestructura Crítica","Renovación Tecnológica 2020","Sala de Lactancia","Seguridad Integral"]

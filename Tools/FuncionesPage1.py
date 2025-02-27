@@ -87,6 +87,8 @@ def limitar_caracteres(entry_widget, max_length, EsNumero=0):
                 return "break"
             else:
                 return  # Permite borrar caracteres
+        elif event.keysym == "Tab":
+            return
         if len(entry_widget.get()) >= max_length:
             # Cancelar entrada si ya se alcanzó el límite
             return "break"
@@ -112,8 +114,11 @@ def limitar_caracteres2(entry_widget):
             largo = entry_widget.get("1.0", tk.END)
         
         # Permitir solo letras como primer carácter
-        if not event.char.isalpha() and event.char not in ("\b", "\x7f","-") and len(largo)<=2:
+        if event.keysym == "Tab":
+            return
+        elif not event.char.isalpha() and event.char not in ("\b", "\x7f","-") and len(largo)<=2:
             return "break"
+        
     entry_widget.bind("<KeyPress>",validar_entrada)
 
 def Instancias_Disponibles():
@@ -169,6 +174,8 @@ def FormatearNumero(entry_widget,Frames=None):
         widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-3]
         if event.keysym in ("BackSpace", "Delete"):
             widget_insert.delete(len(widget_insert.get()) - 1, tk.END)
+        elif event.keysym == "Tab":
+            return
         else:
             widget_insert.insert(len(widget_insert.get()),event.char)
 
@@ -200,6 +207,8 @@ def Formato_OCO(widget, Ejecutor, event):
             return "break"  # Bloquear si intenta borrar antes del prefijo o antes del 3er carácter
         else:
             return  # Permitir borrar
+    elif event.keysym == "Tab":
+        return
 
     # Bloquear caracteres no numéricos
     if not event.char.isdigit():
