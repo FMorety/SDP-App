@@ -68,7 +68,7 @@ class Registro:
 def solicitar_responsable():
     global Responsable, Responsable_init
     Responsable = os.getlogin()
-    Responsable = responsables_bit[Responsable]
+    Responsable = responsables_bit[Responsable] if Responsable in responsables_bit else Responsable
     Responsable_init = os.getlogin()
 
 if __name__ == "__main__":
