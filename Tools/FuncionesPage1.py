@@ -135,11 +135,8 @@ def FormatearNumero(entry_widget,Frames=None):
     # Función para formatear el monto como moneda (con separación de miles y 2 decimales)
     def format_money(value,event):
         global Contador2
-        if Contador2 == 1:  # Verifica que Contador2 sea 1 para no ejecutar la función
-            return
-        elif not event.char.isdigit():
-            return
-        elif len(entry_widget.get())==0 and event.char=="0":
+
+        if len(entry_widget.get())==0 and event.char=="0":
             return
 
         # Elimina cualquier caracter que no sea un dígito o punto
@@ -159,7 +156,7 @@ def FormatearNumero(entry_widget,Frames=None):
             widget_insert.insert(0, formatted_value)
     
     def formato_entry(event):
-       monto_value = entry_widget.get() + event.char
+       monto_value = (entry_widget.get() + event.char) if event.char.isdigit() else entry_widget.get()
        if monto_value.strip():
             formatted_value = format_money(monto_value,event)
             entry_widget.delete(0, 'end')
@@ -171,20 +168,26 @@ def FormatearNumero(entry_widget,Frames=None):
 
     def aplicar_formato(event):
        
-        widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-3]
+        if Contador2 != 1 and Frames != None:
+            widget_insert = Frames.grid_slaves()[len(Frames.grid_slaves())-3]
+            if event.keysym in ("BackSpace", "Delete"):
+                widget_insert.delete(len(widget_insert.get()) - 1, tk.END)
+            else:
+                widget_insert.insert(len(widget_insert.get()),event.char)
+
         if event.keysym in ("BackSpace", "Delete"):
-            widget_insert.delete(len(widget_insert.get()) - 1, tk.END)
+            entry_widget.delete(len(entry_widget.get()) - 1, tk.END)
+            formato_entry(event)
+            formato_insert(event)
         elif event.keysym == "Tab":
             return
-        else:
-            widget_insert.insert(len(widget_insert.get()),event.char)
-
-        formato_entry(event)
-        formato_insert(event)
+        elif event.char.isdigit() or event.char in (".", ","):
+            formato_entry(event)
+            formato_insert(event)
 
         return "break"
         
-    entry_widget.bind("<KeyPress>", aplicar_formato if Frames != None else None)
+    entry_widget.bind("<KeyPress>", aplicar_formato)
     entry_widget.bind('<FocusOut>', validar_focusout)
 
 def format_money(value):
