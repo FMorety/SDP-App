@@ -57,18 +57,21 @@ def Formato_NomSol(widget,listaverbos,event):
     
     NomSol = widget
     Verbo = NomSol.get().split(" ")[0]
+    Posicion_Cursor = NomSol.index(tk.INSERT)
+
+    if Posicion_Cursor < len(Verbo):
+        return "break"  # Bloquear si intenta ingresar un carácter dentro del verbo
 
     while Verbo not in listaverbos:
         Verbo = Verbo[:-1]
 
     if event.keysym in ("BackSpace", "Delete"):
-        Posicion_Cursor = NomSol.index(tk.INSERT)
         if Posicion_Cursor < len(Verbo)+1:
             return "break"  # Bloquear si intenta borrar antes del prefijo
         else:
             return  # Permitir borrar
 
-def Prohibir_Seleccion(event):
+def Prohibir_Seleccion(event,widget=None):
     return "break"
 
 def limitar_caracteres(entry_widget, max_length, EsNumero=0):

@@ -128,12 +128,14 @@ def actualizar_info(info, ID, parent):
                         widget.grid(padx=70 - len(value))
                     elif key == "OCO" or key == "ID_Solicitud":
                         widget.grid(padx=25 - len(str(value)))
+                    elif key == "Post_Resolucion2":
+                        widget.config(fg="dark green")
                     break
     else:
         for widget in parent.grid_slaves():
             fila_actual = ID.grid_info()["row"]
             if widget.winfo_class() == "Label" and widget.grid_info()["row"] == fila_actual:
-                widget.config(text="-")
+                widget.config(text="-",fg="black")
 
 def Entrega_Info(ID, parent, matriz, event):
     
@@ -267,7 +269,7 @@ def Formato_Monto(monto, saldo, motivo, event):
     
     def formatear_e_insertar(monto_value, saldo_value):
         saldo_value = "${:,.0f}".format(saldo_value).replace(',', '.')
-        saldo.config(text=saldo_value)
+        saldo.config(text=saldo_value, fg= "black" if saldo_value == "$0" else "dark green")
         monto_value = re.sub(r'[^\d]', '', str(monto_value))
         monto_value = "${:,.0f}".format(int(monto_value)).replace(',', '.')
         monto.delete(0, tk.END)
@@ -305,7 +307,8 @@ def Formato_Monto(monto, saldo, motivo, event):
     if "Ahorro" in motivo.get():
         saldo_value = saldo_value + int(monto_value[:-1] if monto.get()!='' else 0) - int(monto_value)
         if saldo_value < 0:
-            return "break"
+            monto_value = int(monto_value)+saldo_value
+            saldo_value = 0
     elif motivo.get() == "Suplemento":
         saldo_value = saldo_value - int(monto_value[:-1] if monto.get()!='' else 0) + int(monto_value)
     
@@ -418,8 +421,8 @@ def Control_Monto_Fondo(parent):
             Saldo_Fondo.config(fg="red")
             Movimiento_Fondo.config(fg="red")
         elif Saldo_Fondo_value > 0:
-            Saldo_Fondo.config(fg="black")
-            Movimiento_Fondo.config(fg="black")
+            Saldo_Fondo.config(fg="dark green")
+            Movimiento_Fondo.config(fg="dark green")
         else:
             Saldo_Fondo.config(fg="black")
             Movimiento_Fondo.config(fg="black")

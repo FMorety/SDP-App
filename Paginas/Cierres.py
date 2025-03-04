@@ -72,10 +72,9 @@ def Registrar_Cierres(responsable,oco,estado,matriz):
     elif OCO[0] != "1" and len(OCO) != 8:
         return messagebox.showerror("Error: OCO","Ingrese un código de OCO válido. La OCO debe tener 8 digitos.")
     
-    Validacion_Cierre = SQL(f"SELECT [OCO] FROM [Subdireccion de Proyectos BBDD].[dbo].[Cierres] WHERE [OCO] = {OCO}")
+    Validacion_Cierre = SQLActualizar(f"SELECT [OCO] FROM [Subdireccion de Proyectos BBDD].[dbo].[Cierres] WHERE [OCO] = {OCO}")
     Validacion_Matriz = matriz[matriz['OCO'] == int(OCO)].empty
-    Validacion_Estado = SQL(f"SELECT [Estado_Cierre] FROM [Subdireccion de Proyectos BBDD].[dbo].[Cierres] WHERE [OCO] = {OCO}")
-    print(Validacion_Estado)
+    Validacion_Estado = SQLActualizar(f"SELECT [Estado_Cierre] FROM [Subdireccion de Proyectos BBDD].[dbo].[Cierres] WHERE [OCO] = {OCO}")
 
     if Validacion_Estado == estado.get():
         return messagebox.showerror("Error: Estado","El estado de cierre seleccionado ya se encuentra registrado en la base de datos.")
