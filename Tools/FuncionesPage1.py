@@ -59,7 +59,7 @@ def Formato_NomSol(widget,listaverbos,event):
     Verbo = NomSol.get().split(" ")[0]
     Posicion_Cursor = NomSol.index(tk.INSERT)
 
-    if Posicion_Cursor < len(Verbo):
+    if Posicion_Cursor < len(Verbo) and event.keysym not in ["Left","Right","Home","End"]:
         return "break"  # Bloquear si intenta ingresar un carácter dentro del verbo
 
     while Verbo not in listaverbos:
@@ -70,6 +70,8 @@ def Formato_NomSol(widget,listaverbos,event):
             return "break"  # Bloquear si intenta borrar antes del prefijo
         else:
             return  # Permitir borrar
+    else:
+        return
 
 def Prohibir_Seleccion(event,widget=None):
     return "break"
@@ -119,8 +121,8 @@ def limitar_caracteres2(entry_widget):
         # Permitir solo letras como primer carácter
         if event.keysym == "Tab":
             return
-        elif not event.char.isalpha() and event.char not in ("\b", "\x7f","-") and len(largo)<=2:
-            return "break"
+        else:
+            return
         
     entry_widget.bind("<KeyPress>",validar_entrada)
 
@@ -769,6 +771,9 @@ def Ejecutor_Auto(Ejecutor, NombreSolicitud, MacroAgr, FramesInternos):
                 NombreSolicitud.set(NombreSolicitud['values'][0]) if NombreSolicitud.get() not in NombreSolicitud['values'] else None
             elif Ejecutor.get() == "DSI":
                 NombreSolicitud.config(values=["Adquisición","Ampliación","Construcción","Habilitación","Instalación","Mejoramiento","Normalización","Regularización","Renovación","Reparación"])
+                NombreSolicitud.set(NombreSolicitud['values'][0]) if NombreSolicitud.get() not in NombreSolicitud['values'] else None
+            elif Ejecutor.get() == "SEDE":
+                NombreSolicitud.config(values=["Adquisición","Habilitación","Instalación","Mejoramiento","Normalización","Regularización","Renovación","Reparación"])
                 NombreSolicitud.set(NombreSolicitud['values'][0]) if NombreSolicitud.get() not in NombreSolicitud['values'] else None
 
             Cruce_TipoItem_Cuenta(TipoItem,Cuenta,["61070000","61075000","61080000"])

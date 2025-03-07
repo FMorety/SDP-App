@@ -62,8 +62,6 @@ def Form_Ingreso_Solicitud(parent,responsable):
     Verbos = ["Adquisición","Ampliación","Construcción","Habilitación","Instalación","Mejoramiento","Normalización","Regularización","Renovación","Reparación"]
     NomSol = crear_combobox(Frame_Bottom,"Nombre Solicitud:",Verbos,2,0,estado="normal"); NomSol.set(NomSol['values'][0])
     NomSol.bind("<KeyPress>",lambda event: Formato_NomSol(NomSol,NomSol['values'],event))
-    NomSol.bind("<B1-Motion>",lambda event: Prohibir_Seleccion(event))
-    NomSol.bind("<Double-1>",lambda event: Prohibir_Seleccion(event))
 
         #Descripción Solicitud#
     DesSol = crear_text(Frame_Bottom,"Descripción Solicitud:",3,0); limitar_caracteres2(DesSol)
@@ -179,7 +177,7 @@ def Form_Ingreso_Solicitud(parent,responsable):
     Nuevo_Item = Button(Frame_Botones,text="Nuevo Item",command=lambda: Frame_de_Item(scrollable_frame,MarcosInternos,Ejecutor),width=10)
     Nuevo_Item.grid(row=0,column=2,sticky="n",padx=(20,0))
 
-        # ---------- Automatización OCO/Cuenta/Equipamiento ---------- #    
+        # ---------- Automatización OCO/Verbo/Cuenta/Equipamiento ---------- #    
 
     Ejecutor_Auto(Ejecutor, NomSol, MacroAgrupacion, MarcosInternos)
     

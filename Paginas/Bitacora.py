@@ -67,7 +67,7 @@ def Form_Bitacora(parent,responsable):
 
     linea5 = agregar_linea(scrollable_frame,0,0,0,20); linea5.grid(row=1,column=11,sticky="ew")
 
-    Label_Saldo = tk.Label(scrollable_frame, text="Saldo PostRe",font=("Arial",9,"bold")); Label_Saldo.grid(row=0,column=12,padx=(4,20),pady=2)
+    Label_Saldo = tk.Label(scrollable_frame, text="Nueva PostRe",font=("Arial",9,"bold")); Label_Saldo.grid(row=0,column=12,padx=(4,20),pady=2)
     Saldo = tk.Label(scrollable_frame, text="-",font=("Arial",9)); Saldo.grid(row=1,column=12,padx=(4,20))
 
     linea = agregar_linea(scrollable_frame,0,5,0,80); linea.grid(row=0,column=13,rowspan=2,sticky="ew") 
@@ -76,7 +76,7 @@ def Form_Bitacora(parent,responsable):
     Movimiento = tk.Entry(scrollable_frame, bd=1, highlightthickness=1, highlightbackground="gray",font=("Open Sans",10),width=14,justify="center"); Movimiento.grid(row=1,column=14,padx=(20,5))
     Movimiento.bind("<KeyPress>",lambda event: Reglas_Monto(Movimiento,Saldo,Motivo,scrollable_frame,event))
 
-    Label_Motivo = tk.Label(scrollable_frame, text="Motivo",font=("Arial",9,"bold")); Label_Motivo.grid(row=0,column=15,pady=2,padx=5)
+    Label_Motivo = tk.Label(scrollable_frame, text="Tipo Movimiento",font=("Arial",9,"bold")); Label_Motivo.grid(row=0,column=15,pady=2,padx=5)
     Motivo = ttk.Combobox(scrollable_frame, values=["Ahorro","Suplemento","Ahorro / Cierre","Bajar"], state="readonly"); Motivo.grid(row=1,column=15,padx=5)
     Motivo.set(Motivo['values'][1])
     Motivo.bind("<<ComboboxSelected>>",lambda event: Motivo_Seleccionado(Motivo,Monto_PostRe,Saldo,Movimiento))
