@@ -34,6 +34,8 @@ Divisiones = {
     "Casa Central": -100
 }
 Fondos_Centrales = {
+    "Libros Digitales": -247,
+    "Libros Físicos": -246,
     "Ren. Tecnologica": -8,
     "Des. Informatico": -7,
     "Seg. Integral": -6,

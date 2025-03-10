@@ -58,7 +58,7 @@ def SQLConsulta(Query,lista=[],pandas=False):
                      
     except pyodbc.Error as e:
         messagebox.showinfo("Resultado",f"Error al ejecutar la consulta. Revisar código. {e}")
-        print(e)
+        print(e); return e
 
     finally:
         # Cerrar el cursor y la conexión
