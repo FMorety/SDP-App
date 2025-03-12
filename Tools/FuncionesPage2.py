@@ -451,6 +451,7 @@ def limpiar_bitacora(parent,fila,fila_max=None):
     for widget in parent.grid_slaves(row=fila):
 
         if widget.winfo_class() == "Entry":
+            widget.config(state="normal")
             widget.delete(0,tk.END)
         elif widget.winfo_class() == "TCombobox":
             if widget.grid_info()["row"] == fila_max:
@@ -600,11 +601,17 @@ def Registrar_Valores(parent,responsable):
         elif Datos[-3] == 0:
             return messagebox.showerror("Error: Monto cero.", "Existe un movimiento de $0 en el formulario. Favor ingrese un monto valido que sea distinto de $0. Para otros casos especiales, ingresar manualemnte el cambio en la base de datos.")
 
+        subida_a_bitacora = funcion_subida_bitacora(Datos)
+        if subida_a_bitacora is None:
+            return
         Planificado_Mes = SQL(f"SELECT [{nombre_mes_actual}] FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE [ID_Activo] = {Datos[2]}")
         Nuevo_Monto_Mes_Actual = int(Planificado_Mes) + Datos[-3]
 
-        SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [{nombre_mes_actual}] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
-        funcion_subida_bitacora(Datos)
+        Accion_Update = SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [{nombre_mes_actual}] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
+        
+        if Accion_Update is None or Planificado_Mes is None:
+            return # Retorna en caso de error
+        
         limpiar_bitacora(parent,fila,N_Filas+2)
 
     # Se reinicia la lista de datos a subir.
@@ -648,9 +655,11 @@ def Registrar_Valores(parent,responsable):
     if Movimiento_Fondo == 0:
         return limpiar_bitacora(parent,N_Filas+2,N_Filas+2)
     else:
+        subida_a_bitacora = funcion_subida_bitacora(Datos)
+        if subida_a_bitacora is None:
+            return
         Planificado_Mes = SQL(f"SELECT [Diciembre] FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE [ID_Activo] = {Datos[2]}")
         Nuevo_Monto_Mes_Actual = int(Planificado_Mes) + Datos[-3]
 
         SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [Diciembre] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
-        funcion_subida_bitacora(Datos)
         limpiar_bitacora(parent,N_Filas+2,N_Filas+2)

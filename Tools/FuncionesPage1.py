@@ -8,7 +8,7 @@ from tkinter import messagebox
 import re
 import requests
 
-from SQLConnect import SQLConsulta as SQL, funcion_subida_matriz, funcion_subida_bitacora
+from SQLConnect import SQLConsulta as SQL, funcion_subida_matriz, funcion_subida_bitacora, SQLActualizar
 
 Divisiones = {
     "Alameda": 1000,
@@ -584,16 +584,26 @@ def Registrar_Valores(Frames,FramesInternos,responsable):
                 return
             elif result:
                 print(Datos)
-                funcion_subida_matriz(Datos)
-                funcion_subida_bitacora(Datos_Bitacora)
                 
+                subida_proyecto = funcion_subida_matriz(Datos)
+                if subida_proyecto is None:
+                    return
+            
+                subida_bitacora = funcion_subida_bitacora(Datos_Bitacora)
+                if subida_bitacora is None:
+                    SQLActualizar(f"DELETE FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE ID_Activo = {Datos[0]}")
+                    return
                 
         else:
             print(Datos)
-            funcion_subida_matriz(Datos)
-            funcion_subida_bitacora(Datos_Bitacora)
-    
-    limpiar_widgets(Frames,FramesInternos)
+            subida_proyecto = funcion_subida_matriz(Datos)
+            if subida_proyecto is None:
+                return
+        
+            subida_bitacora = funcion_subida_bitacora(Datos_Bitacora)
+            if subida_bitacora is None:
+                SQLActualizar(f"DELETE FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE ID_Activo = {Datos[0]}")
+                return
 
 def Sabana_2025(Division,Escuela,Carrera,Subcartera,checkbox,ID_Sol_Widget):
     

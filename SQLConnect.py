@@ -58,7 +58,7 @@ def SQLConsulta(Query,lista=[],pandas=False):
                      
     except pyodbc.Error as e:
         messagebox.showinfo("Resultado",f"Error al ejecutar la consulta. Revisar código. {e}")
-        print(e); return e
+        print(e); return None
 
     finally:
         # Cerrar el cursor y la conexión
@@ -85,22 +85,25 @@ def SQLActualizar(Query):
 
     cursor = conn.cursor()
 
-    cursor.execute(Query)
-    conn.commit()                   
-
-    cursor.close()
-    conn.close()
+    try:
+        cursor.execute(Query)
+        conn.commit()
+    except pyodbc.Error as e:
+        messagebox.showinfo("Resultado", f"Error al ejecutar la consulta. Revisar código. {e}")
+        print(e)
+        return None  # Devuelve None en caso de error
+    finally:
+        cursor.close()
+        conn.close()
 
 def funcion_subida_bitacora(datos):
     placeholders = ", ".join("?" for _ in range(len(datos)))
     SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Bitacora] VALUES ("
             
-    SQLConsulta(SQL_Insert,lista=datos)
+    return SQLConsulta(SQL_Insert,lista=datos)
 
 def funcion_subida_matriz(datos):
     placeholders = ", ".join("?" for _ in range(len(datos)))
     SQL_Insert = f"INSERT INTO [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] VALUES ("
             
-    SQLConsulta(SQL_Insert,lista=datos)
-
-
+    return SQLConsulta(SQL_Insert,lista=datos)
