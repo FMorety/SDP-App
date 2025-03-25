@@ -504,7 +504,7 @@ def Obtener_Fondos(parent,matriz):
 
     Entrega_Info_Fondo(fondos_combobox,parent,matriz)
 
-def Registrar_Valores(parent,responsable):
+def Registrar_Valores(parent,responsable,matriz):
 
     N_Filas = parent.grid_size()[1]-4
 
@@ -555,7 +555,12 @@ def Registrar_Valores(parent,responsable):
         Datos_Fila = parent.grid_slaves(row=fila)
         Datos_Fila = Datos_Fila[::-1]
         
-        grupo_widgets = [1,4,6,8,14,15,16] if fila == N_Filas else [0,3,5,7,12,13,14]
+        if isinstance(Datos_Fila[0],ttk.Button) and isinstance(Datos_Fila[-1],tk.Entry):
+            grupo_widgets = [1,4,6,8,14,15,16] 
+        elif isinstance(Datos_Fila[0],tk.Entry) and isinstance(Datos_Fila[-1],tk.Canvas):
+            grupo_widgets = [0,3,5,7,12,13,14]
+        elif isinstance(Datos_Fila[0],ttk.Button) and isinstance(Datos_Fila[-1],tk.Canvas):
+            grupo_widgets = [1,4,6,8,13,14,15]
 
         for index, widget in enumerate(Datos_Fila):
 
@@ -569,7 +574,7 @@ def Registrar_Valores(parent,responsable):
                     valor_widget = widget.get()
             else:
                 continue
-                        
+            print(valor_widget)
             if index == grupo_widgets[2]:
                 valor_widget = responsable
             elif index == grupo_widgets[3]:
@@ -602,17 +607,19 @@ def Registrar_Valores(parent,responsable):
             return messagebox.showerror("Error: Monto cero.", "Existe un movimiento de $0 en el formulario. Favor ingrese un monto valido que sea distinto de $0. Para otros casos especiales, ingresar manualemnte el cambio en la base de datos.")
 
         subida_a_bitacora = funcion_subida_bitacora(Datos)
-        if subida_a_bitacora is None:
-            return
+        if subida_a_bitacora == "Error":
+            return # Retorna en caso de error
         Planificado_Mes = SQL(f"SELECT [{nombre_mes_actual}] FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE [ID_Activo] = {Datos[2]}")
         Nuevo_Monto_Mes_Actual = int(Planificado_Mes) + Datos[-3]
 
         Accion_Update = SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [{nombre_mes_actual}] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
-        
-        if Accion_Update is None or Planificado_Mes is None:
-            return # Retorna en caso de error
-        
         limpiar_bitacora(parent,fila,N_Filas+2)
+        
+        if Accion_Update == "Error" or Planificado_Mes == "Error":
+            return # Retorna en caso de error
+        else:
+            matriz.loc[ matriz['ID_Activo'] == Datos[2], 'Post_Resolucion' ] = matriz.loc[ matriz['ID_Activo'] == Datos[2], 'Post_Resolucion' ].values[0] + Datos[-3]
+            matriz.loc[ matriz['ID_Activo'] == Datos[2], 'Post_Resolucion2' ] = matriz.loc[ matriz['ID_Activo'] == Datos[2], 'Post_Resolucion2' ].values[0] + Datos[-3]
 
     # Se reinicia la lista de datos a subir.
     Datos = [ID_Correlativo_Max+1,Evento_Max]
@@ -656,10 +663,15 @@ def Registrar_Valores(parent,responsable):
         return limpiar_bitacora(parent,N_Filas+2,N_Filas+2)
     else:
         subida_a_bitacora = funcion_subida_bitacora(Datos)
-        if subida_a_bitacora is None:
+        if subida_a_bitacora == "Error":
             return
         Planificado_Mes = SQL(f"SELECT [Diciembre] FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE [ID_Activo] = {Datos[2]}")
         Nuevo_Monto_Mes_Actual = int(Planificado_Mes) + Datos[-3]
 
         SQLActualizar(f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] SET [Diciembre] = {Nuevo_Monto_Mes_Actual} WHERE [ID_Activo] = {Datos[2]}")
         limpiar_bitacora(parent,N_Filas+2,N_Filas+2)
+
+        matriz.loc[ matriz['ID_Activo'] == Datos[2], 'Post_Resolucion' ] = matriz.loc[ matriz['ID_Activo'] == Datos[2], 'Post_Resolucion' ].values[0] + Datos[-3]
+        matriz.loc[ matriz['ID_Activo'] == Datos[2], 'Post_Resolucion2' ] = matriz.loc[ matriz['ID_Activo'] == Datos[2], 'Post_Resolucion2' ].values[0] + Datos[-3]
+
+    return messagebox.showinfo("Movimientos registrados", "Los movimientos han sido registrados exitosamente en la base de datos.")

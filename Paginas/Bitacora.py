@@ -32,7 +32,7 @@ def Form_Bitacora(parent,responsable):
     canvas.pack(side="left", fill="both", expand=True)
     scrollbar_y.pack(side="right", fill="y")
     
-    Registrar_Bitacora = ttk.Button(Frame_botones,text="Registrar Movimientos",width=20,command= lambda: Registrar_Valores(scrollable_frame,responsable))
+    Registrar_Bitacora = ttk.Button(Frame_botones,text="Registrar Movimientos",width=20,command= lambda: Registrar_Valores(scrollable_frame,responsable,Matriz_CAPEX))
     Registrar_Bitacora.pack()
 
     AgregarMovimiento = ttk.Button(scrollable_frame,text="+",width=3,command=lambda: Agregar_Movimiento(AgregarMovimiento,scrollable_frame,Matriz_CAPEX,linea))
