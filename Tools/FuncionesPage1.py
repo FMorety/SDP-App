@@ -635,7 +635,6 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera,checkbox,ID_Sol_Widget):
         f"Escuela de {clave}": (valor.zfill(2), f"Escuela de {clave}") 
         for clave, valor in Sabana[['Escuela', 'Cod_Escuela']].drop_duplicates().values
     }
-    
         #   Diccionario de carreras
 
     Carreras = [
@@ -685,15 +684,16 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera,checkbox,ID_Sol_Widget):
             Lista_Carreras = set()
 
             Cod_Division = Sedes[Division.get() if event != None else 'Alameda'][0]
-
+            
             for codigo in Carreras:
 
                 if Cod_Division == str(codigo[0][0:2]):
                     Cod_Escuela = str(codigo[0][3:5])
                     Nombre_Escuela = next((escuela[1] for escuela in Escuelas.values() if escuela[0] == Cod_Escuela), None)
-
+                    
                     if Nombre_Escuela:
                         Lista_Escuelas.add(Nombre_Escuela)
+                
 
 
             Lista_Escuelas = list(Lista_Escuelas)
