@@ -706,7 +706,7 @@ def Sabana_2025(Division,Escuela,Carrera,Subcartera,checkbox,ID_Sol_Widget):
                         Lista_Carreras.add(codigo[1])
 
             Lista_Carreras = list(Lista_Carreras);  Lista_Carreras2 = [" ".join([palabra.capitalize() if (len(palabra) > 3 and '/' not in palabra) else palabra.lower() for palabra in s.split()]) for s in Lista_Carreras];     Lista_Carreras2[0:0] = ["Todas"]
-            Carrera.config(state="readonly",values=Lista_Carreras2); Carrera.set(Carrera['values'][0]) if Carrera.get() not in Carreras else None
+            Carrera.config(state="normal",values=Lista_Carreras2); Carrera.set(Carrera['values'][0]) if Carrera.get() not in Carreras else None
 
 
     Division.bind("<<ComboboxSelected>>", validar_click_Division)
