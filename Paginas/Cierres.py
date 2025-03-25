@@ -72,9 +72,12 @@ def Registrar_Cierres(responsable,oco,estado,matriz):
     elif OCO[0] != "1" and len(OCO) != 8:
         return messagebox.showerror("Error: OCO","Ingrese un código de OCO válido. La OCO debe tener 8 digitos.")
     
-    Validacion_Cierre = SQLActualizar(f"SELECT [OCO] FROM [Subdireccion de Proyectos BBDD].[dbo].[Cierres] WHERE [OCO] = {OCO}")
+    Validacion_Cierre = SQL(f"SELECT [OCO] FROM [Subdireccion de Proyectos BBDD].[dbo].[Cierres] WHERE [OCO] = {OCO}")
     Validacion_Matriz = matriz[matriz['OCO'] == int(OCO)].empty
-    Validacion_Estado = SQLActualizar(f"SELECT [Estado_Cierre] FROM [Subdireccion de Proyectos BBDD].[dbo].[Cierres] WHERE [OCO] = {OCO}")
+    Validacion_Estado = SQL(f"SELECT [Estado_Cierre] FROM [Subdireccion de Proyectos BBDD].[dbo].[Cierres] WHERE [OCO] = {OCO}")
+
+    menor_id_activo = int(matriz.loc[matriz['OCO'] == int(OCO), 'ID_Activo'].min())
+    Datos = [ID_Correlativo_Max, Evento_Max, menor_id_activo, int(OCO), responsable, fecha_hora_actual, 0, f"Estado: {estado.get()}", f"{responsable} ha actualizado el estado de cierre de la OCO {OCO}"]
 
     if Validacion_Estado == estado.get():
         return messagebox.showerror("Error: Estado","El estado de cierre seleccionado ya se encuentra registrado en la base de datos.")
@@ -82,8 +85,6 @@ def Registrar_Cierres(responsable,oco,estado,matriz):
     if not Validacion_Cierre and Validacion_Matriz:
         return messagebox.showerror("Error: OCO","La OCO señalada no se encuentra registrada en la Matriz CAPEX.")
     elif not Validacion_Cierre and not Validacion_Matriz:
-        menor_id_activo = int(matriz.loc[matriz['OCO'] == int(OCO), 'ID_Activo'].min())
-        Datos = [ID_Correlativo_Max, Evento_Max, menor_id_activo, int(OCO), responsable, fecha_hora_actual, 0, f"Estado: {estado.get()}", f"{responsable} ha actualizado el estado de cierre de la OCO {OCO}"]
         cierre_nuevo = messagebox.askyesno("OCO no encontrada.","La OCO señalada no se encontró en el listado de OCOs en proceso de cierre. ¿Desea incluir esta nueva OCO al listado?")
         if cierre_nuevo:
             try:
@@ -100,7 +101,7 @@ def Registrar_Cierres(responsable,oco,estado,matriz):
         else:
             return
     else:
-        SQL_Update = f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Cierres] SET [Estado_Cierre] = '{estado.get()}' WHERE [OCO] = {int(OCO)}"
+        SQL_Update = f"UPDATE [Subdireccion de Proyectos BBDD].[dbo].[Cierres] SET [Estado_Cierre] = '{estado.get()}' WHERE [OCO] = {OCO}"
         SQLActualizar(SQL_Update)
         funcion_subida_bitacora(Datos)
         print(SQL_Update)
