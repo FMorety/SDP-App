@@ -94,6 +94,8 @@ def limitar_caracteres(entry_widget, max_length, EsNumero=0):
                 return  # Permite borrar caracteres
         elif event.keysym == "Tab":
             return
+        elif str(datetime.now().year) in str(entry_widget.get()) and len(entry_widget.get())<11 and entry_widget.index(tk.INSERT) < 9:
+            return "break"
         if len(entry_widget.get()) >= max_length:
             # Cancelar entrada si ya se alcanzó el límite
             return "break"
@@ -495,7 +497,23 @@ def Registrar_Valores(Frames,FramesInternos,responsable):
     fecha_hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     # --------------------------------------------------------------------------------------------------------------------------------------------- #
+    # -----Restricciones----- #
 
+    if p==1 and len(DatosGenerales[1]) != 14:
+        return (messagebox.showerror("Error: Revisar ID Solicitud ingresada manualmente.",f"Por favor, completar el ID Solicitud con el formato solicitado en la casilla.\n\nFormato del ID Solicitud: {datetime.now().year}-XXXX-XXXX"), print("No se ejecutó la acción."))
+    elif len(DatosGenerales[6].split(" "))==1:
+        return (messagebox.showerror("Error: Revisar Nombre Solicitud ingresado.",f"Celda 'Nombre Solicitud' vacio. Por favor, llene la solicitud con un nombre adecuado para el proyecto que contemple uno de los verbos propuestos."))
+    
+    #Extrae los datos del Item, y distribuye los montos en la Matriz_Planificacion
+    for Frame in FramesInternos:
+        DatosItem, *_ = obtener_variables(Frame.grid_slaves())
+        print(DatosItem)
+        if len(str(DatosItem[-6])) != 8 and len(str(DatosItem[-6])) != 9:
+            return (messagebox.showerror("Error: Revisar OCO ingresada.",f"Por favor, ingrese una OCO con un formato valido según corresponda. (Las OCOS cuentan con 8 o 9 digitos.)"))
+        elif len(str(DatosItem[-4])) != 8:
+            return (messagebox.showerror("Error: Revisar Cuenta ingresada.",f"Por favor, ingrese una Cuenta con un formato valido según corresponda. (Las cuentas cuentan con 8 digitos.)"))
+
+    # --------------------------------------------------------------------------------------------------------------------------------------------- #
 
     #Extrae los datos del Item, y distribuye los montos en la Matriz_Planificacion
     for Frame in FramesInternos:
@@ -547,14 +565,9 @@ def Registrar_Valores(Frames,FramesInternos,responsable):
             cod_Div = Divisiones[Division]
             Codigo_ID_Solicitud_Nuevo = ["2025-"+str(cod_Div).zfill(4)+"-"+str(ID_Solicitud_Max).zfill(4)]
             Datos[0:0]=Codigo_ID_Solicitud_Nuevo
-            
-            
+
         elif p == 1:
-            if len(Datos[0]) != 14:
-                return (messagebox.showerror("Error: Revisar ID Solicitud ingresada manualmente.",f"Por favor, completar el ID Solicitud con el formato solicitado en la casilla.\n\nFormato del ID Solicitud: {datetime.now().year}-XXXX-XXXX"), print("No se ejecutó la acción."))
-            
-            elif str(datetime.now().year) in Datos[0] and str(Divisiones[Division]) in Datos[0]:
-                Codigo_ID_Solicitud_Nuevo = Datos[0]
+            Codigo_ID_Solicitud_Nuevo = Datos[0]
                 
         ID_Activo_Max += 1
         Datos[0:0] = [ID_Activo_Max]
@@ -563,13 +576,6 @@ def Registrar_Valores(Frames,FramesInternos,responsable):
 
         #Extracción de Datos para la Bitacora
         Datos_Bitacora = [ID_Correlativo_Max,Evento_Max,ID_Activo_Max,Datos[12],responsable,fecha_hora_actual,Monto_Aprobado,"Creación",""]
-        
-        if len(str(Datos[12])) != 8 and len(str(Datos[12])) != 9:
-            return (messagebox.showerror("Error: Revisar OCO ingresada.",f"Por favor, ingrese una OCO con un formato valido según corresponda. (Las OCOS cuentan con 8 o 9 digitos.)"))
-        elif len(str(Datos[14])) != 8:
-            return (messagebox.showerror("Error: Revisar Cuenta ingresada.",f"Por favor, ingrese una Cuenta con un formato valido según corresponda. (Las cuentas cuentan con 8 digitos.)"))
-        elif len(Datos[5].split(" "))==1:
-            return (messagebox.showerror("Error: Revisar Nombre Solicitud ingresado.",f"Celda 'Nombre Solicitud' vacio. Por favor, llene la solicitud con un nombre adecuado para el proyecto que contemple uno de los verbos propuestos."))
         
         Datos[12:12] = ['']
         
@@ -586,24 +592,26 @@ def Registrar_Valores(Frames,FramesInternos,responsable):
                 print(Datos)
                 
                 subida_proyecto = funcion_subida_matriz(Datos)
-                if subida_proyecto is None:
+                if subida_proyecto == "Error":
                     return
             
                 subida_bitacora = funcion_subida_bitacora(Datos_Bitacora)
-                if subida_bitacora is None:
+                if subida_bitacora == "Error":
                     SQLActualizar(f"DELETE FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE ID_Activo = {Datos[0]}")
                     return
                 
         else:
             print(Datos)
             subida_proyecto = funcion_subida_matriz(Datos)
-            if subida_proyecto is None:
+            if subida_proyecto == "Error":
                 return
         
             subida_bitacora = funcion_subida_bitacora(Datos_Bitacora)
-            if subida_bitacora is None:
+            if subida_bitacora == "Error":
                 SQLActualizar(f"DELETE FROM [Subdireccion de Proyectos BBDD].[dbo].[Matriz_CAPEX_Regular] WHERE ID_Activo = {Datos[0]}")
                 return
+        ID_Correlativo_Max += 1
+    messagebox.showinfo("Registros cargados", "Proyecto/s registrado/s correctamente en la Matriz CAPEX Regular.")
 
 def Sabana_2025(Division,Escuela,Carrera,Subcartera,checkbox,ID_Sol_Widget):
     
@@ -799,4 +807,3 @@ def Cruce_TipoItem_Cuenta(TipoItem_Entry,Cuenta_Entry,lista):
         Cuenta_Entry.config(state=DISABLED); Cuenta_Entry.set("61080000")
     elif TipoItem_Entry.get() == "Tecnología":
         Cuenta_Entry.config(state="readonly",values=lista); Cuenta_Entry.set(Cuenta_Entry['values'][0])
-        
